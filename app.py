@@ -37,7 +37,9 @@ from email.mime.text import MIMEText
 _LOGGER = logging.getLogger("thoth.slo_reporter")
 
 
-def push_thoth_sli_weekly_metric(weekly_value_metric, prometheus_registry, pushgateway_endpoint):
+def push_thoth_sli_weekly_metric(
+    weekly_value_metric: Metric, prometheus_registry: CollectorRegistry, pushgateway_endpoint: str
+):
     """Push Thoth SLI weekly metric to PushGateway."""
     weekly_metric = Gauge("thoth_sli_weekly", "Weekly Thoth Service Level Indicators", registry=prometheus_registry)
 
@@ -49,15 +51,31 @@ def push_thoth_sli_weekly_metric(weekly_value_metric, prometheus_registry, pushg
     return weekly_value_metric
 
 
-def generate_services_table_html(prometheus_connect_object):
-    """Generate Thoth Service Level Indicators table in HTML."""
-    thoth_sli = []
+def generate_email(learned_packages: int):
+    """General email to be sent."""
+    end_time = datetime.datetime.now()
+    start_time = end_time - datetime.timedelta(days=7)
+    start_time_epoch = int(start_time.timestamp() * 1000)
+    end_time_epoch = int(end_time.timestamp() * 1000)
 
-    thoth_sli_df = pd.DataFrame(thoth_sli)
-    return thoth_sli_df.to_html()
+    # TODO: Show one single dashboard for all metrics to be shown.
+    grafana_dashboard_url = (
+        f"https://grafana.datahub.redhat.com/dashboard/db/thoth-knowledge-graph-content-metrics-stage?"
+        + f"refresh=1m&panelId=23&fullscreen&orgId=1&from={start_time_epoch}&to={end_time_epoch}"
+    )
+
+    return MIMEText(
+        f"<strong>Thoth Solved {learned_packages} Python Packages in the last week.</strong> \
+            <br><br> \
+            Python Packages Information collected in the last week by Thoth. \
+            <br> \
+            The following dashboard panel contains Python Packages info collected: <a href='{grafana_dashboard_url}'> Python Packages Info.</a> \
+            <br>",
+        "html",
+    )
 
 
-def send_sli_email(server, sender_address, recipients, learned_packages, service_availabilities):
+def send_sli_email(server: str, sender_address: str, recipients: str, learned_packages: int):
     """Send email about Thoth Service Level Objectives."""
     _MAIL_SERVER = smtplib.SMTP(server)
 
@@ -73,27 +91,6 @@ def send_sli_email(server, sender_address, recipients, learned_packages, service
     _MAIL_SERVER.sendmail(sender_address, recipients, msg.as_string())
 
 
-def generate_email(learned_packages: int):
-    """General email to be sent."""
-    end_time = datetime.datetime.now()
-    start_time = end_time - datetime.timedelta(days=7)
-    start_time_epoch = int(start_time.timestamp() * 1000)
-    end_time_epoch = int(end_time.timestamp() * 1000)
-
-    grafana_dashboard_url = f"https://grafana.datahub.redhat.com/dashboard/db/thoth-knowledge-graph-content-metrics-stage?" + \
-                            f"refresh=1m&panelId=23&fullscreen&orgId=1&from={start_time_epoch}&to={end_time_epoch}"
-
-    return MIMEText(
-        f"<strong>Thoth Solved {learned_packages} Python Packages in the last week.</strong> \
-            <br><br> \
-            Python Packages Information collected in the last week by Thoth. \
-            <br> \
-            The following dashboard panel contains Python Packages info collected: <a href='{grafana_dashboard_url}'> Python Packages Info.</a> \
-            <br>",
-        "html",
-    )
-
-
 def main():
     """Main function for Thoth Service Level Objectives (SLO) Reporter."""
     _SERVER = os.environ["SMTP_SERVER"]
@@ -106,6 +103,7 @@ def main():
 
     prometheus_registry = CollectorRegistry()
 
+    # TODO: Collect all important metrics in a different function
     pc = PrometheusConnect(url=_THANOS_URL, headers={"Authorization": f"bearer {_THANOS_TOKEN}"}, disable_ssl=True)
     query = (
         'thoth_graphdb_total_main_records{instance="metrics-exporter-thoth-frontend-stage.cloud.paas.psi.redhat.com:80", main_table="python_package_version"}'
@@ -115,9 +113,8 @@ def main():
 
     weekly_sli_value = push_thoth_sli_weekly_metric(learned_packages_weekly, prometheus_registry, _PUSHGATEWAY_ENDPOINT)
     _LOGGER.info(f"Pushed Thoth weekly SLI to Prometheus Pushgateway.")
-    thoth_sli_html = generate_services_table_html(pc)
-    _LOGGER.info(f"Correctly generated Thoth weekly SLI HTML.")
-    send_sli_email(_SERVER, _SENDER_ADDRESS, _ADDRESS_RECIPIENTS, weekly_sli_value, thoth_sli_html)
+
+    send_sli_email(_SERVER, _SENDER_ADDRESS, _ADDRESS_RECIPIENTS, weekly_sli_value)
     _LOGGER.info(f"Thoth weekly SLI correctly sent.")
 
 
