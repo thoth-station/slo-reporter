@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-"""This is the main script of the SLO reporter.
+"""This is the main script of Thoth SLO reporter.
 
     Thanks to DataHub Team in the Red Hat AICoE!!
 """
@@ -38,7 +38,7 @@ _LOGGER = logging.getLogger("thoth.slo_reporter")
 
 
 def push_thoth_sli_weekly_metric(weekly_value_metric, prometheus_registry, pushgateway_endpoint):
-
+    """Push Thoth SLI weekly metric to PushGateway."""
     weekly_metric = Gauge("thoth_sli_weekly", "Weekly Thoth Service Level Indicators", registry=prometheus_registry)
 
     weekly_value_metric = float(weekly_value_metric[0]["value"][1])
@@ -80,15 +80,16 @@ def generate_email(learned_packages: int):
     start_time_epoch = int(start_time.timestamp() * 1000)
     end_time_epoch = int(end_time.timestamp() * 1000)
 
-    grafana_dashboard_url = f"https://grafana.datahub.redhat.com/dashboard/db/thoth-knowledge-graph-content-metrics-stage?refresh=1m&panelId=23&fullscreen&orgId=1&from={start_time_epoch}&to={end_time_epoch}"
+    grafana_dashboard_url = f"https://grafana.datahub.redhat.com/dashboard/db/thoth-knowledge-graph-content-metrics-stage?" + \
+                            f"refresh=1m&panelId=23&fullscreen&orgId=1&from={start_time_epoch}&to={end_time_epoch}"
 
     return MIMEText(
         f"<strong>Thoth Solved {learned_packages} Python Packages in the last week.</strong> \
-                     <br><br> \
-                     Python Packages Information collected in the last week by Thoth. \
-                     <br> \
-                     The following dashboard panel contains Python Packages info collected: <a href='{grafana_dashboard_url}'> Python Packages Info in the last week.</a> \
-                     <br>",
+            <br><br> \
+            Python Packages Information collected in the last week by Thoth. \
+            <br> \
+            The following dashboard panel contains Python Packages info collected: <a href='{grafana_dashboard_url}'> Python Packages Info.</a> \
+            <br>",
         "html",
     )
 
