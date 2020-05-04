@@ -1,0 +1,113 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: slo-reporter
+  annotations:
+    description: "Thoth: SLO Reporter"
+    openshift.io/display-name: "Thoth: SLO Reporter"
+    version: 0.1.0
+    tags: thoth,ai-stacks,aistacks,slo-reporter
+    template.openshift.io/documentation-url: https://github.com/Thoth-Station/
+    template.openshift.io/long-description: >
+      This template defines resources needed to deploy 
+      Thoth SLO Reporter to OpenShift.
+    template.openshift.io/provider-display-name: "Red Hat, Inc."
+    thoth-station.ninja/template-version: 0.1.0 
+  labels:
+    template: slo-reporter
+    app: thoth
+    component: slo-reporter
+
+parameters:
+  - description: Registry the ImageStream to be used
+    displayName: ImageStream Registry
+    required: true
+    name: IMAGE_STREAM_REGISTRY
+    value: "docker-registry.default.svc:5000"
+
+  - displayName: Suspend CronJob run
+    description: Suspend CronJob run
+    required: true
+    name: THOTH_SUSPEND_JOB
+    value: "true"
+
+  - description: Project the ImageStream to be use lives in
+    displayName: ImageStream Project
+    required: true
+    name: IMAGE_STREAM_NAMESPACE
+
+  - description: Tag of the ImageStream to be use
+    displayName: ImageStream Tag
+    required: true
+    name: IMAGE_STREAM_TAG
+    value: "latest"
+
+objects:
+  - kind: CronJob
+    apiVersion: batch/v1beta1
+    metadata:
+      name: slo-reporter
+      annotations:
+        thoth-station.ninja/template-version: 0.1.0
+      labels:
+        app: thoth
+        component: slo-reporter
+    spec:
+      schedule: "0 21 * * FRI"  # Every Friday
+      suspend: ${{THOTH_SUSPEND_JOB}}
+      concurrencyPolicy: Forbid
+      successfulJobsHistoryLimit: 2
+      startingDeadlineSeconds: null
+      failedJobsHistoryLimit: 4
+      jobTemplate:
+        spec:
+          template:
+            metadata:
+              name: slo-reporter
+              labels:
+                app: thoth
+                component: slo-reporter
+            spec:
+              containers:
+                - image: "${IMAGE_STREAM_REGISTRY}/${IMAGE_STREAM_NAMESPACE}/slo-reporter:${IMAGE_STREAM_TAG}"
+                  name: slo-reporter
+                  env:
+                    - name: PROMETHEUS_PUSHGATEWAY_URL
+                      valueFrom:
+                        configMapKeyRef:
+                          name: thoth
+                          key: metrics-pushgateway-url
+                    - name: SENDER_ADDRESS
+                      valueFrom:
+                        configMapKeyRef:
+                          name: slo-reporter
+                          key: sender-address
+                    - name: SMTP_SERVER
+                      valueFrom:
+                        configMapKeyRef:
+                          name: slo-reporter
+                          key: smtp-server
+                    - name: THANOS_ENDPOINT
+                      valueFrom:
+                        configMapKeyRef:
+                          name: slo-reporter
+                          key: thanos-endpoint
+                      # TODO: Use actual Thanos token
+                    - name: THANOS_ACCESS_TOKEN
+                      valueFrom:
+                        secretKeyRef:
+                          name: prometheus-reader
+                          key: token
+                    - name: EMAIL_RECIPIENTS
+                      valueFrom:
+                        configMapKeyRef:
+                          name: slo-reporter
+                          key: email-recipients
+                  resources:
+                    requests:
+                      memory: "256Mi"
+                      cpu: "500m"
+                    limits:
+                      memory: "512Mi"
+                      cpu: "500m"
+              restartPolicy: OnFailure
