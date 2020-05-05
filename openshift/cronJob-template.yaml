@@ -36,6 +36,11 @@ parameters:
     required: true
     name: IMAGE_STREAM_NAMESPACE
 
+  - description: Environment in which Thoth is running
+    displayName: Thoth Enviroment
+    required: true
+    name: THOTH_ENVIRONMENT
+
   - description: Tag of the ImageStream to be use
     displayName: ImageStream Tag
     required: true
@@ -103,6 +108,13 @@ objects:
                         configMapKeyRef:
                           name: slo-reporter
                           key: email-recipients
+                    - name: THOTH_ENVIRONMENT
+                      value: "${THOTH_ENVIRONMENT}"
+                    - name: METRICS_EXPORTER_FRONTEND_PROMETHEUS_INSTANCE
+                      valueFrom:
+                        configMapKeyRef:
+                          name: thoth
+                          key: prometheus-instance-metrics-exporter-frontend
                   resources:
                     requests:
                       memory: "256Mi"
