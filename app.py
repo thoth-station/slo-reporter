@@ -77,6 +77,8 @@ def generate_email(sli_metrics: Dict[str, float]):
         report_method = _SLI_REPORT_CONTEXT[metric_name]["report_method"]
         message += "\n" + report_method(metric_data)
 
+    message += SliMetricReport.REFERENCE_REPORT
+
     return MIMEText(message, "html")
 
 

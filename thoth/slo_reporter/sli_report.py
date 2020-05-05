@@ -26,17 +26,25 @@ _INSTANCE = os.environ["METRICS_EXPORTER_FRONTEND_PROMETHEUS_INSTANCE"]
 _LOGGER = logging.getLogger(__name__)
 
 
-def _metrics_python_packages(start_time_epoch: datetime.datetime, end_time_epoch: datetime.datetime):
-    """Create query and dashbord for python packages."""
-    query_labels = f'{{instance="{_INSTANCE}", main_table="python_package_version"}}'
+def _add_dashbords(start_time_epoch: datetime.datetime, end_time_epoch: datetime.datetime):
+    """Create dashboard link for report."""
     dashboard_name = f"thoth-knowledge-graph-content-metrics-{_ENVIRONMENT}"
-    dashboard_url = f"https://grafana.datahub.redhat.com/dashboard/db/{dashboard_name}? \
-        + refresh=1m&orgId=1&from={start_time_epoch}&to={end_time_epoch}"
+    dashboard_url = (
+        f"https://grafana.datahub.redhat.com/dashboard/db/{dashboard_name}?"
+        + f"refresh=1m&orgId=1&from={start_time_epoch}&to={end_time_epoch}"
+    )
+
+    return f"<br> \
+            Reference dashboard: {dashboard_url}"
+
+
+def _metrics_solved_python_packages():
+    """Create data for report for Solved python packages."""
+    query_labels = f'{{instance="{_INSTANCE}", main_table="python_package_version"}}'
 
     return {
         "query": f"thoth_graphdb_total_main_records{query_labels}"
         + f" - min_over_time(thoth_graphdb_total_main_records{query_labels}[7d])",
-        "dashboard": dashboard_url,
         "report_method": _report_python_packages,
     }
 

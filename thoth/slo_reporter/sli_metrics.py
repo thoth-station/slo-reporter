@@ -20,7 +20,7 @@
 import datetime
 import logging
 
-from .sli_report import _metrics_python_packages
+from .sli_report import _metrics_solved_python_packages, _add_dashbords
 
 
 _END_TIME = datetime.datetime.now()
@@ -40,4 +40,6 @@ class SliMetricReport:
         f"<strong>Thoth SLI Metrics from {_START_TIME.strftime('%Y-%m-%d')} \
          to {_END_TIME.strftime('%Y-%m-%d')}.</strong>"
     )
-    SOLVED_PYTHON_PACKAGES_REPORT = _metrics_python_packages(_START_TIME_EPOCH, _END_TIME_EPOCH)
+    SOLVED_PYTHON_PACKAGES_REPORT = _metrics_solved_python_packages()
+
+    REFERENCE_REPORT = _add_dashbords(_START_TIME_EPOCH, _END_TIME_EPOCH)
