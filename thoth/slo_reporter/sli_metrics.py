@@ -20,7 +20,7 @@
 import datetime
 import logging
 
-from sli_report import _metrics_python_packages
+from .sli_report import _metrics_python_packages
 
 
 _END_TIME = datetime.datetime.now()
@@ -34,8 +34,10 @@ _LOGGER = logging.getLogger(__name__)
 class SliMetricReport:
     """Metrics to be included in the report."""
 
-    REPORT_SUBJECT = f"Thoth Service Level Indicators Update Week ({_START_TIME.strftime('%Y-%m-%d')} - {_END_TIME.strftime('%Y-%m-%d')})"
+    REPORT_SUBJECT = f"Thoth Service Level Indicators Update Week" + \
+                     f" ({_START_TIME.strftime('%Y-%m-%d')} - {_END_TIME.strftime('%Y-%m-%d')})"
     INITIAL_REPORT = (
-        f"<strong>Thoth SLI Metrics from {_START_TIME.strftime('%Y-%m-%d')} to {_END_TIME.strftime('%Y-%m-%d')}.</strong>"
+        f"<strong>Thoth SLI Metrics from {_START_TIME.strftime('%Y-%m-%d')} \
+         to {_END_TIME.strftime('%Y-%m-%d')}.</strong>"
     )
     SOLVED_PYTHON_PACKAGES_REPORT = _metrics_python_packages(_START_TIME_EPOCH, _END_TIME_EPOCH)

@@ -31,10 +31,12 @@ from prometheus_client import CollectorRegistry, Gauge, push_to_gateway
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from sli_metrics import SliMetricReport
+from thoth.slo_reporter.sli_metrics import SliMetricReport
+from thoth.slo_reporter import __service_version__
 
 
 _LOGGER = logging.getLogger("thoth.slo_reporter")
+_LOGGER.info(f"Thoth SLO Reporter v%s", __service_version__)
 
 _SERVER = os.environ["SMTP_SERVER"]
 _SENDER_ADDRESS = os.environ["SENDER_ADDRESS"]

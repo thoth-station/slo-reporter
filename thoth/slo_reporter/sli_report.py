@@ -42,7 +42,7 @@ def _metrics_python_packages(start_time_epoch: datetime.datetime, end_time_epoch
 
 
 def _report_python_packages(learned_packages: float):
-    """create report for Python packages."""
+    """Create report for Python packages."""
     report = f"<br><br> \
                 Thoth solved <strong>{int(learned_packages)} Python Packages </strong> in the last week. \
                 <br>"
