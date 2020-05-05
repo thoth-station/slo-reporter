@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-"""This file contains all html report created for each sli metric."""
+"""This file contains all sli metrics that should be included in the report."""
 
 import datetime
 import logging
@@ -23,18 +23,18 @@ import logging
 from sli_report import _metrics_python_packages
 
 
+_END_TIME = datetime.datetime.now()
+_START_TIME = _END_TIME - datetime.timedelta(days=7)
+_START_TIME_EPOCH = int(_START_TIME.timestamp() * 1000)
+_END_TIME_EPOCH = int(_END_TIME.timestamp() * 1000)
+
 _LOGGER = logging.getLogger(__name__)
 
 
-class SliMetrics:
-    """Metrics and dashboards to be included in the report."""
+class SliMetricReport:
+    """Metrics to be included in the report."""
 
-    END_TIME = datetime.datetime.now()
-    START_TIME = END_TIME - datetime.timedelta(days=7)
-    START_TIME_EPOCH = int(START_TIME.timestamp() * 1000)
-    END_TIME_EPOCH = int(END_TIME.timestamp() * 1000)
-
-    INITIAL_MESSAGE = (
-        f"<strong>Thoth SLI Metrics from {START_TIME.strftime('%Y-%m-%d')} to {END_TIME.strftime('%Y-%m-%d')}.</strong>"
+    INITIAL_REPORT = (
+        f"<strong>Thoth SLI Metrics from {_START_TIME.strftime('%Y-%m-%d')} to {_END_TIME.strftime('%Y-%m-%d')}.</strong>"
     )
-    SOLVED_PYTHON_PACKAGES = _metrics_python_packages(START_TIME_EPOCH, END_TIME_EPOCH)
+    SOLVED_PYTHON_PACKAGES_REPORT = _metrics_python_packages(_START_TIME_EPOCH, _END_TIME_EPOCH)

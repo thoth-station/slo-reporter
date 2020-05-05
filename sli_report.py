@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-"""This file contains all metrics that need to be included in the email report."""
+"""This file contains structures of report for each metric."""
 
 import logging
 import os
@@ -28,7 +28,7 @@ _LOGGER = logging.getLogger(__name__)
 
 def _metrics_python_packages(start_time_epoch: datetime.datetime, end_time_epoch: datetime.datetime):
     """Create query and dashbord for python packages."""
-    query_labels = f'instance={_INSTANCE}, main_table="python_package_version"'
+    query_labels = f'{{instance="{_INSTANCE}", main_table="python_package_version"}}'
     dashboard_name = f"thoth-knowledge-graph-content-metrics-{_ENVIRONMENT}"
     dashboard_url = f"https://grafana.datahub.redhat.com/dashboard/db/{dashboard_name}? \
         + refresh=1m&panelId=23&fullscreen&orgId=1&from={start_time_epoch}&to={end_time_epoch}"

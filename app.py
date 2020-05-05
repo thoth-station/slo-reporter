@@ -34,7 +34,7 @@ from prometheus_client import CollectorRegistry, Gauge, push_to_gateway
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from sli_metrics import SliMetrics
+from sli_metrics import SliMetricReport
 
 
 _LOGGER = logging.getLogger("thoth.slo_reporter")
@@ -47,13 +47,13 @@ _THANOS_URL = os.environ["THANOS_ENDPOINT"]
 _THANOS_TOKEN = os.environ["THANOS_ACCESS_TOKEN"]
 _PUSHGATEWAY_ENDPOINT = os.environ["PROMETHEUS_PUSHGATEWAY_URL"]
 
-PROMETHEUS_REGISTRY = CollectorRegistry()
+_PROMETHEUS_REGISTRY = CollectorRegistry()
 
 _THOTH_WEEKLY_SLI = Gauge(
-    "thoth_sli_weekly", "Weekly Thoth Service Level Indicators", ["sli_type"], registry=PROMETHEUS_REGISTRY
+    "thoth_sli_weekly", "Weekly Thoth Service Level Indicators", ["sli_type"], registry=_PROMETHEUS_REGISTRY
 )
 
-_SLI_REPORT_CONTEXT = {"solved_python_packages": SliMetrics.SOLVED_PYTHON_PACKAGES}
+_SLI_REPORT_CONTEXT = {"solved_python_packages": SliMetricReport.SOLVED_PYTHON_PACKAGES_REPORT}
 
 
 def push_thoth_sli_weekly_metrics(weekly_metrics: Dict[str, Metric], pushgateway_endpoint: str):
@@ -62,17 +62,18 @@ def push_thoth_sli_weekly_metrics(weekly_metrics: Dict[str, Metric], pushgateway
     for sli_type, metric_data in weekly_metrics.items():
         weekly_value_metric = float(metric_data[0]["value"][1])
         _THOTH_WEEKLY_SLI.labels(sli_type=sli_type).set(weekly_value_metric)
-        _LOGGER.info("sli_type(%r)=%r", sli_type.message, weekly_value_metric)
+        _LOGGER.info("sli_type(%r)=%r", sli_type, weekly_value_metric)
         pushed_metrics[sli_type] = weekly_value_metric
 
-    push_to_gateway(pushgateway_endpoint, job="Weekly Thoth SLI", registry=PROMETHEUS_REGISTRY)
+    push_to_gateway(pushgateway_endpoint, job="Weekly Thoth SLI", registry=_PROMETHEUS_REGISTRY)
 
     return pushed_metrics
 
 
 def generate_email(sli_metrics: Dict[str, float]):
-    """General email to be sent."""
-    message = SliMetrics.INITIAL_MESSAGE
+    """Generate email to be sent."""
+    message = SliMetricReport.INITIAL_REPORT
+
     for metric_name, metric_data in sli_metrics.items():
         report_method = _SLI_REPORT_CONTEXT[metric_name]["report_method"]
         message += "\n" + report_method(metric_data)
@@ -101,9 +102,9 @@ def main():
     pc = PrometheusConnect(url=_THANOS_URL, headers={"Authorization": f"bearer {_THANOS_TOKEN}"}, disable_ssl=True)
 
     collected_info = {}
-    for context, data in _SLI_REPORT_CONTEXT.items():
-        _LOGGER.info(f"Retrieving data for... {context}")
-        collected_info[context] = pc.custom_query(query=SliMetrics[context]["query"])
+    for sli_type, data in _SLI_REPORT_CONTEXT.items():
+        _LOGGER.info(f"Retrieving data for... {sli_type}")
+        collected_info[sli_type] = pc.custom_query(query=_SLI_REPORT_CONTEXT[sli_type]["query"])
 
     weekly_sli_values_map = push_thoth_sli_weekly_metrics(collected_info, _PUSHGATEWAY_ENDPOINT)
     _LOGGER.info(f"Pushed Thoth weekly SLI to Prometheus Pushgateway.")
