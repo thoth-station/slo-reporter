@@ -34,6 +34,7 @@ _LOGGER = logging.getLogger(__name__)
 class SliMetricReport:
     """Metrics to be included in the report."""
 
+    REPORT_SUBJECT = f"Thoth Service Level Indicators Update Week ({_START_TIME.strftime('%Y-%m-%d')} - {_END_TIME.strftime('%Y-%m-%d')})"
     INITIAL_REPORT = (
         f"<strong>Thoth SLI Metrics from {_START_TIME.strftime('%Y-%m-%d')} to {_END_TIME.strftime('%Y-%m-%d')}.</strong>"
     )

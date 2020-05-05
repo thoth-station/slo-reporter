@@ -83,7 +83,7 @@ def send_sli_email(server: str, sender_address: str, recipients: str, weekly_sli
     _MAIL_SERVER = smtplib.SMTP(server)
 
     msg = MIMEMultipart()
-    msg["Subject"] = "Thoth Service Level Indicators"
+    msg["Subject"] = SliMetricReport.REPORT_SUBJECT
     msg["From"] = sender_address
     msg["To"] = recipients
 
