@@ -31,7 +31,7 @@ def _metrics_python_packages(start_time_epoch: datetime.datetime, end_time_epoch
     query_labels = f'{{instance="{_INSTANCE}", main_table="python_package_version"}}'
     dashboard_name = f"thoth-knowledge-graph-content-metrics-{_ENVIRONMENT}"
     dashboard_url = f"https://grafana.datahub.redhat.com/dashboard/db/{dashboard_name}? \
-        + refresh=1m&panelId=23&fullscreen&orgId=1&from={start_time_epoch}&to={end_time_epoch}"
+        + refresh=1m&orgId=1&from={start_time_epoch}&to={end_time_epoch}"
 
     return {
         "query": f"thoth_graphdb_total_main_records{query_labels}"
@@ -41,10 +41,10 @@ def _metrics_python_packages(start_time_epoch: datetime.datetime, end_time_epoch
     }
 
 
-def _report_python_packages(learned_packages: int):
+def _report_python_packages(learned_packages: float):
     """create report for Python packages."""
     report = f"<br><br> \
-                Thoth solved <strong>{learned_packages} Python Packages </strong> in the last week. \
+                Thoth solved <strong>{int(learned_packages)} Python Packages </strong> in the last week. \
                 <br>"
 
     return report

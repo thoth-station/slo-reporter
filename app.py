@@ -15,10 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-"""This is the main script of Thoth SLO reporter.
-
-    Thanks to DataHub Team in the Red Hat AICoE!!
-"""
+"""This is the main script of Thoth SLO reporter."""
 
 import os
 import logging
@@ -86,7 +83,7 @@ def send_sli_email(server: str, sender_address: str, recipients: str, weekly_sli
     _MAIL_SERVER = smtplib.SMTP(server)
 
     msg = MIMEMultipart()
-    msg["Subject"] = "Thoth Week Service Level Indicators"
+    msg["Subject"] = "Thoth Service Level Indicators"
     msg["From"] = sender_address
     msg["To"] = recipients
 
