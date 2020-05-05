@@ -43,9 +43,9 @@ _SERVER = os.environ["SMTP_SERVER"]
 _SENDER_ADDRESS = os.environ["SENDER_ADDRESS"]
 _ADDRESS_RECIPIENTS = os.environ["EMAIL_RECIPIENTS"]
 
-# _THANOS_URL = os.environ["THANOS_ENDPOINT"]
-# _THANOS_TOKEN = os.environ["THANOS_ACCESS_TOKEN"]
-# _PUSHGATEWAY_ENDPOINT = os.environ["PROMETHEUS_PUSHGATEWAY_URL"]
+_THANOS_URL = os.environ["THANOS_ENDPOINT"]
+_THANOS_TOKEN = os.environ["THANOS_ACCESS_TOKEN"]
+_PUSHGATEWAY_ENDPOINT = os.environ["PROMETHEUS_PUSHGATEWAY_URL"]
 
 PROMETHEUS_REGISTRY = CollectorRegistry()
 
@@ -56,9 +56,7 @@ _THOTH_WEEKLY_SLI = Gauge(
 _SLI_REPORT_CONTEXT = {"solved_python_packages": SliMetrics.SOLVED_PYTHON_PACKAGES}
 
 
-def push_thoth_sli_weekly_metrics(
-    weekly_metrics: Dict[str, Metric], pushgateway_endpoint: str
-):
+def push_thoth_sli_weekly_metrics(weekly_metrics: Dict[str, Metric], pushgateway_endpoint: str):
     """Push Thoth SLI weekly metric to PushGateway."""
     pushed_metrics = {}
     for sli_type, metric_data in weekly_metrics.items():
@@ -100,18 +98,15 @@ def send_sli_email(server: str, sender_address: str, recipients: str, weekly_sli
 
 def main():
     """Main function for Thoth Service Level Objectives (SLO) Reporter."""
-    # # TODO: Collect all important metrics in a different function
-    # pc = PrometheusConnect(url=_THANOS_URL, headers={"Authorization": f"bearer {_THANOS_TOKEN}"}, disable_ssl=True)
+    pc = PrometheusConnect(url=_THANOS_URL, headers={"Authorization": f"bearer {_THANOS_TOKEN}"}, disable_ssl=True)
 
-    # collected_info = {}
-    # for context, data in _SLI_REPORT_CONTEXT.items():
-    #     _LOGGER.info(f"Retrieving data for... {context}")
-    #     collected_info[context] = pc.custom_query(query=SliMetrics[context]["query"])
-    weekly_sli_values_map = {
-        "solved_python_packages" : 2040
-    }
-    # weekly_sli_values_map = push_thoth_sli_weekly_metrics(collected_info, _PUSHGATEWAY_ENDPOINT)
-    # _LOGGER.info(f"Pushed Thoth weekly SLI to Prometheus Pushgateway.")
+    collected_info = {}
+    for context, data in _SLI_REPORT_CONTEXT.items():
+        _LOGGER.info(f"Retrieving data for... {context}")
+        collected_info[context] = pc.custom_query(query=SliMetrics[context]["query"])
+
+    weekly_sli_values_map = push_thoth_sli_weekly_metrics(collected_info, _PUSHGATEWAY_ENDPOINT)
+    _LOGGER.info(f"Pushed Thoth weekly SLI to Prometheus Pushgateway.")
 
     send_sli_email(_SERVER, _SENDER_ADDRESS, _ADDRESS_RECIPIENTS, weekly_sli_values_map)
     _LOGGER.info(f"Thoth weekly SLI correctly sent.")
