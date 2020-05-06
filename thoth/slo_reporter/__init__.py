@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# project template
+# slo-reporter
 # Copyright(C) 2010 Red Hat, Inc.
 #
 # This program is free software: you can redistribute it and / or modify
@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-"""This file carries the version of the template project."""
 
-__version__ = "0.1.0"
+"""This is a SLO Reporter for Thoth."""
+
+
+__version__ = "0.0.1"
+__service_version__ = f"{__version__}"
