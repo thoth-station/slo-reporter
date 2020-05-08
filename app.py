@@ -42,6 +42,8 @@ _SERVER = os.environ["SMTP_SERVER"]
 _SENDER_ADDRESS = os.environ["SENDER_ADDRESS"]
 _ADDRESS_RECIPIENTS = os.environ["EMAIL_RECIPIENTS"]
 
+_ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
+
 _THANOS_URL = os.environ["THANOS_ENDPOINT"]
 _THANOS_TOKEN = os.environ["THANOS_ACCESS_TOKEN"]
 _PUSHGATEWAY_ENDPOINT = os.environ["PROMETHEUS_PUSHGATEWAY_URL"]
@@ -49,7 +51,9 @@ _PUSHGATEWAY_ENDPOINT = os.environ["PROMETHEUS_PUSHGATEWAY_URL"]
 _PROMETHEUS_REGISTRY = CollectorRegistry()
 
 _THOTH_WEEKLY_SLI = Gauge(
-    "thoth_sli_weekly", "Weekly Thoth Service Level Indicators", ["sli_type"], registry=_PROMETHEUS_REGISTRY
+    f"thoth_sli_weekly_{_ENVIRONMENT}",
+    "Weekly Thoth Service Level Indicators",
+    ["sli_type"], registry=_PROMETHEUS_REGISTRY
 )
 
 _SLI_REPORT_CONTEXT = {"solved_python_packages": SliMetricReport.SOLVED_PYTHON_PACKAGES_REPORT}
