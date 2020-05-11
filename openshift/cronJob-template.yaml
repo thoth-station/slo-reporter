@@ -97,10 +97,10 @@ objects:
                         configMapKeyRef:
                           name: slo-reporter
                           key: thanos-endpoint
-                    - name: THANOS_ACCESS_TOKEN  # TODO: Use actual Thanos token
+                    - name: THANOS_ACCESS_TOKEN
                       valueFrom:
                         secretKeyRef:
-                          name: prometheus-reader
+                          name: slo-reporter
                           key: token
                     - name: EMAIL_RECIPIENTS
                       valueFrom:
