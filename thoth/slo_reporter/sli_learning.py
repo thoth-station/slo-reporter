@@ -54,8 +54,10 @@ class SLILearning(SLIBase):
         return {
             "max_learning_rate": f"max_over_time(\
                 increase(\
-                    thoth_graphdb_unsolved_python_package_versions_change_total{query_labels}[1h])[{_INTERVAL}:1h])",
-            "learned_packages": f"sum(delta(thoth_graphdb_total_number_solved_python_packages{query_labels}[{_INTERVAL}]))"
+                    thoth_graphdb_unsolved_python_package_versions_change_total{query_labels}[1h]\
+                        )[{_INTERVAL}:1h])",
+            "learned_packages": f"sum(delta(\
+                thoth_graphdb_total_number_solved_python_packages{query_labels}[{_INTERVAL}]))",
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:
@@ -65,12 +67,21 @@ class SLILearning(SLIBase):
         """
         html_inputs = []
         for learning_quantity in _REGISTERED_LEARNING_MEASUREMENT_UNIT.keys():
-            html_inputs.append(
-                [
-                    learning_quantity,
-                    int(sli[learning_quantity]),
-                    _REGISTERED_LEARNING_MEASUREMENT_UNIT[learning_quantity]
-                ]
-            )
+            if sli[learning_quantity]:
+                html_inputs.append(
+                    [
+                        learning_quantity,
+                        int(sli[learning_quantity]),
+                        _REGISTERED_LEARNING_MEASUREMENT_UNIT[learning_quantity],
+                    ]
+                )
+            else:
+                html_inputs.append(
+                    [
+                        learning_quantity,
+                        "Nan",
+                        _REGISTERED_LEARNING_MEASUREMENT_UNIT[learning_quantity],
+                    ]
+                )
         report = HTMLTemplates.thoth_learning_template(html_inputs=html_inputs)
         return report

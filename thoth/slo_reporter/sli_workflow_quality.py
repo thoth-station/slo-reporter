@@ -32,11 +32,7 @@ _ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
 _INTERVAL = "7d"
 _LOGGER = logging.getLogger(__name__)
 
-REGISTERED_SERVICES = [
-    "adviser",
-    "solver",
-    "inspection"
-]
+REGISTERED_SERVICES = ["adviser", "solver", "inspection"]
 
 
 class SLIWorkflowQuality(SLIBase):
@@ -55,7 +51,7 @@ class SLIWorkflowQuality(SLIBase):
             result = self._aggregate_queries(service=service)
             for query_name, query in result.items():
                 queries[query_name] = query
-        
+
         return queries
 
     @staticmethod
@@ -104,7 +100,7 @@ class SLIWorkflowQuality(SLIBase):
                         )
                         / total_workflows
                     ) * 100
-                
+
                 html_inputs[service] = int(successfull_percentage)
 
             else:

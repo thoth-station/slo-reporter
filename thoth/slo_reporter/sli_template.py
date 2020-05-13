@@ -18,30 +18,31 @@
 """This file contains all templates used to create the final html report."""
 
 from pathlib import Path
-from typing import List, Any
+from typing import List, Any, Dict
 from jinja2 import Template
 from jinja2 import Environment, FileSystemLoader
 
-_FILE_LOADER = FileSystemLoader(Path.cwd().joinpath('thoth', 'slo_reporter', 'templates'))
+_FILE_LOADER = FileSystemLoader(Path.cwd().joinpath("thoth", "slo_reporter", "templates"))
 ENV = Environment(loader=_FILE_LOADER)
+
 
 class HTMLTemplates:
     """This class collect all HTML used for the SLI report."""
 
-    def thoth_services_template(html_inputs: List[Any]):
+    def thoth_services_template(html_inputs: Dict[str, Any]):
         """Create HTML template to be used for thoth services."""
         parameters = locals()
-        template = ENV.get_template('thoth_service.html')
+        template = ENV.get_template("thoth_service.html")
         return template.render(**parameters)
 
     def thoth_learning_template(html_inputs: List[Any]):
         """Create HTML template to be used for thoth learning info."""
         parameters = locals()
-        template = ENV.get_template('thoth_learning.html')
+        template = ENV.get_template("thoth_learning.html")
         return template.render(**parameters)
 
-    def thoth_references_template(html_inputs: List[Any]):
+    def thoth_references_template(html_inputs: Dict[str, Any]):
         """Create HTML template to be used for thoth references."""
         parameters = locals()
-        template = ENV.get_template('thoth_references.html')
+        template = ENV.get_template("thoth_references.html")
         return template.render(**parameters)
