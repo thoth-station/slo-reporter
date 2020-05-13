@@ -27,6 +27,7 @@ from .sli_base import SLIBase
 
 
 _INSTANCE = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND"]
+_ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
 _INTERVAL = "7d"
 _LOGGER = logging.getLogger(__name__)
 
@@ -44,9 +45,9 @@ class SLISolverQuality(SLIBase):
         """Aggregate queries for solver_quality SLI Report."""
         query_labels_solver_reports = f'{{instance="{_INSTANCE}", result_type="solver"}}'
         query_labels_solver_workflows_f = f'{{instance="{_INSTANCE}", \
-            label_selector="component=solver", job="Thoth Metrics (stage)", workflow_status="Failed"}}'
+            label_selector="component=solver", job="Thoth Metrics ({_ENVIRONMENT})", workflow_status="Failed"}}'
         query_labels_solver_workflows_e = f'{{instance="{_INSTANCE}", \
-            label_selector="component=solver", job="Thoth Metrics (stage)", workflow_status="Error"}}'
+            label_selector="component=solver", job="Thoth Metrics ({_ENVIRONMENT})", workflow_status="Error"}}'
         return {
             "solver_reports": f"thoth_ceph_results_number{query_labels_solver_reports}"
             + f" - min_over_time(thoth_ceph_results_number{query_labels_solver_reports}[{_INTERVAL}])",

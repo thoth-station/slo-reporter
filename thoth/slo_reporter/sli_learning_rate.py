@@ -27,6 +27,7 @@ from .sli_base import SLIBase
 
 
 _INSTANCE = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND"]
+_ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
 _INTERVAL = "7d"
 _LOGGER = logging.getLogger(__name__)
 
@@ -42,7 +43,7 @@ class SLILearningRate(SLIBase):
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for learning_rate SLI Report."""
-        query_labels = f'{{instance="{_INSTANCE}", job="Thoth Metrics (stage)"}}'
+        query_labels = f'{{instance="{_INSTANCE}", job="Thoth Metrics ({_ENVIRONMENT})"}}'
         return {
             "max_learning_rate": f"max_over_time(increase(thoth_graphdb_unsolved_python_package_versions_change_total{query_labels}[1h])[{_INTERVAL}:1h])"
         }

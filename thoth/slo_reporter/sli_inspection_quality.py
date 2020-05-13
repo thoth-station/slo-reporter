@@ -27,6 +27,7 @@ from .sli_base import SLIBase
 
 
 _INSTANCE = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND"]
+_ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
 _INTERVAL = "7d"
 _LOGGER = logging.getLogger(__name__)
 
@@ -45,9 +46,9 @@ class SLIInspectionQuality(SLIBase):
         component = "inspection"
         query_labels_inspection_reports = f'{{instance="{_INSTANCE}", result_type="inspection"}}'
         query_labels_inspection_workflows_f = f'{{instance="{_INSTANCE}", \
-            label_selector="component=inspection", job="Thoth Metrics (stage)", workflow_status="Failed"}}'
+            label_selector="component=inspection", job="Thoth Metrics ({_ENVIRONMENT})", workflow_status="Failed"}}'
         query_labels_inspection_workflows_e = f'{{instance="{_INSTANCE}", \
-            label_selector="component=inspection", job="Thoth Metrics (stage)", workflow_status="Error"}}'
+            label_selector="component=inspection", job="Thoth Metrics ({_ENVIRONMENT})", workflow_status="Error"}}'
         return {
             "inspection_reports": f"thoth_ceph_results_number{query_labels_inspection_reports}"
             + f" - min_over_time(thoth_ceph_results_number{query_labels_inspection_reports}[{_INTERVAL}])",
