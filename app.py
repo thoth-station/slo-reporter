@@ -63,7 +63,7 @@ _PROMETHEUS_REGISTRY = CollectorRegistry()
 _THOTH_WEEKLY_SLI = Gauge(
     f"thoth_sli_weekly_{_ENVIRONMENT}",
     "Weekly Thoth Service Level Indicators",
-    ["sli_type"], registry=_PROMETHEUS_REGISTRY
+    ["sli_type", "metric_name"], registry=_PROMETHEUS_REGISTRY
 )
 
 
@@ -108,10 +108,7 @@ def generate_email(sli_metrics: Dict[str, float]):
 
     for sli_name, metric_data in sli_metrics.items():
         report_method = SLIReport.REPORT_SLI_CONTEXT[sli_name]["report_method"]
-        if all([v for v in metric_data.values()]):
-            message += "\n" + report_method(metric_data)
-        else:
-            _LOGGER.warning(f"Some metric are empty for {sli_name}... {metric_data}")
+        message += "\n" + report_method(metric_data)
 
     message += SLIReport.REPORT_REFERENCES
 
