@@ -40,7 +40,7 @@ def _add_dashbords(start_time_epoch: datetime.datetime, end_time_epoch: datetime
 
 def _metrics_solved_python_packages():
     """Create data for report for Solved python packages."""
-    query_labels = f'{{instance="{_INSTANCE}", main_table="python_package_version"}}'
+    query_labels = f'{{instance="{_INSTANCE}", job="Thoth Metrics ({_ENVIRONMENT}), main_table="python_package_version"}}'
 
     return {
         "query": f"thoth_graphdb_total_main_records{query_labels}"
