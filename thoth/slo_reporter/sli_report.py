@@ -21,11 +21,8 @@ import datetime
 import logging
 
 from .sli_references import _add_dashbords
-from .sli_solved_python_packages import SLISolvedPythonPackages
-from .sli_adviser_quality import SLIAdviserQuality
-from .sli_inspection_quality import SLIInspectionQuality
-from .sli_solver_quality import SLISolverQuality
-from .sli_learning_rate import SLILearningRate
+from .sli_workflow_quality import SLIWorkflowQuality
+from .sli_learning import SLILearning
 
 
 _END_TIME = datetime.datetime.now()
@@ -47,11 +44,8 @@ class SLIReport:
          to {_END_TIME.strftime('%Y-%m-%d')}.</strong>"
 
     REPORT_SLI_CONTEXT = {
-        SLISolvedPythonPackages._SLI_NAME: SLISolvedPythonPackages()._aggregate_info(),
-        SLIAdviserQuality._SLI_NAME: SLIAdviserQuality()._aggregate_info(),
-        SLISolverQuality._SLI_NAME: SLISolverQuality()._aggregate_info(),
-        SLIInspectionQuality._SLI_NAME: SLIInspectionQuality()._aggregate_info(),
-        SLILearningRate._SLI_NAME: SLILearningRate()._aggregate_info(),
+        SLILearning._SLI_NAME: SLILearning()._aggregate_info(),
+        SLIWorkflowQuality._SLI_NAME: SLIWorkflowQuality()._aggregate_info(),
     }
 
     REPORT_REFERENCES = _add_dashbords(_START_TIME_EPOCH, _END_TIME_EPOCH)

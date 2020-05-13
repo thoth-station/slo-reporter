@@ -21,25 +21,29 @@ import os
 import logging
 import datetime
 
+from .sli_template import HTMLTemplates
+
 _ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
 _LOGGER = logging.getLogger(__name__)
 
 
 def _add_dashbords(start_time_epoch: datetime.datetime, end_time_epoch: datetime.datetime):
     """Create dashboard link for report."""
+    html_inputs = {}
+
     knowledge_graph_dashboard_name = f"thoth-knowledge-graph-content-metrics-{_ENVIRONMENT}"
     knowledge_graph_dashboard_url = (
         f"https://grafana.datahub.redhat.com/dashboard/db/{knowledge_graph_dashboard_name}?"
         + f"refresh=1m&orgId=1&from={start_time_epoch}&to={end_time_epoch}"
     )
+    html_inputs["Thoth Knowledge Graph"] = knowledge_graph_dashboard_url
 
     sli_slo_dashboard_name = f"thoth-sli-slo"
     sli_slo_dashboard_url = (
         f"https://grafana.datahub.redhat.com/dashboard/db/{sli_slo_dashboard_name}?"
         + f"refresh=1m&orgId=1&from={start_time_epoch}&to={end_time_epoch}"
     )
+    html_inputs["Thoth SLI/SLO"] = sli_slo_dashboard_url
 
-    return f"<br> \
-            Reference dashboard Thoth Knowledge Graph: {knowledge_graph_dashboard_url} \
-            <br> \
-            Reference dashboard Thoth SLI/SLO: {sli_slo_dashboard_url}"
+    report = HTMLTemplates.thoth_references_template(html_inputs=html_inputs)
+    return report

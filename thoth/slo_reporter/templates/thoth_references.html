@@ -1,0 +1,21 @@
+<body>
+    <table class="table table-thoth-learning">
+        <thead>
+            <tr>
+                <th>Thoth References</th>
+            </tr>
+        </thead>
+        <thead>
+            <tr>
+                <th>Reference</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reference, url in html_inputs.items() %}
+            <tr>
+                <td><a href="{{ url }}"> {{ reference }}</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
