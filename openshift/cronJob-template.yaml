@@ -114,6 +114,8 @@ objects:
                         configMapKeyRef:
                           name: thoth
                           key: prometheus-instance-metrics-exporter-frontend
+                    - name: PROMETHEUS_INSTANCE_USER_API
+                      value: user-api-thoth-frontend-stage.cloud.paas.psi.redhat.com:80 # Thoth ConfigMap
                   resources:
                     requests:
                       memory: "256Mi"
