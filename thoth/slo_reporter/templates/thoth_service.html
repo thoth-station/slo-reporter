@@ -1,23 +1,21 @@
-<body>
-    <table class="table table-thoth-services">
-        <thead>
-            <tr>
-                <th>Thoth Components</th>
-            </tr>
-        </thead>
-        <thead>
-            <tr>
-                <th>Component</th>
-                <th>Successfull [%]</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for service, successfull_percentage in html_inputs.items() %}
-            <tr>
-                <td>{{ service }}</td>
-                <td>{{ successfull_percentage }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
+{% include "base.html" %}
+{% block title %} <strong> Thoth Components </strong> {% endblock %}
+{% block classes %}
+<thead>
+    <tr>
+        <th>Component</th>
+        <th>Succeeded</th>
+    </tr>
+</thead>
+{% endblock %}
+{% block inputs %}
+<tbody>
+    {% for service, successfull_percentage in html_inputs.items() %}
+    <tr>
+        <td>{{ service }}</td>
+        <td>{{ successfull_percentage }}</td>
+        <td> % </td>
+    </tr>
+    {% endfor %}
+</tbody>
+{% endblock %}
