@@ -79,10 +79,10 @@ def collect_metrics():
             _LOGGER.info(f"Querying... {query_name}")
             try:
                 metric_data = pc.custom_query(query=query)
-                _LOGGER.debug(f"Metric obtained... {metric_data}")
+                _LOGGER.info(f"Metric obtained... {metric_data}")
                 collected_info[sli_name][query_name] = float(metric_data[0]["value"][1])
             except Exception as e:
-                _LOGGER.warning(f"Could not gather metric for {sli_name}-{query_name}...{e}")
+                _LOGGER.exception(f"Could not gather metric for {sli_name}-{query_name}...{e}")
                 pass
                 collected_info[sli_name][query_name] = None
 

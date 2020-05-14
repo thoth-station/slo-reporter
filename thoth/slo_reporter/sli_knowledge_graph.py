@@ -36,6 +36,8 @@ _REGISTERED_KNOWLEDGE_QUANTITY = {
     "py_indices_registered": "Python Indices",
     "total_packages": "Python Packages",
     "new_packages": "New Python Packages",
+    "total_releases": "Python Packages Releases",
+    "new_packages_releases": "New Python Packages Releases"
 }
 
 
@@ -55,7 +57,9 @@ class SLIKnowledgeGraph(SLIBase):
         return {
             "py_indices_registered": f"thoth_graphdb_total_python_indexes{query_labels}",
             "total_packages": f"thoth_graphdb_sum_python_packages_per_indexes{query_labels}",
-            "new_packages": f"delta(thoth_graphdb_sum_python_packages_per_indexes{query_labels}[{_INTERVAL}])"
+            "new_packages": f"delta(thoth_graphdb_sum_python_packages_per_indexes{query_labels}[{_INTERVAL}])",
+            "total_releases": f"thoth_graphdb_number_python_package_versions{query_labels}",
+            "new_packages_releases": f"delta(thoth_graphdb_number_python_package_versions{query_labels}[{_INTERVAL}])"
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:
