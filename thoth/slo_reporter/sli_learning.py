@@ -80,9 +80,9 @@ class SLILearning(SLIBase):
 
             html_inputs.append(
                 [
-                _REGISTERED_LEARNING_MEASUREMENT_UNIT[learning_quantity]["name"],
-                value,
-                _REGISTERED_LEARNING_MEASUREMENT_UNIT[learning_quantity]["measurement_unit"],
+                    _REGISTERED_LEARNING_MEASUREMENT_UNIT[learning_quantity]["name"],
+                    value,
+                    _REGISTERED_LEARNING_MEASUREMENT_UNIT[learning_quantity]["measurement_unit"],
                 ]
             )
 

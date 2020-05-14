@@ -61,10 +61,11 @@ class SLIUserAPI(SLIBase):
         query_labels_up = f'{{instance="{_INSTANCE}", job="Thoth User API Metrics (stage)"}}'
 
         return {
-            "avg_successfull_request": f"sum((avg(flask_http_request_total{query_labels_get_total}) + \
+            "avg_successfull_request": f"sum(\
+                (avg(flask_http_request_total{query_labels_get_total}) + \
                 avg(flask_http_request_total{query_labels_post_total})) / \
                 sum(flask_http_request_total{query_labels}))",
-            "avg_up_time": f"avg_over_time(up{query_labels_up}[{_INTERVAL}])"
+            "avg_up_time": f"avg_over_time(up{query_labels_up}[{_INTERVAL}])",
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:
@@ -75,15 +76,15 @@ class SLIUserAPI(SLIBase):
         html_inputs = []
         for user_api_quantity in _USER_API_MEASUREMENT_UNIT.keys():
             if sli[user_api_quantity]:
-                value = round(sli[user_api_quantity]*100, 3)
+                value = round(sli[user_api_quantity] * 100, 3)
             else:
                 value = "Nan"
 
             html_inputs.append(
                 [
-                _USER_API_MEASUREMENT_UNIT[user_api_quantity]["name"],
-                value,
-                _USER_API_MEASUREMENT_UNIT[user_api_quantity]["measurement_unit"],
+                    _USER_API_MEASUREMENT_UNIT[user_api_quantity]["name"],
+                    value,
+                    _USER_API_MEASUREMENT_UNIT[user_api_quantity]["measurement_unit"],
                 ]
             )
         report = HTMLTemplates.thoth_user_api_template(html_inputs=html_inputs)

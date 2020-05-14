@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-"""This file contains class for Thoth Knowledge Graph."""
+"""This file contains class for PyPI Knowledge Graph."""
 
 import logging
 import os
@@ -33,7 +33,6 @@ _INTERVAL = "7d"
 _LOGGER = logging.getLogger(__name__)
 
 _REGISTERED_KNOWLEDGE_QUANTITY = {
-    "python_indices_registered": "Python Indices",
     "total_packages": "Python Packages",
     "new_packages": "New Python Packages",
     "total_releases": "Python Packages Releases",
@@ -41,10 +40,10 @@ _REGISTERED_KNOWLEDGE_QUANTITY = {
 }
 
 
-class SLIKnowledgeGraph(SLIBase):
-    """This class contain functions for Knowledge Graph SLI."""
+class SLIPyPIKnowledgeGraph(SLIBase):
+    """This class contain functions for PyPI Knowledge Graph SLI."""
 
-    _SLI_NAME = "knowledge_graph"
+    _SLI_NAME = "pypi_knowledge_graph"
 
     def _aggregate_info(self):
         """"Aggregate info required for knowledge graph SLI Report."""
@@ -55,13 +54,12 @@ class SLIKnowledgeGraph(SLIBase):
         query_labels = f'{{instance="{_INSTANCE}", job="Thoth Metrics ({_ENVIRONMENT})"}}'
 
         return {
-            "python_indices_registered": f"thoth_graphdb_total_python_indexes{query_labels}",
-            "total_packages": f"thoth_graphdb_sum_python_packages_per_indexes{query_labels}",
+            "total_packages": f"thoth_total_pypi_packages{query_labels}",
             "new_packages": f"delta(\
-                thoth_graphdb_sum_python_packages_per_indexes{query_labels}[{_INTERVAL}])",
-            "total_releases": f"thoth_graphdb_number_python_package_versions{query_labels}",
+                thoth_total_pypi_packages{query_labels}[{_INTERVAL}])",
+            "total_releases": f"thoth_total_pypi_packages_releases{query_labels}",
             "new_packages_releases": f"delta(\
-                thoth_graphdb_number_python_package_versions{query_labels}[{_INTERVAL}])",
+                thoth_total_pypi_packages_releases{query_labels}[{_INTERVAL}])",
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:
@@ -77,5 +75,5 @@ class SLIKnowledgeGraph(SLIBase):
                 value = "Nan"
 
             html_inputs.append([_REGISTERED_KNOWLEDGE_QUANTITY[knowledge_quantity], value])
-        report = HTMLTemplates.thoth_knowledge_template(html_inputs=html_inputs)
+        report = HTMLTemplates.thoth_pypi_knowledge_template(html_inputs=html_inputs)
         return report

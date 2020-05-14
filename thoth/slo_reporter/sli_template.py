@@ -29,32 +29,38 @@ ENV = Environment(loader=_FILE_LOADER)
 class HTMLTemplates:
     """This class collects all HTML template used for the SLI report."""
 
+    def thoth_pypi_knowledge_template(html_inputs: List[Any]):
+        """Create HTML template to be used for PyPI knowledge graph info."""
+        parameters = locals()
+        template = ENV.get_template("thoth_knowledge_graph.html")
+        return template.render(**parameters)
+
     def thoth_knowledge_template(html_inputs: List[Any]):
-        """Create HTML template to be used for thoth knowledge graph info."""
+        """Create HTML template to be used for Thoth knowledge graph info."""
         parameters = locals()
         template = ENV.get_template("thoth_knowledge_graph.html")
         return template.render(**parameters)
 
     def thoth_learning_template(html_inputs: List[Any]):
-        """Create HTML template to be used for thoth learning info."""
+        """Create HTML template to be used for Thoth learning info."""
         parameters = locals()
         template = ENV.get_template("thoth_learning.html")
         return template.render(**parameters)
 
     def thoth_user_api_template(html_inputs: List[Any]):
-        """Create HTML template to be used for thoth User-API info."""
+        """Create HTML template to be used for Thoth User-API info."""
         parameters = locals()
         template = ENV.get_template("thoth_user_api.html")
         return template.render(**parameters)
 
     def thoth_services_template(html_inputs: Dict[str, Any]):
-        """Create HTML template to be used for thoth services."""
+        """Create HTML template to be used for Thoth services."""
         parameters = locals()
         template = ENV.get_template("thoth_service.html")
         return template.render(**parameters)
 
     def thoth_references_template(html_inputs: Dict[str, Any]):
-        """Create HTML template to be used for thoth references."""
+        """Create HTML template to be used for Thoth references."""
         parameters = locals()
         template = ENV.get_template("thoth_references.html")
         return template.render(**parameters)

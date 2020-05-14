@@ -21,6 +21,7 @@ import datetime
 import logging
 
 from .sli_references import _add_dashbords
+from .sli_pypi_knowledge_graph import SLIPyPIKnowledgeGraph
 from .sli_knowledge_graph import SLIKnowledgeGraph
 from .sli_learning import SLILearning
 from .sli_user_api import SLIUserAPI
