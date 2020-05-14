@@ -1,0 +1,25 @@
+<body>
+    <table class="table table-thoth-user-api">
+        <thead>
+            <tr>
+                <th>Thoth User-API</th>
+            </tr>
+        </thead>
+        <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Value</th>
+                <th> </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in html_inputs %}
+            <tr>
+                <td>{{ item[0] }}</td>
+                <td>{{ item[1] }}</td>
+                <td>{{ item[2] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>

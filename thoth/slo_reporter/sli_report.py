@@ -21,8 +21,10 @@ import datetime
 import logging
 
 from .sli_references import _add_dashbords
-from .sli_workflow_quality import SLIWorkflowQuality
+from .sli_knowledge_graph import SLIKnowledgeGraph
 from .sli_learning import SLILearning
+from .sli_user_api import SLIUserAPI
+from .sli_workflow_quality import SLIWorkflowQuality
 
 
 _END_TIME = datetime.datetime.now()
@@ -44,7 +46,9 @@ class SLIReport:
          to {_END_TIME.strftime('%Y-%m-%d')}.</strong>"
 
     REPORT_SLI_CONTEXT = {
+        SLIKnowledgeGraph._SLI_NAME: SLIKnowledgeGraph()._aggregate_info(),
         SLILearning._SLI_NAME: SLILearning()._aggregate_info(),
+        SLIUserAPI._SLI_NAME: SLIUserAPI()._aggregate_info(),
         SLIWorkflowQuality._SLI_NAME: SLIWorkflowQuality()._aggregate_info(),
     }
 

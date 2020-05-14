@@ -36,7 +36,7 @@ REGISTERED_SERVICES = ["adviser", "solver", "inspection"]
 
 
 class SLIWorkflowQuality(SLIBase):
-    """This class contain functions for Workflow Quality SLI (Thoth services)."""
+    """This class contains functions for Workflow Quality SLI (Thoth services)."""
 
     _SLI_NAME = "component_quality"
 
@@ -101,7 +101,7 @@ class SLIWorkflowQuality(SLIBase):
                         / total_workflows
                     ) * 100
 
-                html_inputs[service] = int(successfull_percentage)
+                html_inputs[service] = round(successfull_percentage, 3)
 
             else:
 

@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-"""This file contains class for Learning Quantities about Thoth."""
+"""This file contains class for Thoth Knowledge Graph."""
 
 import logging
 import os
@@ -32,59 +32,49 @@ _ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
 _INTERVAL = "7d"
 _LOGGER = logging.getLogger(__name__)
 
-_REGISTERED_LEARNING_MEASUREMENT_UNIT = {
-    "max_learning_rate": {
-        "name": "Learning Rate",
-        "measurement_unit": "packages/hour"
-    },
-    "learned_packages": {
-        "name": "Knowledge increase",
-        "measurement_unit": "packages",
-    }
+_REGISTERED_KNOWLEDGE_QUANTITY = {
+    "py_indices_registered": "Python Indices",
+    "total_packages": "Python Packages",
+    "new_packages": "New Python Packages",
 }
 
 
-class SLILearning(SLIBase):
-    """This class contains functions for Learning Rate SLI."""
+class SLIKnowledgeGraph(SLIBase):
+    """This class contain functions for Knowledge Graph SLI."""
 
-    _SLI_NAME = "learning_rate"
+    _SLI_NAME = "knowledge_graph"
 
     def _aggregate_info(self):
-        """"Aggregate info required for learning quantities SLI Report."""
+        """"Aggregate info required for knowledge graph SLI Report."""
         return {"query": self._query_sli(), "report_method": self._report_sli}
 
     def _query_sli(self) -> List[str]:
-        """Aggregate queries for learning quantities SLI Report."""
+        """Aggregate queries for knowledge graph SLI Report."""
         query_labels = f'{{instance="{_INSTANCE}", job="Thoth Metrics ({_ENVIRONMENT})"}}'
 
         return {
-            "max_learning_rate": f"max_over_time(\
-                increase(\
-                    thoth_graphdb_unsolved_python_package_versions_change_total{query_labels}[1h]\
-                        )[{_INTERVAL}:1h])",
-            "learned_packages": f"sum(delta(\
-                thoth_graphdb_total_number_solved_python_packages{query_labels}[{_INTERVAL}]))",
+            "py_indices_registered": f"thoth_graphdb_total_python_indexes{query_labels}",
+            "total_packages": f"thoth_graphdb_sum_python_packages_per_indexes{query_labels}",
+            "new_packages": f"delta(thoth_graphdb_sum_python_packages_per_indexes{query_labels}[{_INTERVAL}])"
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:
-        """Create report for learning quantities SLI.
+        """Create report for knowledge graph SLI.
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
         html_inputs = []
-        for learning_quantity in _REGISTERED_LEARNING_MEASUREMENT_UNIT.keys():
-            if sli[learning_quantity]:
-                value = int(sli[learning_quantity])
+        for knowledge_quantity in _REGISTERED_KNOWLEDGE_QUANTITY.keys():
+            if sli[knowledge_quantity] or int(sli[knowledge_quantity]) == 0:
+                value = int(sli[knowledge_quantity])
             else:
                 value = "Nan"
 
             html_inputs.append(
                 [
-                _REGISTERED_LEARNING_MEASUREMENT_UNIT[learning_quantity]["name"],
-                value,
-                _REGISTERED_LEARNING_MEASUREMENT_UNIT[learning_quantity]["measurement_unit"],
+                _REGISTERED_KNOWLEDGE_QUANTITY[knowledge_quantity],
+                value
                 ]
             )
-
-        report = HTMLTemplates.thoth_learning_template(html_inputs=html_inputs)
+        report = HTMLTemplates.thoth_knowledge_template(html_inputs=html_inputs)
         return report
