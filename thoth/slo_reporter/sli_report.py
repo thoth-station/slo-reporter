@@ -49,7 +49,7 @@ class SLIReport:
          to {_END_TIME.strftime('%Y-%m-%d')}.</strong>"
 
     REPORT_SLI_CONTEXT = {
-        #TODO: Add PyPI Knowledge Graph
+        # TODO: Add PyPI Knowledge Graph
         SLIKnowledgeGraph._SLI_NAME: SLIKnowledgeGraph()._aggregate_info(),
         SLILearning._SLI_NAME: SLILearning()._aggregate_info(),
         SLIUserAPI._SLI_NAME: SLIUserAPI()._aggregate_info(),
