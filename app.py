@@ -31,91 +31,120 @@ from prometheus_client import CollectorRegistry, Gauge, push_to_gateway
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from thoth.slo_reporter.sli_metrics import SliMetricReport
+from thoth.slo_reporter.sli_report import SLIReport
 from thoth.slo_reporter import __service_version__
 
 
 _LOGGER = logging.getLogger("thoth.slo_reporter")
 _LOGGER.info(f"Thoth SLO Reporter v%s", __service_version__)
 
-_SERVER = os.environ["SMTP_SERVER"]
-_SENDER_ADDRESS = os.environ["SENDER_ADDRESS"]
-_ADDRESS_RECIPIENTS = os.environ["EMAIL_RECIPIENTS"]
+_DRY_RUN = bool(int(os.getenv("DRY_RUN", 0)))
+
+_DEBUG_LEVEL = bool(int(os.getenv("DEBUG_LEVEL", 0)))
+
+if _DEBUG_LEVEL:
+    logging.basicConfig(level=logging.DEBUG)
+else:
+    logging.basicConfig(level=logging.INFO)
+
+if not _DRY_RUN:
+    _SERVER = os.environ["SMTP_SERVER"]
+    _SENDER_ADDRESS = os.environ["SENDER_ADDRESS"]
+    _ADDRESS_RECIPIENTS = os.environ["EMAIL_RECIPIENTS"]
+    _PUSHGATEWAY_ENDPOINT = os.environ["PROMETHEUS_PUSHGATEWAY_URL"]
 
 _ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
 
 _THANOS_URL = os.environ["THANOS_ENDPOINT"]
 _THANOS_TOKEN = os.environ["THANOS_ACCESS_TOKEN"]
-_PUSHGATEWAY_ENDPOINT = os.environ["PROMETHEUS_PUSHGATEWAY_URL"]
 
 _PROMETHEUS_REGISTRY = CollectorRegistry()
 
 _THOTH_WEEKLY_SLI = Gauge(
     f"thoth_sli_weekly_{_ENVIRONMENT}",
     "Weekly Thoth Service Level Indicators",
-    ["sli_type"], registry=_PROMETHEUS_REGISTRY
+    ["sli_type", "metric_name"], registry=_PROMETHEUS_REGISTRY
 )
 
-_SLI_REPORT_CONTEXT = {"solved_python_packages": SliMetricReport.SOLVED_PYTHON_PACKAGES_REPORT}
+
+def collect_metrics():
+    """Collect metrics from Prometheus/Thanos."""
+    pc = PrometheusConnect(url=_THANOS_URL, headers={"Authorization": f"bearer {_THANOS_TOKEN}"}, disable_ssl=True)
+
+    collected_info = {}
+    for sli_name, sli_methods in SLIReport.REPORT_SLI_CONTEXT.items():
+        _LOGGER.info(f"Retrieving data for... {sli_name}")
+        collected_info[sli_name] = {}
+        for query_name, query in sli_methods["query"].items():
+            _LOGGER.info(f"Querying... {query_name}")
+            try:
+                metric_data = pc.custom_query(query=query)
+                _LOGGER.info(f"Metric obtained... {metric_data}")
+                collected_info[sli_name][query_name] = float(metric_data[0]["value"][1])
+            except Exception as e:
+                _LOGGER.exception(f"Could not gather metric for {sli_name}-{query_name}...{e}")
+                pass
+                collected_info[sli_name][query_name] = None
+
+    return collected_info
 
 
-def push_thoth_sli_weekly_metrics(weekly_metrics: Dict[str, Metric], pushgateway_endpoint: str):
+def push_thoth_sli_weekly_metrics(weekly_metrics: Dict[str, Metric]):
     """Push Thoth SLI weekly metric to PushGateway."""
-    pushed_metrics = {}
     for sli_type, metric_data in weekly_metrics.items():
-        weekly_value_metric = float(metric_data[0]["value"][1])
-        _THOTH_WEEKLY_SLI.labels(sli_type=sli_type).set(weekly_value_metric)
-        _LOGGER.info("sli_type(%r)=%r", sli_type, weekly_value_metric)
-        pushed_metrics[sli_type] = weekly_value_metric
+        for metric_name, weekly_value_metric in metric_data.items():
+            if weekly_value_metric:
+                _THOTH_WEEKLY_SLI.labels(sli_type=sli_type, metric_name=metric_name).set(weekly_value_metric)
+                _LOGGER.info("(sli_type=%r, metric_name=%r)=%r", sli_type, metric_name, weekly_value_metric)
 
-    push_to_gateway(pushgateway_endpoint, job="Weekly Thoth SLI", registry=_PROMETHEUS_REGISTRY)
-
-    return pushed_metrics
+    if not _DRY_RUN:
+        push_to_gateway(_PUSHGATEWAY_ENDPOINT, job="Weekly Thoth SLI", registry=_PROMETHEUS_REGISTRY)
+        _LOGGER.info(f"Pushed Thoth weekly SLI to Prometheus Pushgateway.")
 
 
 def generate_email(sli_metrics: Dict[str, float]):
     """Generate email to be sent."""
-    message = SliMetricReport.INITIAL_REPORT
+    message = SLIReport.REPORT_INTRO
 
-    for metric_name, metric_data in sli_metrics.items():
-        report_method = _SLI_REPORT_CONTEXT[metric_name]["report_method"]
+    for sli_name, metric_data in sli_metrics.items():
+        report_method = SLIReport.REPORT_SLI_CONTEXT[sli_name]["report_method"]
         message += "\n" + report_method(metric_data)
 
-    message += SliMetricReport.REFERENCE_REPORT
+    message += SLIReport.REPORT_REFERENCES
 
     return MIMEText(message, "html")
 
 
-def send_sli_email(server: str, sender_address: str, recipients: str, weekly_sli_values_map: Dict[str, float]):
+def send_sli_email(weekly_sli_values_map: Dict[str, float]):
     """Send email about Thoth Service Level Objectives."""
-    _MAIL_SERVER = smtplib.SMTP(server)
+    email_message = generate_email(weekly_sli_values_map)
+
+    if _DRY_RUN:
+        _LOGGER.info(f"Email message: {email_message}")
+        return
+
+    server = _SERVER
+    sender_address = _SENDER_ADDRESS
+    recipients = _ADDRESS_RECIPIENTS
 
     msg = MIMEMultipart()
-    msg["Subject"] = SliMetricReport.REPORT_SUBJECT
+    msg["Subject"] = SLIReport.REPORT_SUBJECT
     msg["From"] = sender_address
     msg["To"] = recipients
 
-    email_message = generate_email(weekly_sli_values_map)
-
     msg.attach(email_message)
-
+    _MAIL_SERVER = smtplib.SMTP(server)
     _MAIL_SERVER.sendmail(sender_address, recipients, msg.as_string())
+    _LOGGER.info(f"Thoth weekly SLI correctly sent.")
 
 
 def main():
     """Main function for Thoth Service Level Objectives (SLO) Reporter."""
-    pc = PrometheusConnect(url=_THANOS_URL, headers={"Authorization": f"bearer {_THANOS_TOKEN}"}, disable_ssl=True)
+    weekly_sli_values_map = collect_metrics()
 
-    collected_info = {}
-    for sli_type, data in _SLI_REPORT_CONTEXT.items():
-        _LOGGER.info(f"Retrieving data for... {sli_type}")
-        collected_info[sli_type] = pc.custom_query(query=_SLI_REPORT_CONTEXT[sli_type]["query"])
+    push_thoth_sli_weekly_metrics(weekly_sli_values_map)
 
-    weekly_sli_values_map = push_thoth_sli_weekly_metrics(collected_info, _PUSHGATEWAY_ENDPOINT)
-    _LOGGER.info(f"Pushed Thoth weekly SLI to Prometheus Pushgateway.")
-
-    send_sli_email(_SERVER, _SENDER_ADDRESS, _ADDRESS_RECIPIENTS, weekly_sli_values_map)
-    _LOGGER.info(f"Thoth weekly SLI correctly sent.")
+    send_sli_email(weekly_sli_values_map)
 
 
 if __name__ == "__main__":

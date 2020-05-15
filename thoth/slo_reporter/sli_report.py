@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # slo-reporter
-# Copyright(C) 2010 Red Hat, Inc.
+# Copyright(C) 2020 Francesco Murdaca
 #
 # This program is free software: you can redistribute it and / or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,44 +15,43 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-"""This file contains structures of report for each metric."""
+"""This file contains all sli metrics that should be included in the report."""
 
-import logging
-import os
 import datetime
+import logging
 
-_ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
-_INSTANCE = os.environ["METRICS_EXPORTER_FRONTEND_PROMETHEUS_INSTANCE"]
+from .sli_references import _add_dashbords
+from .sli_pypi_knowledge_graph import SLIPyPIKnowledgeGraph
+from .sli_knowledge_graph import SLIKnowledgeGraph
+from .sli_learning import SLILearning
+from .sli_user_api import SLIUserAPI
+from .sli_workflow_quality import SLIWorkflowQuality
+
+
+_END_TIME = datetime.datetime.now()
+_START_TIME = _END_TIME - datetime.timedelta(days=7)
+_START_TIME_EPOCH = int(_START_TIME.timestamp() * 1000)
+_END_TIME_EPOCH = int(_END_TIME.timestamp() * 1000)
+
 _LOGGER = logging.getLogger(__name__)
 
 
-def _add_dashbords(start_time_epoch: datetime.datetime, end_time_epoch: datetime.datetime):
-    """Create dashboard link for report."""
-    dashboard_name = f"thoth-knowledge-graph-content-metrics-{_ENVIRONMENT}"
-    dashboard_url = (
-        f"https://grafana.datahub.redhat.com/dashboard/db/{dashboard_name}?"
-        + f"refresh=1m&orgId=1&from={start_time_epoch}&to={end_time_epoch}"
+class SLIReport:
+    """This class contains all sections included in a report."""
+
+    REPORT_SUBJECT = (
+        f"Thoth Service Level Indicators Update Week"
+        + f" ({_START_TIME.strftime('%Y-%m-%d')} - {_END_TIME.strftime('%Y-%m-%d')})"
     )
+    REPORT_INTRO = f"<strong>Thoth SLI Metrics from {_START_TIME.strftime('%Y-%m-%d')} \
+         to {_END_TIME.strftime('%Y-%m-%d')}.</strong>"
 
-    return f"<br> \
-            Reference dashboard: {dashboard_url}"
-
-
-def _metrics_solved_python_packages():
-    """Create data for report for Solved python packages."""
-    query_labels = f'{{instance="{_INSTANCE}", job="Thoth Metrics ({_ENVIRONMENT}), main_table="python_package_version"}}'
-
-    return {
-        "query": f"thoth_graphdb_total_main_records{query_labels}"
-        + f" - min_over_time(thoth_graphdb_total_main_records{query_labels}[7d])",
-        "report_method": _report_python_packages,
+    REPORT_SLI_CONTEXT = {
+        #TODO: Add PyPI Knowledge Graph
+        SLIKnowledgeGraph._SLI_NAME: SLIKnowledgeGraph()._aggregate_info(),
+        SLILearning._SLI_NAME: SLILearning()._aggregate_info(),
+        SLIUserAPI._SLI_NAME: SLIUserAPI()._aggregate_info(),
+        SLIWorkflowQuality._SLI_NAME: SLIWorkflowQuality()._aggregate_info(),
     }
 
-
-def _report_python_packages(learned_packages: float):
-    """Create report for Python packages."""
-    report = f"<br><br> \
-                Thoth solved <strong>{int(learned_packages)} Python Packages </strong> in the last week. \
-                <br>"
-
-    return report
+    REPORT_REFERENCES = _add_dashbords(_START_TIME_EPOCH, _END_TIME_EPOCH)
