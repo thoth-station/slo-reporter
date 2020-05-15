@@ -40,6 +40,14 @@ _REGISTERED_LEARNING_MEASUREMENT_UNIT = {
     "learned_packages": {
         "name": "Knowledge increase",
         "measurement_unit": "packages",
+    },
+    "solvers": {
+        "name": "Number of Solvers",
+        "measurement_unit": "",
+    },
+    "new_solvers": {
+        "name": "New Solvers",
+        "measurement_unit": "",
     }
 }
 
@@ -64,6 +72,8 @@ class SLILearning(SLIBase):
                         )[{_INTERVAL}:1h])",
             "learned_packages": f"sum(delta(\
                 thoth_graphdb_total_number_solved_python_packages{query_labels}[{_INTERVAL}]))",
+            "solvers": f"thoth_graphdb_total_number_solvers{query_labels}",
+            "new_solvers": f"delta(thoth_graphdb_total_number_solvers{query_labels}[{_INTERVAL}])",
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:
@@ -73,7 +83,7 @@ class SLILearning(SLIBase):
         """
         html_inputs = []
         for learning_quantity in _REGISTERED_LEARNING_MEASUREMENT_UNIT.keys():
-            if sli[learning_quantity]:
+            if sli[learning_quantity] or int(sli[learning_quantity]) == 0:
                 value = int(sli[learning_quantity])
             else:
                 value = "Nan"
