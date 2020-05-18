@@ -53,7 +53,6 @@ else:
 
 if not _DRY_RUN:
     _PROMETHEUS_REGISTRY = CollectorRegistry()
-
     _THOTH_WEEKLY_SLI = Gauge(
         f"thoth_sli_weekly_{Configuration._ENVIRONMENT}",
         "Weekly Thoth Service Level Indicators",
