@@ -29,6 +29,11 @@ ENV = Environment(loader=_FILE_LOADER)
 class HTMLTemplates:
     """This class collects all HTML template used for the SLI report."""
 
+    def thoth_report_style_template():
+        """Create HTML template for the style."""
+        template = ENV.get_template("style.html")
+        return template.render()
+
     def thoth_pypi_knowledge_template(html_inputs: List[Any]):
         """Create HTML template to be used for PyPI knowledge graph info."""
         parameters = locals()

@@ -29,6 +29,7 @@ from .sli_knowledge_graph import SLIKnowledgeGraph
 from .sli_learning import SLILearning
 from .sli_user_api import SLIUserAPI
 from .sli_workflow_quality import SLIWorkflowQuality
+from .sli_template import HTMLTemplates
 
 
 _END_TIME = datetime.datetime.utcnow()
@@ -52,18 +53,10 @@ class SLIReport:
         + f" ({_START_TIME.strftime('%Y-%m-%d')} - {_END_TIME.strftime('%Y-%m-%d')})"
     )
 
-    REPORT_INTRO = f"<h1> <strong>Thoth SLI Metrics ({_ENVIRONMENT} environment) from {_START_TIME.strftime('%Y-%m-%d')} \
+    REPORT_INTRO = f"<h1> <strong> Thoth SLI Metrics ({_ENVIRONMENT} environment) from {_START_TIME.strftime('%Y-%m-%d')} \
          to {_END_TIME.strftime('%Y-%m-%d')}.</strong> </h1>"
 
-    REPORT_STYLE = """
-        <head>
-        <style>
-        table, th, td {
-        border: 1px solid black;
-        }
-        </style>
-        </head>
-    """
+    REPORT_STYLE = HTMLTemplates.thoth_report_style_template()
 
     REPORT_SLI_CONTEXT = {
         # TODO: Add PyPI Knowledge Graph

@@ -28,3 +28,13 @@ class Configuration:
     """Configuration of SLO-reporter."""
 
     DRY_RUN = bool(int(os.getenv("DRY_RUN", 0)))
+
+    if not DRY_RUN:
+        _SERVER = os.environ["SMTP_SERVER"]
+        _SENDER_ADDRESS = os.environ["SENDER_ADDRESS"]
+        _ADDRESS_RECIPIENTS = os.environ["EMAIL_RECIPIENTS"]
+        _PUSHGATEWAY_ENDPOINT = os.environ["PROMETHEUS_PUSHGATEWAY_URL"]
+        _ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
+
+        _THANOS_URL = os.environ["THANOS_ENDPOINT"]
+        _THANOS_TOKEN = os.environ["THANOS_ACCESS_TOKEN"]
