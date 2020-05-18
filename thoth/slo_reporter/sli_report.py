@@ -21,6 +21,8 @@ import os
 import datetime
 import logging
 
+from .configuration import Configuration
+
 from .sli_references import _add_dashbords
 from .sli_pypi_knowledge_graph import SLIPyPIKnowledgeGraph
 from .sli_knowledge_graph import SLIKnowledgeGraph
@@ -29,12 +31,16 @@ from .sli_user_api import SLIUserAPI
 from .sli_workflow_quality import SLIWorkflowQuality
 
 
-_END_TIME = datetime.datetime.now()
+_END_TIME = datetime.datetime.utcnow()
 _START_TIME = _END_TIME - datetime.timedelta(days=7)
 _START_TIME_EPOCH = int(_START_TIME.timestamp() * 1000)
 _END_TIME_EPOCH = int(_END_TIME.timestamp() * 1000)
 
-_ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
+_ENVIRONMENT = "dry_run"
+
+if not Configuration.DRY_RUN:
+    _ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -45,9 +51,20 @@ class SLIReport:
         f"Thoth Service Level Indicators Update Week"
         + f" ({_START_TIME.strftime('%Y-%m-%d')} - {_END_TIME.strftime('%Y-%m-%d')})"
     )
-    REPORT_INTRO = f"<strong>Thoth SLI Metrics ({_ENVIRONMENT} environment) from {_START_TIME.strftime('%Y-%m-%d')} \
-         to {_END_TIME.strftime('%Y-%m-%d')}.</strong>"
 
+    REPORT_INTRO = f"<!DOCTYPE html>\n<html>\n<body>\
+        \n<h1> <strong>Thoth SLI Metrics ({_ENVIRONMENT} environment) from {_START_TIME.strftime('%Y-%m-%d')} \
+         to {_END_TIME.strftime('%Y-%m-%d')}.</strong> </h1>"
+
+    REPORT_STYLE = """
+        <head>
+        <style>
+        table, th, td {
+        border: 1px solid black;
+        }
+        </style>
+        </head>
+    """
     REPORT_SLI_CONTEXT = {
         # TODO: Add PyPI Knowledge Graph
         SLIKnowledgeGraph._SLI_NAME: SLIKnowledgeGraph()._aggregate_info(),
@@ -57,3 +74,6 @@ class SLIReport:
     }
 
     REPORT_REFERENCES = _add_dashbords(_START_TIME_EPOCH, _END_TIME_EPOCH)
+
+    REPORT_END = f"</body>\
+            \n</html>"
