@@ -4,7 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pandas = "*"
 prometheus-client = "*"
 prometheus-api-client = "*"
 jinja2 = "*"

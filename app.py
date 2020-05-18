@@ -20,7 +20,10 @@
 import os
 import logging
 import smtplib
-import pandas as pd
+import datetime
+import base64
+import webbrowser
+import tempfile
 
 from typing import Dict
 
@@ -33,12 +36,13 @@ from email.mime.text import MIMEText
 
 from thoth.slo_reporter.sli_report import SLIReport
 from thoth.slo_reporter import __service_version__
+from thoth.slo_reporter.configuration import Configuration
 
 
 _LOGGER = logging.getLogger("thoth.slo_reporter")
 _LOGGER.info(f"Thoth SLO Reporter v%s", __service_version__)
 
-_DRY_RUN = bool(int(os.getenv("DRY_RUN", 0)))
+_DRY_RUN = Configuration.DRY_RUN
 
 _DEBUG_LEVEL = bool(int(os.getenv("DEBUG_LEVEL", 0)))
 
@@ -53,23 +57,24 @@ if not _DRY_RUN:
     _ADDRESS_RECIPIENTS = os.environ["EMAIL_RECIPIENTS"]
     _PUSHGATEWAY_ENDPOINT = os.environ["PROMETHEUS_PUSHGATEWAY_URL"]
 
-_ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
+    _ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
 
-_THANOS_URL = os.environ["THANOS_ENDPOINT"]
-_THANOS_TOKEN = os.environ["THANOS_ACCESS_TOKEN"]
+    _THANOS_URL = os.environ["THANOS_ENDPOINT"]
+    _THANOS_TOKEN = os.environ["THANOS_ACCESS_TOKEN"]
 
-_PROMETHEUS_REGISTRY = CollectorRegistry()
+    _PROMETHEUS_REGISTRY = CollectorRegistry()
 
-_THOTH_WEEKLY_SLI = Gauge(
-    f"thoth_sli_weekly_{_ENVIRONMENT}",
-    "Weekly Thoth Service Level Indicators",
-    ["sli_type", "metric_name"], registry=_PROMETHEUS_REGISTRY
-)
+    _THOTH_WEEKLY_SLI = Gauge(
+        f"thoth_sli_weekly_{_ENVIRONMENT}",
+        "Weekly Thoth Service Level Indicators",
+        ["sli_type", "metric_name"], registry=_PROMETHEUS_REGISTRY
+    )
 
 
 def collect_metrics():
     """Collect metrics from Prometheus/Thanos."""
-    pc = PrometheusConnect(url=_THANOS_URL, headers={"Authorization": f"bearer {_THANOS_TOKEN}"}, disable_ssl=True)
+    if not _DRY_RUN:
+        pc = PrometheusConnect(url=_THANOS_URL, headers={"Authorization": f"bearer {_THANOS_TOKEN}"}, disable_ssl=True)
 
     collected_info = {}
     for sli_name, sli_methods in SLIReport.REPORT_SLI_CONTEXT.items():
@@ -78,8 +83,11 @@ def collect_metrics():
         for query_name, query in sli_methods["query"].items():
             _LOGGER.info(f"Querying... {query_name}")
             try:
-                metric_data = pc.custom_query(query=query)
-                _LOGGER.info(f"Metric obtained... {metric_data}")
+                if not _DRY_RUN:
+                    metric_data = pc.custom_query(query=query)
+                    _LOGGER.info(f"Metric obtained... {metric_data}")
+                else:
+                    metric_data = [{"metric": "dry run", "value": [datetime.datetime.utcnow(), 1]}]
                 collected_info[sli_name][query_name] = float(metric_data[0]["value"][1])
             except Exception as e:
                 _LOGGER.exception(f"Could not gather metric for {sli_name}-{query_name}...{e}")
@@ -97,14 +105,15 @@ def push_thoth_sli_weekly_metrics(weekly_metrics: Dict[str, Metric]):
                 _THOTH_WEEKLY_SLI.labels(sli_type=sli_type, metric_name=metric_name).set(weekly_value_metric)
                 _LOGGER.info("(sli_type=%r, metric_name=%r)=%r", sli_type, metric_name, weekly_value_metric)
 
-    if not _DRY_RUN:
-        push_to_gateway(_PUSHGATEWAY_ENDPOINT, job="Weekly Thoth SLI", registry=_PROMETHEUS_REGISTRY)
-        _LOGGER.info(f"Pushed Thoth weekly SLI to Prometheus Pushgateway.")
+    push_to_gateway(_PUSHGATEWAY_ENDPOINT, job="Weekly Thoth SLI", registry=_PROMETHEUS_REGISTRY)
+    _LOGGER.info(f"Pushed Thoth weekly SLI to Prometheus Pushgateway.")
 
 
 def generate_email(sli_metrics: Dict[str, float]):
     """Generate email to be sent."""
     message = SLIReport.REPORT_INTRO
+
+    message += SLIReport.REPORT_STYLE
 
     for sli_name, metric_data in sli_metrics.items():
         report_method = SLIReport.REPORT_SLI_CONTEXT[sli_name]["report_method"]
@@ -112,17 +121,17 @@ def generate_email(sli_metrics: Dict[str, float]):
 
     message += SLIReport.REPORT_REFERENCES
 
-    return MIMEText(message, "html")
-
-
-def send_sli_email(weekly_sli_values_map: Dict[str, float]):
-    """Send email about Thoth Service Level Objectives."""
-    email_message = generate_email(weekly_sli_values_map)
+    html_message = MIMEText(message, "html")
+    _LOGGER.debug(f"Email message: {html_message}")
 
     if _DRY_RUN:
-        _LOGGER.info(f"Email message: {email_message}")
-        return
+        return message
+    
+    return html_message
 
+
+def send_sli_email(email_message: MIMEText):
+    """Send email about Thoth Service Level Objectives."""
     server = _SERVER
     sender_address = _SENDER_ADDRESS
     recipients = _ADDRESS_RECIPIENTS
@@ -140,11 +149,23 @@ def send_sli_email(weekly_sli_values_map: Dict[str, float]):
 
 def main():
     """Main function for Thoth Service Level Objectives (SLO) Reporter."""
+    if _DRY_RUN:
+         _LOGGER.info("Dry run...")
     weekly_sli_values_map = collect_metrics()
 
-    push_thoth_sli_weekly_metrics(weekly_sli_values_map)
+    if not _DRY_RUN:
+        push_thoth_sli_weekly_metrics(weekly_sli_values_map)
 
-    send_sli_email(weekly_sli_values_map)
+    email_message = generate_email(weekly_sli_values_map)
+
+    if _DRY_RUN:
+        with tempfile.NamedTemporaryFile('w', delete=False, suffix='.html') as f:
+            url = 'file://' + f.name
+            f.write(email_message)
+        webbrowser.open(url)
+
+    if not _DRY_RUN:
+        send_sli_email(email_message)
 
 
 if __name__ == "__main__":

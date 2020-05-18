@@ -21,9 +21,15 @@ import os
 import logging
 import datetime
 
+from .configuration import Configuration
+
 from .sli_template import HTMLTemplates
 
-_ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
+_ENVIRONMENT = "dry_run"
+
+if not Configuration.DRY_RUN:
+    _ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
+
 _LOGGER = logging.getLogger(__name__)
 
 

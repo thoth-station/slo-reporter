@@ -25,10 +25,15 @@ from typing import Dict, List, Any
 
 from .sli_base import SLIBase
 from .sli_template import HTMLTemplates
+from .configuration import Configuration
 
+_INSTANCE = "dry_run"
+_ENVIRONMENT = "dry_run"
 
-_INSTANCE = os.environ["PROMETHEUS_INSTANCE_USER_API"]
-_ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
+if not Configuration.DRY_RUN:
+    _INSTANCE = os.environ["PROMETHEUS_INSTANCE_USER_API"]
+    _ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
+
 _INTERVAL = "7d"
 _LOGGER = logging.getLogger(__name__)
 
