@@ -52,8 +52,7 @@ class SLIReport:
         + f" ({_START_TIME.strftime('%Y-%m-%d')} - {_END_TIME.strftime('%Y-%m-%d')})"
     )
 
-    REPORT_INTRO = f"<!DOCTYPE html>\n<html>\n<body>\
-        \n<h1> <strong>Thoth SLI Metrics ({_ENVIRONMENT} environment) from {_START_TIME.strftime('%Y-%m-%d')} \
+    REPORT_INTRO = f"<h1> <strong>Thoth SLI Metrics ({_ENVIRONMENT} environment) from {_START_TIME.strftime('%Y-%m-%d')} \
          to {_END_TIME.strftime('%Y-%m-%d')}.</strong> </h1>"
 
     REPORT_STYLE = """
@@ -65,6 +64,7 @@ class SLIReport:
         </style>
         </head>
     """
+
     REPORT_SLI_CONTEXT = {
         # TODO: Add PyPI Knowledge Graph
         SLIKnowledgeGraph._SLI_NAME: SLIKnowledgeGraph()._aggregate_info(),
@@ -74,6 +74,3 @@ class SLIReport:
     }
 
     REPORT_REFERENCES = _add_dashbords(_START_TIME_EPOCH, _END_TIME_EPOCH)
-
-    REPORT_END = f"</body>\
-            \n</html>"
