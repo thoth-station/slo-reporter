@@ -27,13 +27,10 @@ from .sli_template import HTMLTemplates
 from .configuration import Configuration
 
 _INSTANCE = "dry_run"
-_ENVIRONMENT = "dry_run"
 
 if not Configuration.DRY_RUN:
     _INSTANCE = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND"]
-    _ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
 
-_INTERVAL = "7d"
 _LOGGER = logging.getLogger(__name__)
 
 _REGISTERED_KNOWLEDGE_QUANTITY = {
@@ -55,15 +52,15 @@ class SLIPyPIKnowledgeGraph(SLIBase):
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for knowledge graph SLI Report."""
-        query_labels = f'{{instance="{_INSTANCE}", job="Thoth Metrics ({_ENVIRONMENT})"}}'
+        query_labels = f'{{instance="{_INSTANCE}", job="Thoth Metrics ({Configuration._ENVIRONMENT})"}}'
 
         return {
             "total_packages": f"thoth_total_pypi_packages{query_labels}",
             "new_packages": f"delta(\
-                thoth_total_pypi_packages{query_labels}[{_INTERVAL}])",
+                thoth_total_pypi_packages{query_labels}[{Configuration._INTERVAL}])",
             "total_releases": f"thoth_total_pypi_packages_releases{query_labels}",
             "new_packages_releases": f"delta(\
-                thoth_total_pypi_packages_releases{query_labels}[{_INTERVAL}])",
+                thoth_total_pypi_packages_releases{query_labels}[{Configuration._INTERVAL}])",
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:

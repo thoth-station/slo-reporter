@@ -37,11 +37,6 @@ _START_TIME = _END_TIME - datetime.timedelta(days=7)
 _START_TIME_EPOCH = int(_START_TIME.timestamp() * 1000)
 _END_TIME_EPOCH = int(_END_TIME.timestamp() * 1000)
 
-_ENVIRONMENT = "dry_run"
-
-if not Configuration.DRY_RUN:
-    _ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
-
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -53,7 +48,7 @@ class SLIReport:
         + f" ({_START_TIME.strftime('%Y-%m-%d')} - {_END_TIME.strftime('%Y-%m-%d')})"
     )
 
-    REPORT_INTRO = f"<h1> <strong> Thoth SLI Metrics ({_ENVIRONMENT} environment) from {_START_TIME.strftime('%Y-%m-%d')} \
+    REPORT_INTRO = f"<h1> <strong> Thoth SLI Metrics ({Configuration._ENVIRONMENT} environment) from {_START_TIME.strftime('%Y-%m-%d')} \
          to {_END_TIME.strftime('%Y-%m-%d')}.</strong> </h1>"
 
     REPORT_STYLE = HTMLTemplates.thoth_report_style_template()

@@ -28,13 +28,10 @@ from .sli_template import HTMLTemplates
 from .configuration import Configuration
 
 _INSTANCE = "dry_run"
-_ENVIRONMENT = "dry_run"
 
 if not Configuration.DRY_RUN:
     _INSTANCE = os.environ["PROMETHEUS_INSTANCE_USER_API"]
-    _ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
 
-_INTERVAL = "7d"
 _LOGGER = logging.getLogger(__name__)
 
 _USER_API_MEASUREMENT_UNIT = {
@@ -63,14 +60,14 @@ class SLIUserAPI(SLIBase):
         query_labels = f'{{instance="{_INSTANCE}"}}'
         query_labels_get_total = f'{{instance="{_INSTANCE}", status="200"}}'
         query_labels_post_total = f'{{instance="{_INSTANCE}", status="202"}}'
-        query_labels_up = f'{{instance="{_INSTANCE}", job="Thoth User API Metrics (stage)"}}'
+        query_labels_up = f'{{instance="{_INSTANCE}", job="Thoth User API Metrics ({Configuration._ENVIRONMENT})"}}'
 
         return {
             "avg_successfull_request": f"sum(\
                 (avg(flask_http_request_total{query_labels_get_total}) + \
                 avg(flask_http_request_total{query_labels_post_total})) / \
                 sum(flask_http_request_total{query_labels}))",
-            "avg_up_time": f"avg_over_time(up{query_labels_up}[{_INTERVAL}])",
+            "avg_up_time": f"avg_over_time(up{query_labels_up}[{Configuration._INTERVAL}])",
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:
