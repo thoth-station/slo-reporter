@@ -1,0 +1,22 @@
+{% extends "templates/base.html" %}
+{% block table_name %} <strong> Thoth Learning </strong> {% endblock %}
+{% block table_info %} <strong> What Thoth learned and information on learning </strong> {% endblock %}
+{% block classes %}
+        <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        {% endblock %}
+        {% block inputs %}
+        <tbody>
+            {% for item in html_inputs %}
+            <tr>
+                <td>{{ item[0] }}</td>
+                <td>{{ item[1] }}</td>
+                <td>{{ item[2] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+{% endblock %}

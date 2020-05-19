@@ -48,8 +48,14 @@ class SLIReport:
         + f" ({_START_TIME.strftime('%Y-%m-%d')} - {_END_TIME.strftime('%Y-%m-%d')})"
     )
 
-    REPORT_INTRO = f"<h1> <strong> Thoth SLI Metrics ({Configuration._ENVIRONMENT} environment) from {_START_TIME.strftime('%Y-%m-%d')} \
-         to {_END_TIME.strftime('%Y-%m-%d')}.</strong> </h1>"
+    REPORT_START = HTMLTemplates.thoth_report_start_template()
+
+    REPORT_INTRO = HTMLTemplates.thoth_report_intro_template(html_inputs={
+        "environment": Configuration._ENVIRONMENT,
+        "start_time": str(_START_TIME.strftime('%Y-%m-%d')),
+        "end_time": str(_END_TIME.strftime('%Y-%m-%d'))
+    }
+    )
 
     REPORT_STYLE = HTMLTemplates.thoth_report_style_template()
 
@@ -62,3 +68,5 @@ class SLIReport:
     }
 
     REPORT_REFERENCES = _add_dashbords(_START_TIME_EPOCH, _END_TIME_EPOCH)
+
+    REPORT_END = HTMLTemplates.thoth_report_end_template()

@@ -1,0 +1,22 @@
+{% extends "templates/base.html" %}
+{% block table_name %} <strong> Thoth Components </strong> {% endblock %}
+{% block table_info %} <strong> Status of Thoth services </strong> {% endblock %}
+{% block classes %}
+        <thead>
+            <tr>
+                <th>Component</th>
+                <th>Succeeded</th>
+            </tr>
+        </thead>
+        {% endblock %}
+        {% block inputs %}
+        <tbody>
+            {% for service, successfull_percentage in html_inputs.items() %}
+            <tr>
+                <td>{{ service }}</td>
+                <td>{{ successfull_percentage }}</td>
+                <td> % </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+{% endblock %}

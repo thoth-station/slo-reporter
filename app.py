@@ -26,6 +26,7 @@ import webbrowser
 import tempfile
 
 from typing import Dict
+from pathlib import Path
 
 from prometheus_api_client import Metric, MetricsList, PrometheusConnect
 from prometheus_api_client.utils import parse_datetime, parse_timedelta
@@ -104,9 +105,9 @@ def push_thoth_sli_weekly_metrics(weekly_metrics: Dict[str, Metric]):
 
 def generate_email(sli_metrics: Dict[str, float]):
     """Generate email to be sent."""
-    message = SLIReport.REPORT_INTRO
-
+    message = SLIReport.REPORT_START
     message += SLIReport.REPORT_STYLE
+    message += SLIReport.REPORT_INTRO
 
     for sli_name, metric_data in sli_metrics.items():
         report_method = SLIReport.REPORT_SLI_CONTEXT[sli_name]["report_method"]
@@ -114,8 +115,14 @@ def generate_email(sli_metrics: Dict[str, float]):
 
     message += SLIReport.REPORT_REFERENCES
 
+    message += SLIReport.REPORT_END
+
     html_message = MIMEText(message, "html")
     _LOGGER.debug(f"Email message: {html_message}")
+
+    html_file = open(Path.cwd().joinpath("thoth", "slo_reporter", "SLO-reporter.html"),"w")
+    html_file.write(message)
+    html_file.close()
 
     if _DRY_RUN:
         return message
