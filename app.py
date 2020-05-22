@@ -120,13 +120,13 @@ def generate_email(sli_metrics: Dict[str, float]):
     html_message = MIMEText(message, "html")
     _LOGGER.debug(f"Email message: {html_message}")
 
-    html_file = open(Path.cwd().joinpath("thoth", "slo_reporter", "SLO-reporter.html"),"w")
+    html_file = open(Path.cwd().joinpath("thoth", "slo_reporter", "SLO-reporter.html"), "w")
     html_file.write(message)
     html_file.close()
 
     if _DRY_RUN:
         return message
-    
+
     return html_message
 
 
@@ -150,7 +150,7 @@ def send_sli_email(email_message: MIMEText):
 def main():
     """Main function for Thoth Service Level Objectives (SLO) Reporter."""
     if _DRY_RUN:
-         _LOGGER.info("Dry run...")
+        _LOGGER.info("Dry run...")
     weekly_sli_values_map = collect_metrics()
 
     if not _DRY_RUN:

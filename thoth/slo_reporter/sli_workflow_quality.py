@@ -61,9 +61,11 @@ class SLIWorkflowQuality(SLIBase):
         """Aggregate service queries."""
         query_labels_reports = f'{{instance="{_INSTANCE}", result_type="{service}"}}'
         query_labels_workflows_f = f'{{instance="{_INSTANCE}", \
-            label_selector="component={service}", job="Thoth Metrics ({Configuration._ENVIRONMENT})", workflow_status="Failed"}}'
+            label_selector="component={service}", \
+                job="Thoth Metrics ({Configuration._ENVIRONMENT})", workflow_status="Failed"}}'
         query_labels_workflows_e = f'{{instance="{_INSTANCE}", \
-            label_selector="component={service}", job="Thoth Metrics ({Configuration._ENVIRONMENT})", workflow_status="Error"}}'
+            label_selector="component={service}", \
+                job="Thoth Metrics ({Configuration._ENVIRONMENT})", workflow_status="Error"}}'
 
         return {
             f"{service}_reports": f"delta(\
