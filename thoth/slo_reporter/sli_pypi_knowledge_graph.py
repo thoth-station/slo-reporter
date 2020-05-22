@@ -52,15 +52,20 @@ class SLIPyPIKnowledgeGraph(SLIBase):
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for knowledge graph SLI Report."""
-        query_labels = f'{{instance="{_INSTANCE}", job="Thoth Metrics ({Configuration._ENVIRONMENT})"}}'
+        query_labels_packages = (
+            f'{{instance="{_INSTANCE}", job="Thoth Metrics ({Configuration._ENVIRONMENT})", stats_type="packages"}}'
+        )
+        query_labels_releases = (
+            f'{{instance="{_INSTANCE}", job="Thoth Metrics ({Configuration._ENVIRONMENT})", stats_type="releases"}}'
+        )
 
         return {
-            "total_packages": f"thoth_total_pypi_packages{query_labels}",
+            "total_packages": f"thoth_pypi_stats{query_labels_packages}",
             "new_packages": f"delta(\
-                thoth_total_pypi_packages{query_labels}[{Configuration._INTERVAL}])",
-            "total_releases": f"thoth_total_pypi_packages_releases{query_labels}",
+                thoth_pypi_stats{query_labels_packages}[{Configuration._INTERVAL}])",
+            "total_releases": f"thoth_pypi_stats{query_labels_releases}",
             "new_packages_releases": f"delta(\
-                thoth_total_pypi_packages_releases{query_labels}[{Configuration._INTERVAL}])",
+                thoth_pypi_stats{query_labels_releases}[{Configuration._INTERVAL}])",
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:
@@ -71,7 +76,7 @@ class SLIPyPIKnowledgeGraph(SLIBase):
         html_inputs = []
         for knowledge_quantity in _REGISTERED_KNOWLEDGE_QUANTITY.keys():
             if sli[knowledge_quantity] or int(sli[knowledge_quantity]) == 0:
-                value = int(sli[knowledge_quantity])
+                value = abs(int(sli[knowledge_quantity]))
             else:
                 value = "Nan"
 

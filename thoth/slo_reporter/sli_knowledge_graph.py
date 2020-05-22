@@ -74,7 +74,7 @@ class SLIKnowledgeGraph(SLIBase):
         html_inputs = []
         for knowledge_quantity in _REGISTERED_KNOWLEDGE_QUANTITY.keys():
             if sli[knowledge_quantity] or int(sli[knowledge_quantity]) == 0:
-                value = int(sli[knowledge_quantity])
+                value = abs(int(sli[knowledge_quantity]))
             else:
                 value = "Nan"
 

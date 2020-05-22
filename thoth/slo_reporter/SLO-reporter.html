@@ -9,7 +9,62 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/patternfly/3.24.0/css/patternfly-additions.min.css">
 </head>
 <body>
-    <h1> <strong> Thoth SLI Metrics Report (dry_run environment) from 2020-05-12 to 2020-05-19.</strong> </h1>
+    <h1> <strong> Thoth SLI Metrics Report (stage environment) from 2020-05-15 to 2020-05-22.</strong> </h1>
+
+    <div class="container-fluid container-cards-pf">
+        <div class="row row-cards-pf">
+            <div class="col-xs-12 col-sm-12 col-md-12">
+                <div class="card-pf card-pf-accented card-pf-aggregate-status">
+                    <h2 class="card-pf-title">
+                        <span class="fa fa-info"></span> <strong> Changes in PyPI Knowledge Graph </strong> 
+                    </h2>
+                    <div class="card-pf-body">
+                        <p class="card-pf-aggregate-status-notifications">
+                            <span class="card-pf-aggregate-status-notification">
+                                 <strong> PyPI Knowledge Graph </strong> 
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <table class="table table-bordered table-hover table-treegrid" border="5">
+            
+        <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        
+            
+        <tbody>
+            
+            <tr>
+                <td>Python Packages</td>
+                <td>235513</td>
+            </tr>
+            
+            <tr>
+                <td>New Python Packages</td>
+                <td>214</td>
+            </tr>
+            
+            <tr>
+                <td>Python Packages Releases</td>
+                <td>1851000</td>
+            </tr>
+            
+            <tr>
+                <td>New Python Packages Releases</td>
+                <td>2587</td>
+            </tr>
+            
+        </tbody>
+
+        </table>
+    </div>
 
     <div class="container-fluid container-cards-pf">
         <div class="row row-cards-pf">
@@ -43,12 +98,12 @@
             
             <tr>
                 <td>Python Indices</td>
-                <td>1</td>
+                <td>4</td>
             </tr>
             
             <tr>
                 <td>Python Packages</td>
-                <td>1</td>
+                <td>7088</td>
             </tr>
             
             <tr>
@@ -58,12 +113,12 @@
             
             <tr>
                 <td>Python Packages Releases</td>
-                <td>1</td>
+                <td>180763</td>
             </tr>
             
             <tr>
                 <td>New Python Packages Releases</td>
-                <td>1</td>
+                <td>399</td>
             </tr>
             
         </tbody>
@@ -103,25 +158,25 @@
             
             <tr>
                 <td>Learning Rate</td>
-                <td>1</td>
+                <td>31</td>
                 <td>packages/hour</td>
             </tr>
             
             <tr>
                 <td>Knowledge increase</td>
-                <td>1</td>
+                <td>1750</td>
                 <td>packages</td>
             </tr>
             
             <tr>
                 <td>Number of Solvers</td>
-                <td>1</td>
+                <td>5</td>
                 <td></td>
             </tr>
             
             <tr>
                 <td>New Solvers</td>
-                <td>1</td>
+                <td>2</td>
                 <td></td>
             </tr>
             
@@ -162,13 +217,13 @@
             
             <tr>
                 <td>Successfull requests User-API (avg)</td>
-                <td>100.0</td>
+                <td>60.049</td>
                 <td>%</td>
             </tr>
             
             <tr>
                 <td>Uptime User-API (avg)</td>
-                <td>100.0</td>
+                <td>99.98</td>
                 <td>%</td>
             </tr>
             
@@ -209,19 +264,19 @@
             
             <tr>
                 <td>adviser</td>
-                <td>-33.333</td>
+                <td>95.318</td>
                 <td> % </td>
             </tr>
             
             <tr>
                 <td>solver</td>
-                <td>-33.333</td>
+                <td>66.936</td>
                 <td> % </td>
             </tr>
             
             <tr>
                 <td>inspection</td>
-                <td>-33.333</td>
+                <td>Nan</td>
                 <td> % </td>
             </tr>
             
@@ -259,11 +314,11 @@
         <tbody>
             
             <tr>
-                <td><a href="https://grafana.datahub.redhat.com/dashboard/db/thoth-knowledge-graph-content-metrics-dry_run?refresh=1m&orgId=1&from=1589304391989&to=1589909191989"> Thoth Knowledge Graph</a></td>
+                <td><a href="https://grafana.datahub.redhat.com/dashboard/db/thoth-knowledge-graph-content-metrics-stage?refresh=1m&orgId=1&from=1589548966690&to=1590153766690"> Thoth Knowledge Graph</a></td>
             </tr>
             
             <tr>
-                <td><a href="https://grafana.datahub.redhat.com/dashboard/db/thoth-sli-slo?refresh=1m&orgId=1&from=1589304391989&to=1589909191989"> Thoth SLI/SLO</a></td>
+                <td><a href="https://grafana.datahub.redhat.com/dashboard/db/thoth-sli-slo?refresh=1m&orgId=1&from=1589548966690&to=1590153766690"> Thoth SLI/SLO</a></td>
             </tr>
             
         </tbody>

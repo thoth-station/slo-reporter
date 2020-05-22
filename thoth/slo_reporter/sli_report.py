@@ -50,17 +50,18 @@ class SLIReport:
 
     REPORT_START = HTMLTemplates.thoth_report_start_template()
 
-    REPORT_INTRO = HTMLTemplates.thoth_report_intro_template(html_inputs={
-        "environment": Configuration._ENVIRONMENT,
-        "start_time": str(_START_TIME.strftime('%Y-%m-%d')),
-        "end_time": str(_END_TIME.strftime('%Y-%m-%d'))
-    }
+    REPORT_INTRO = HTMLTemplates.thoth_report_intro_template(
+        html_inputs={
+            "environment": Configuration._ENVIRONMENT,
+            "start_time": str(_START_TIME.strftime("%Y-%m-%d")),
+            "end_time": str(_END_TIME.strftime("%Y-%m-%d")),
+        }
     )
 
     REPORT_STYLE = HTMLTemplates.thoth_report_style_template()
 
     REPORT_SLI_CONTEXT = {
-        # TODO: Add PyPI Knowledge Graph
+        SLIPyPIKnowledgeGraph._SLI_NAME: SLIPyPIKnowledgeGraph()._aggregate_info(),
         SLIKnowledgeGraph._SLI_NAME: SLIKnowledgeGraph()._aggregate_info(),
         SLILearning._SLI_NAME: SLILearning()._aggregate_info(),
         SLIUserAPI._SLI_NAME: SLIUserAPI()._aggregate_info(),

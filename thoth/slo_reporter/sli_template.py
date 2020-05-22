@@ -48,7 +48,7 @@ class HTMLTemplates:
     def thoth_pypi_knowledge_template(html_inputs: List[Any]):
         """Create HTML template to be used for PyPI knowledge graph info."""
         parameters = locals()
-        template = ENV.get_template("templates/thoth_knowledge_graph.html")
+        template = ENV.get_template("templates/pypi_knowledge_graph.html")
         return template.render(**parameters)
 
     def thoth_knowledge_template(html_inputs: List[Any]):

@@ -35,14 +35,8 @@ if not Configuration.DRY_RUN:
 _LOGGER = logging.getLogger(__name__)
 
 _USER_API_MEASUREMENT_UNIT = {
-    "avg_successfull_request": {
-        "name": "Successfull requests User-API (avg)",
-        "measurement_unit": "%"
-    },
-    "avg_up_time": {
-        "name": "Uptime User-API (avg)",
-        "measurement_unit": "%"
-    },
+    "avg_successfull_request": {"name": "Successfull requests User-API (avg)", "measurement_unit": "%"},
+    "avg_up_time": {"name": "Uptime User-API (avg)", "measurement_unit": "%"},
 }
 
 

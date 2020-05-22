@@ -34,22 +34,10 @@ if not Configuration.DRY_RUN:
 _LOGGER = logging.getLogger(__name__)
 
 _REGISTERED_LEARNING_MEASUREMENT_UNIT = {
-    "max_learning_rate": {
-        "name": "Learning Rate",
-        "measurement_unit": "packages/hour"
-    },
-    "learned_packages": {
-        "name": "Knowledge increase",
-        "measurement_unit": "packages",
-    },
-    "solvers": {
-        "name": "Number of Solvers",
-        "measurement_unit": "",
-    },
-    "new_solvers": {
-        "name": "New Solvers",
-        "measurement_unit": "",
-    }
+    "max_learning_rate": {"name": "Learning Rate", "measurement_unit": "packages/hour"},
+    "learned_packages": {"name": "Knowledge increase", "measurement_unit": "packages"},
+    "solvers": {"name": "Number of Solvers", "measurement_unit": ""},
+    "new_solvers": {"name": "New Solvers", "measurement_unit": ""},
 }
 
 
