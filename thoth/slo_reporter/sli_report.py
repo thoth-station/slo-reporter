@@ -29,17 +29,13 @@ from .sli_knowledge_graph import SLIKnowledgeGraph
 from .sli_learning import SLILearning
 from .sli_user_api import SLIUserAPI
 from .sli_workflow_quality import SLIWorkflowQuality
+from .sli_template import HTMLTemplates
 
 
 _END_TIME = datetime.datetime.utcnow()
 _START_TIME = _END_TIME - datetime.timedelta(days=7)
 _START_TIME_EPOCH = int(_START_TIME.timestamp() * 1000)
 _END_TIME_EPOCH = int(_END_TIME.timestamp() * 1000)
-
-_ENVIRONMENT = "dry_run"
-
-if not Configuration.DRY_RUN:
-    _ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -52,21 +48,20 @@ class SLIReport:
         + f" ({_START_TIME.strftime('%Y-%m-%d')} - {_END_TIME.strftime('%Y-%m-%d')})"
     )
 
-    REPORT_INTRO = f"<h1> <strong>Thoth SLI Metrics ({_ENVIRONMENT} environment) from {_START_TIME.strftime('%Y-%m-%d')} \
-         to {_END_TIME.strftime('%Y-%m-%d')}.</strong> </h1>"
+    REPORT_START = HTMLTemplates.thoth_report_start_template()
 
-    REPORT_STYLE = """
-        <head>
-        <style>
-        table, th, td {
-        border: 1px solid black;
+    REPORT_INTRO = HTMLTemplates.thoth_report_intro_template(
+        html_inputs={
+            "environment": Configuration._ENVIRONMENT,
+            "start_time": str(_START_TIME.strftime("%Y-%m-%d")),
+            "end_time": str(_END_TIME.strftime("%Y-%m-%d")),
         }
-        </style>
-        </head>
-    """
+    )
+
+    REPORT_STYLE = HTMLTemplates.thoth_report_style_template()
 
     REPORT_SLI_CONTEXT = {
-        # TODO: Add PyPI Knowledge Graph
+        SLIPyPIKnowledgeGraph._SLI_NAME: SLIPyPIKnowledgeGraph()._aggregate_info(),
         SLIKnowledgeGraph._SLI_NAME: SLIKnowledgeGraph()._aggregate_info(),
         SLILearning._SLI_NAME: SLILearning()._aggregate_info(),
         SLIUserAPI._SLI_NAME: SLIUserAPI()._aggregate_info(),
@@ -74,3 +69,5 @@ class SLIReport:
     }
 
     REPORT_REFERENCES = _add_dashbords(_START_TIME_EPOCH, _END_TIME_EPOCH)
+
+    REPORT_END = HTMLTemplates.thoth_report_end_template()

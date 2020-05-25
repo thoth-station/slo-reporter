@@ -27,11 +27,9 @@ from .sli_template import HTMLTemplates
 from .configuration import Configuration
 
 _INSTANCE = "dry_run"
-_ENVIRONMENT = "dry_run"
 
 if not Configuration.DRY_RUN:
     _INSTANCE = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND"]
-    _ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
 
 _INTERVAL = "7d"
 _LOGGER = logging.getLogger(__name__)
@@ -56,7 +54,7 @@ class SLIKnowledgeGraph(SLIBase):
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for knowledge graph SLI Report."""
-        query_labels = f'{{instance="{_INSTANCE}", job="Thoth Metrics ({_ENVIRONMENT})"}}'
+        query_labels = f'{{instance="{_INSTANCE}", job="Thoth Metrics ({Configuration._ENVIRONMENT})"}}'
 
         return {
             "python_indices_registered": f"thoth_graphdb_total_python_indexes{query_labels}",
@@ -76,7 +74,7 @@ class SLIKnowledgeGraph(SLIBase):
         html_inputs = []
         for knowledge_quantity in _REGISTERED_KNOWLEDGE_QUANTITY.keys():
             if sli[knowledge_quantity] or int(sli[knowledge_quantity]) == 0:
-                value = int(sli[knowledge_quantity])
+                value = abs(int(sli[knowledge_quantity]))
             else:
                 value = "Nan"
 

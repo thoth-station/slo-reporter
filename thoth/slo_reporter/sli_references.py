@@ -25,11 +25,6 @@ from .configuration import Configuration
 
 from .sli_template import HTMLTemplates
 
-_ENVIRONMENT = "dry_run"
-
-if not Configuration.DRY_RUN:
-    _ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
-
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -37,7 +32,7 @@ def _add_dashbords(start_time_epoch: datetime.datetime, end_time_epoch: datetime
     """Create dashboard link for report."""
     html_inputs = {}
 
-    knowledge_graph_dashboard_name = f"thoth-knowledge-graph-content-metrics-{_ENVIRONMENT}"
+    knowledge_graph_dashboard_name = f"thoth-knowledge-graph-content-metrics-{Configuration._ENVIRONMENT}"
     knowledge_graph_dashboard_url = (
         f"https://grafana.datahub.redhat.com/dashboard/db/{knowledge_graph_dashboard_name}?"
         + f"refresh=1m&orgId=1&from={start_time_epoch}&to={end_time_epoch}"

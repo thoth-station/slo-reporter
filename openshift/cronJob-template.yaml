@@ -58,7 +58,7 @@ objects:
         app: thoth
         component: slo-reporter
     spec:
-      schedule: "0 21 * * FRI"  # Every Friday
+      schedule: "0 0 * * 0"
       suspend: ${{THOTH_SUSPEND_JOB}}
       concurrencyPolicy: Forbid
       successfulJobsHistoryLimit: 2

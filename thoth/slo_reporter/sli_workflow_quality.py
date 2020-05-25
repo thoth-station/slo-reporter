@@ -28,13 +28,10 @@ from .sli_template import HTMLTemplates
 from .configuration import Configuration
 
 _INSTANCE = "dry_run"
-_ENVIRONMENT = "dry_run"
 
 if not Configuration.DRY_RUN:
     _INSTANCE = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND"]
-    _ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
 
-_INTERVAL = "7d"
 _LOGGER = logging.getLogger(__name__)
 
 REGISTERED_SERVICES = ["adviser", "solver", "inspection"]
@@ -64,17 +61,19 @@ class SLIWorkflowQuality(SLIBase):
         """Aggregate service queries."""
         query_labels_reports = f'{{instance="{_INSTANCE}", result_type="{service}"}}'
         query_labels_workflows_f = f'{{instance="{_INSTANCE}", \
-            label_selector="component={service}", job="Thoth Metrics ({_ENVIRONMENT})", workflow_status="Failed"}}'
+            label_selector="component={service}", \
+                job="Thoth Metrics ({Configuration._ENVIRONMENT})", workflow_status="Failed"}}'
         query_labels_workflows_e = f'{{instance="{_INSTANCE}", \
-            label_selector="component={service}", job="Thoth Metrics ({_ENVIRONMENT})", workflow_status="Error"}}'
+            label_selector="component={service}", \
+                job="Thoth Metrics ({Configuration._ENVIRONMENT})", workflow_status="Error"}}'
 
         return {
             f"{service}_reports": f"delta(\
-                thoth_ceph_results_number{query_labels_reports}[{_INTERVAL}])",
+                thoth_ceph_results_number{query_labels_reports}[{Configuration._INTERVAL}])",
             f"{service}_avg_workflows_failed": f"avg_over_time(\
-                thoth_workflows_status{query_labels_workflows_f}[{_INTERVAL}])",
+                thoth_workflows_status{query_labels_workflows_f}[{Configuration._INTERVAL}])",
             f"{service}_avg_workflows_error": f"avg_over_time(\
-                thoth_workflows_status{query_labels_workflows_e}[{_INTERVAL}])",
+                thoth_workflows_status{query_labels_workflows_e}[{Configuration._INTERVAL}])",
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:
