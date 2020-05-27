@@ -46,7 +46,7 @@ class SLIUserAPI(SLIBase):
     _SLI_NAME = "user_api"
 
     def _aggregate_info(self):
-        """"Aggregate info required for User-API SLI Report."""
+        """Aggregate info required for User-API SLI Report."""
         return {"query": self._query_sli(), "report_method": self._report_sli}
 
     def _query_sli(self) -> List[str]:
@@ -81,7 +81,7 @@ class SLIUserAPI(SLIBase):
                     _USER_API_MEASUREMENT_UNIT[user_api_quantity]["name"],
                     value,
                     _USER_API_MEASUREMENT_UNIT[user_api_quantity]["measurement_unit"],
-                ]
+                ],
             )
         report = HTMLTemplates.thoth_user_api_template(html_inputs=html_inputs)
         return report

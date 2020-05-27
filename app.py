@@ -57,7 +57,8 @@ if not _DRY_RUN:
     _THOTH_WEEKLY_SLI = Gauge(
         f"thoth_sli_weekly_{Configuration._ENVIRONMENT}",
         "Weekly Thoth Service Level Indicators",
-        ["sli_type", "metric_name"], registry=_PROMETHEUS_REGISTRY
+        ["sli_type", "metric_name"],
+        registry=_PROMETHEUS_REGISTRY,
     )
 
 
@@ -67,7 +68,7 @@ def collect_metrics():
         pc = PrometheusConnect(
             url=Configuration._THANOS_URL,
             headers={"Authorization": f"bearer {Configuration._THANOS_TOKEN}"},
-            disable_ssl=True
+            disable_ssl=True,
         )
 
     collected_info = {}
@@ -148,7 +149,7 @@ def send_sli_email(email_message: MIMEText):
 
 
 def main():
-    """Main function for Thoth Service Level Objectives (SLO) Reporter."""
+    """Execute the main function for Thoth Service Level Objectives (SLO) Reporter."""
     if _DRY_RUN:
         _LOGGER.info("Dry run...")
     weekly_sli_values_map = collect_metrics()
@@ -159,8 +160,8 @@ def main():
     email_message = generate_email(weekly_sli_values_map)
 
     if _DRY_RUN:
-        with tempfile.NamedTemporaryFile('w', delete=False, suffix='.html') as f:
-            url = 'file://' + f.name
+        with tempfile.NamedTemporaryFile("w", delete=False, suffix=".html") as f:
+            url = "file://" + f.name
             f.write(email_message)
         webbrowser.open(url)
 

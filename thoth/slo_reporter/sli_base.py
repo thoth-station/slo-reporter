@@ -26,7 +26,7 @@ class SLIBase:
     _SLI_NAME = None
 
     def _aggregate_info(self):
-        """"Aggregate info required for specific SLI Report."""
+        """Aggregate info required for specific SLI Report."""
         return {"query": self._query_sli(), "report_method": self._report_sli}
 
     def _query_sli(self) -> Dict[str, str]:

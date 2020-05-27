@@ -47,7 +47,7 @@ class SLIPyPIKnowledgeGraph(SLIBase):
     _SLI_NAME = "pypi_knowledge_graph"
 
     def _aggregate_info(self):
-        """"Aggregate info required for knowledge graph SLI Report."""
+        """Aggregate info required for knowledge graph SLI Report."""
         return {"query": self._query_sli(), "report_method": self._report_sli}
 
     def _query_sli(self) -> List[str]:

@@ -43,7 +43,7 @@ class SLIWorkflowQuality(SLIBase):
     _SLI_NAME = "component_quality"
 
     def _aggregate_info(self):
-        """"Aggregate info required for solver_quality SLI Report."""
+        """Aggregate info required for solver_quality SLI Report."""
         return {"query": self._query_sli(), "report_method": self._report_sli}
 
     def _query_sli(self) -> List[str]:
