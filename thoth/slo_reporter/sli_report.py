@@ -29,6 +29,7 @@ from .sli_knowledge_graph import SLIKnowledgeGraph
 from .sli_learning import SLILearning
 from .sli_user_api import SLIUserAPI
 from .sli_workflow_quality import SLIWorkflowQuality
+from .sli_kebechet import SLIKebechet
 from .sli_template import HTMLTemplates
 
 
@@ -66,6 +67,7 @@ class SLIReport:
         SLILearning._SLI_NAME: SLILearning()._aggregate_info(),
         SLIUserAPI._SLI_NAME: SLIUserAPI()._aggregate_info(),
         SLIWorkflowQuality._SLI_NAME: SLIWorkflowQuality()._aggregate_info(),
+        SLIKebechet._SLI_NAME: SLIKebechet()._aggregate_info(),
     }
 
     REPORT_REFERENCES = _add_dashbords(_START_TIME_EPOCH, _END_TIME_EPOCH)
