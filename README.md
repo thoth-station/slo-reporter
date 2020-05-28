@@ -2,12 +2,12 @@
 
 This is Thoth SLO Reporter to share its achievements and behaviour with the outside world.
 
-# Adding new SLI report
+# Adding a new SLI report
 1. Add a class under [thoth/slo_reporter](https://github.com/thoth-station/slo-reporter/tree/master/thoth/slo_reporter) if it doesn't exist for the kind of report. This class would inherit the base class `SLIBase` from [sli_base.py](https://github.com/thoth-station/slo-reporter/blob/master/thoth/slo_reporter/sli_base.py). 
-2. Add a HTML jinja template that is to be included in the report here - [Link](https://github.com/thoth-station/slo-reporter/tree/master/thoth/slo_reporter/static/templates)
+2. Add an HTML jinja template that is to be included in the report here - [Link](https://github.com/thoth-station/slo-reporter/tree/master/thoth/slo_reporter/static/templates)
 3. Add a method to load the template you designed in [sli_template.py](https://github.com/thoth-station/slo-reporter/blob/master/thoth/slo_reporter/sli_template.py) and passes down the parameters and passes them to the template. 
-4. The query method can be tested agnaist the Prometheus web UI before being added to the method here - [Link](https://prometheus-dh-prod-monitoring.cloud.datahub.psi.redhat.com/graph)
-5. In the class that you created in step 1, add a `aggregate_info` method to return the query and the report.
+4. The query method can be tested against the Prometheus web UI before being added to the method here - [Link](https://prometheus-dh-prod-monitoring.cloud.datahub.psi.redhat.com/graph)
+5. In the class that you created in step 1, add the `aggregate_info` method to return the query and the report.
     ```python    
     def _aggregate_info(self):
         """"Aggregate info required for knowledge graph SLI Report."""
