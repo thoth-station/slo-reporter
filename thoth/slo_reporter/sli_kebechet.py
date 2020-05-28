@@ -36,6 +36,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class SLIKebechet(SLIBase):
+    """This class contain functions for Kebechet SLI."""
 
     _SLI_NAME = "kebechet"
 
