@@ -27,7 +27,6 @@ from .sli_template import HTMLTemplates
 from .configuration import Configuration
 
 _INSTANCE = "dry_run"
-_INTERVAL = "7d"
 
 if not Configuration.DRY_RUN:
     _INSTANCE = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND"]
@@ -50,7 +49,7 @@ class SLIKebechet(SLIBase):
         return {
             "Total active repositories": f"thoth_kebechet_total_active_repo_count{query_labels}",
             "Change in active repositories since last week": f"delta(\
-                thoth_kebechet_total_active_repo_count{query_labels}[{_INTERVAL}])",
+                thoth_kebechet_total_active_repo_count{query_labels}[{Configuration._INTERVAL}])",
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:

@@ -65,9 +65,9 @@ class SLIReport:
         SLIPyPIKnowledgeGraph._SLI_NAME: SLIPyPIKnowledgeGraph()._aggregate_info(),
         SLIKnowledgeGraph._SLI_NAME: SLIKnowledgeGraph()._aggregate_info(),
         SLILearning._SLI_NAME: SLILearning()._aggregate_info(),
+        SLIKebechet._SLI_NAME: SLIKebechet()._aggregate_info(),
         SLIUserAPI._SLI_NAME: SLIUserAPI()._aggregate_info(),
         SLIWorkflowQuality._SLI_NAME: SLIWorkflowQuality()._aggregate_info(),
-        SLIKebechet._SLI_NAME: SLIKebechet()._aggregate_info(),
     }
 
     REPORT_REFERENCES = _add_dashbords(_START_TIME_EPOCH, _END_TIME_EPOCH)
