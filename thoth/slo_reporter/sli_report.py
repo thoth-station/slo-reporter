@@ -55,7 +55,7 @@ class SLIReport:
             "environment": Configuration._ENVIRONMENT,
             "start_time": str(_START_TIME.strftime("%Y-%m-%d")),
             "end_time": str(_END_TIME.strftime("%Y-%m-%d")),
-        }
+        },
     )
 
     REPORT_STYLE = HTMLTemplates.thoth_report_style_template()

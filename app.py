@@ -149,7 +149,7 @@ def send_sli_email(email_message: MIMEText):
 
 
 def main():
-    """Main function for Thoth Service Level Objectives (SLO) Reporter."""
+    """Execute the main function for Thoth Service Level Objectives (SLO) Reporter."""
     if _DRY_RUN:
         _LOGGER.info("Dry run...")
     weekly_sli_values_map = collect_metrics()

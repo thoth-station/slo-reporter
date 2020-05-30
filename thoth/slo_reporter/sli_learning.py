@@ -47,7 +47,7 @@ class SLILearning(SLIBase):
     _SLI_NAME = "learning_rate"
 
     def _aggregate_info(self):
-        """"Aggregate info required for learning quantities SLI Report."""
+        """Aggregate info required for learning quantities SLI Report."""
         return {"query": self._query_sli(), "report_method": self._report_sli}
 
     def _query_sli(self) -> List[str]:
@@ -82,7 +82,7 @@ class SLILearning(SLIBase):
                     _REGISTERED_LEARNING_MEASUREMENT_UNIT[learning_quantity]["name"],
                     value,
                     _REGISTERED_LEARNING_MEASUREMENT_UNIT[learning_quantity]["measurement_unit"],
-                ]
+                ],
             )
 
         report = HTMLTemplates.thoth_learning_template(html_inputs=html_inputs)
