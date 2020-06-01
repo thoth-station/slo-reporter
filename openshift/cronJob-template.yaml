@@ -29,7 +29,7 @@ parameters:
     description: Suspend CronJob run
     required: true
     name: THOTH_SUSPEND_JOB
-    value: "true"
+    value: "false"
 
   - description: Project the ImageStream to be use lives in
     displayName: ImageStream Project
@@ -109,7 +109,7 @@ objects:
                           key: email-recipients
                     - name: THOTH_ENVIRONMENT
                       value: "${THOTH_ENVIRONMENT}"
-                    - name: METRICS_EXPORTER_FRONTEND_PROMETHEUS_INSTANCE
+                    - name: PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND
                       valueFrom:
                         configMapKeyRef:
                           name: thoth
