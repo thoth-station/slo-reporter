@@ -41,3 +41,27 @@ all the things that you see...
 * Add some TODO
 * Adjust app
 * Add requirements
+
+## Release 0.2.1 (2020-06-01T08:37:13)
+* Add apiVersion
+* :pushpin: Automatic update of dependency prometheus-client from 0.7.1 to 0.8.0
+* :pencil: Readme fix
+* updated zuul config file
+* :art: Resolved suggested changes
+* Remove int
+* :pencil: Fixed readme
+* :green_heart: Coala fix
+* :sparkles: Added SLI report for Kebechet
+* :pencil: Added readme for SLO Reporter
+* :sparkles: some reformatting done by pre-commit
+* :sparkles: added pre-commit config file
+* Use index instead of knowledge graph
+* Add PyPI info
+* Change time
+* Save HTML
+* Add info for tables
+* Add configuration
+* Add style for report
+* Adjust README
+* Adjust report
+* Proper dry run
