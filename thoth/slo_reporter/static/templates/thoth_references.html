@@ -4,15 +4,17 @@
 {% block classes %}
         <thead>
             <tr>
-                <th>Reference</th>
+                <th>Reference Link</th>
+                <th>Description</th>
             </tr>
         </thead>
         {% endblock %}
         {% block inputs %}
         <tbody>
-            {% for reference, url in html_inputs.items() %}
+            {% for reference_name, reference in html_inputs.items() %}
             <tr>
-                <td><a href="{{ url }}"> {{ reference }}</a></td>
+                <td><a href="{{ reference['url'] }}"> {{ reference_name }}</a></td>
+                <td>{{ reference['description'] }}</td>
             </tr>
             {% endfor %}
         </tbody>
