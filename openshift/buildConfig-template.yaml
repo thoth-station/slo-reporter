@@ -60,6 +60,12 @@ objects:
               value: "1"
             - name: "THOTH_ADVISE"
               value: ${THOTH_ADVISE}
+            - name: "THOTH_PROVENANCE_CHECK"
+              value: ${THOTH_PROVENANCE_CHECK}
+            - name: THOTH_ERROR_FALLBACK
+              value: "0"
+            - name: DISABLE_SETUP_PY_PROCESSING
+              value: "1"
             - name: "THAMOS_VERBOSE"
               value: "1"
             - name: "THAMOS_DEBUG"
@@ -100,4 +106,9 @@ parameters:
     displayName: THOTH_ADVISE
     required: true
     name: THOTH_ADVISE
-    value: "1"
+    value: "0"
+  - description: Thamos Provenance Check setup tag flag
+    displayName: THOTH_PROVENANCE_CHECK
+    required: false
+    name: THOTH_PROVENANCE_CHECK
+    value: "0"

@@ -59,7 +59,7 @@ class SLIKebechet(SLIBase):
         """
         html_inputs = []
         for knowledge_quantity in sli.keys():
-            if sli[knowledge_quantity] or int(sli[knowledge_quantity]) == 0:
+            if sli[knowledge_quantity] or sli[knowledge_quantity] == 0:
                 value = abs(int(sli[knowledge_quantity]))
             else:
                 value = "Nan"
