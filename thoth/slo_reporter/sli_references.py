@@ -39,7 +39,7 @@ def _add_dashbords(start_time_epoch: datetime.datetime, end_time_epoch: datetime
     )
     html_inputs["Thoth Knowledge Graph"] = {
         "url": knowledge_graph_dashboard_url,
-        "description": "Dashboard for Thoth Knowledge Graph data stored."
+        "description": "Dashboard for Thoth Knowledge Graph data stored.",
     }
 
     sli_slo_dashboard_name = f"thoth-sli-slo"
@@ -47,10 +47,7 @@ def _add_dashbords(start_time_epoch: datetime.datetime, end_time_epoch: datetime
         f"https://grafana.datahub.redhat.com/dashboard/db/{sli_slo_dashboard_name}?"
         + f"refresh=1m&orgId=1&from={start_time_epoch}&to={end_time_epoch}"
     )
-    html_inputs["Thoth SLI/SLO"] = {
-        "url": sli_slo_dashboard_url,
-        "description": "Dashboard for SLI/SLO for Thoth."
-    }
+    html_inputs["Thoth SLI/SLO"] = {"url": sli_slo_dashboard_url, "description": "Dashboard for SLI/SLO for Thoth."}
 
     sli_slo_dashboard_name = f"thoth-reports"
     sli_slo_dashboard_url = (
@@ -59,7 +56,7 @@ def _add_dashbords(start_time_epoch: datetime.datetime, end_time_epoch: datetime
     )
     html_inputs["Thoth Reports"] = {
         "url": sli_slo_dashboard_url,
-        "description": "Dashboard for summary reports created by Thoth reporters components."
+        "description": "Dashboard for summary reports created by Thoth reporters components.",
     }
 
     report = HTMLTemplates.thoth_references_template(html_inputs=html_inputs)
