@@ -77,6 +77,7 @@ def collect_metrics():
         collected_info[sli_name] = {}
         for query_name, query in sli_methods["query"].items():
             _LOGGER.info(f"Querying... {query_name}")
+            _LOGGER.info(f"Using query... {query}")
             try:
                 if not _DRY_RUN:
                     metric_data = pc.custom_query(query=query)
@@ -87,7 +88,7 @@ def collect_metrics():
             except Exception as e:
                 _LOGGER.exception(f"Could not gather metric for {sli_name}-{query_name}...{e}")
                 pass
-                collected_info[sli_name][query_name] = None
+                collected_info[sli_name][query_name] = "ErrorMetricRetrieval"
 
     return collected_info
 
@@ -96,7 +97,7 @@ def push_thoth_sli_weekly_metrics(weekly_metrics: Dict[str, Metric]):
     """Push Thoth SLI weekly metric to PushGateway."""
     for sli_type, metric_data in weekly_metrics.items():
         for metric_name, weekly_value_metric in metric_data.items():
-            if weekly_value_metric:
+            if weekly_value_metric != "ErrorMetricRetrieval":
                 _THOTH_WEEKLY_SLI.labels(sli_type=sli_type, metric_name=metric_name).set(weekly_value_metric)
                 _LOGGER.info("(sli_type=%r, metric_name=%r)=%r", sli_type, metric_name, weekly_value_metric)
 

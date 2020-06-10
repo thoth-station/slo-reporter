@@ -44,4 +44,8 @@ class Configuration:
         _THANOS_URL = os.environ["THANOS_ENDPOINT"]
         _THANOS_TOKEN = os.environ["THANOS_ACCESS_TOKEN"]
 
+        _BACKEND_NAMESPACE = os.environ["THOTH_BACKEND_NAMESPACE"]
+        _MIDDLETIER_NAMESPACE = os.environ["THOTH_MIDDLETIER_NAMESPACE"]
+        _AMUN_INSPECTION_NAMESPACE = os.environ["THOTH_AMUN_INSPECTION_NAMESPACE"]
+
     _INTERVAL = "7d"
