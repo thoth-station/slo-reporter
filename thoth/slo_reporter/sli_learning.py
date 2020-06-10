@@ -72,8 +72,8 @@ class SLILearning(SLIBase):
         """
         html_inputs = []
         for learning_quantity in _REGISTERED_LEARNING_MEASUREMENT_UNIT.keys():
-            if sli[learning_quantity] or sli[learning_quantity] == 0:
-                value = int(sli[learning_quantity])
+            if sli[learning_quantity] != "ErrorMetricRetrieval":
+                value = abs(int(sli[learning_quantity]))
             else:
                 value = "Nan"
 
