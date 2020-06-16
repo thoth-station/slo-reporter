@@ -19,7 +19,6 @@
 
 import logging
 import os
-from datetime import timedelta
 
 _LOGGER = logging.getLogger(__name__)
 

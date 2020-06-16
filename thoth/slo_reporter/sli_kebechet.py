@@ -40,7 +40,7 @@ class SLIKebechet(SLIBase):
     _SLI_NAME = "kebechet"
 
     def _aggregate_info(self):
-        """"Aggregate info required for Kebechet SLI Report."""
+        """Aggregate info required for Kebechet SLI Report."""
         return {"query": self._query_sli(), "report_method": self._report_sli}
 
     def _query_sli(self) -> List[str]:
