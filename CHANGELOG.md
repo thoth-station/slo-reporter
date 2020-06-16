@@ -65,3 +65,11 @@ all the things that you see...
 * Adjust README
 * Adjust report
 * Proper dry run
+
+## Release 0.3.0 (2020-06-16T15:51:48)
+* Modify workflow query and introduce env variables
+* :pushpin: Automatic update of dependency prometheus-api-client from 0.2.0 to 0.3.1
+* Introduce error
+* Correct docstring
+* Add reference descriptions
+* Add Thoth reports references
