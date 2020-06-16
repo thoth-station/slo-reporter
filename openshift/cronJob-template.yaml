@@ -109,6 +109,21 @@ objects:
                           key: email-recipients
                     - name: THOTH_ENVIRONMENT
                       value: "${THOTH_ENVIRONMENT}"
+                    - name: "THOTH_MIDDLETIER_NAMESPACE"
+                      valueFrom:
+                        configMapKeyRef:
+                          key: middletier-namespace
+                          name: thoth
+                    - name: "THOTH_BACKEND_NAMESPACE"
+                      valueFrom:
+                        configMapKeyRef:
+                          key: backend-namespace
+                          name: thoth
+                    - name: "THOTH_AMUN_INSPECTION_NAMESPACE"
+                      valueFrom:
+                        configMapKeyRef:
+                          key: amun-inspection-namespace
+                          name: thoth
                     - name: PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND
                       valueFrom:
                         configMapKeyRef:

@@ -71,8 +71,8 @@ class SLIUserAPI(SLIBase):
         """
         html_inputs = []
         for user_api_quantity in _USER_API_MEASUREMENT_UNIT.keys():
-            if sli[user_api_quantity]:
-                value = round(sli[user_api_quantity] * 100, 3)
+            if sli[user_api_quantity] != "ErrorMetricRetrieval":
+                value = abs(round(sli[user_api_quantity] * 100, 3))
             else:
                 value = "Nan"
 

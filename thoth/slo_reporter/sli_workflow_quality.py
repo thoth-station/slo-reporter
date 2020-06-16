@@ -34,7 +34,23 @@ if not Configuration.DRY_RUN:
 
 _LOGGER = logging.getLogger(__name__)
 
-REGISTERED_SERVICES = ["adviser", "solver", "inspection"]
+if not Configuration.DRY_RUN:
+    REGISTERED_SERVICES = {
+        "adviser": {
+            "entrypoint": "adviser",
+            "namespace": Configuration._BACKEND_NAMESPACE
+        },
+        "solver": {
+            "entrypoint": 'solve-and-sync',
+            "namespace": Configuration._MIDDLETIER_NAMESPACE
+        },
+        "inspection": {
+            "entrypoint": "main",
+            "namespace": Configuration._AMUN_INSPECTION_NAMESPACE
+        }
+    }
+else:
+    REGISTERED_SERVICES = {}
 
 
 class SLIWorkflowQuality(SLIBase):
@@ -60,20 +76,20 @@ class SLIWorkflowQuality(SLIBase):
     def _aggregate_queries(service: str):
         """Aggregate service queries."""
         query_labels_reports = f'{{instance="{_INSTANCE}", result_type="{service}"}}'
-        query_labels_workflows_f = f'{{instance="{_INSTANCE}", \
-            label_selector="component={service}", \
-                job="Thoth Metrics ({Configuration._ENVIRONMENT})", workflow_status="Failed"}}'
-        query_labels_workflows_e = f'{{instance="{_INSTANCE}", \
-            label_selector="component={service}", \
-                job="Thoth Metrics ({Configuration._ENVIRONMENT})", workflow_status="Error"}}'
+
+        entrypoint = REGISTERED_SERVICES[service]['entrypoint']
+        namespace = REGISTERED_SERVICES[service]['namespace']
+
+        query_labels_workflows_f = f'{{entrypoint="{entrypoint}", namespace="{namespace}", phase="Failed"}}'
+        query_labels_workflows_e = f'{{entrypoint="{entrypoint}", namespace="{namespace}", phase="Error"}}'
 
         return {
             f"{service}_reports": f"delta(\
                 thoth_ceph_results_number{query_labels_reports}[{Configuration._INTERVAL}])",
-            f"{service}_avg_workflows_failed": f"avg_over_time(\
-                thoth_workflows_status{query_labels_workflows_f}[{Configuration._INTERVAL}])",
-            f"{service}_avg_workflows_error": f"avg_over_time(\
-                thoth_workflows_status{query_labels_workflows_e}[{Configuration._INTERVAL}])",
+            f"{service}_workflows_failed": f"sum(\
+                argo_workflow_status_phase{query_labels_workflows_f})",
+            f"{service}_workflows_error": f"sum(\
+                argo_workflow_status_phase{query_labels_workflows_e})",
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:
@@ -89,26 +105,32 @@ class SLIWorkflowQuality(SLIBase):
                 if service in metric:
                     service_metrics[metric] = value
 
-            if all([v for v in service_metrics.values()]):
+            number_reports = sli[f"{service}_reports"]
+            number_workflow_failed = sli[f"{service}_workflows_failed"]
+            number_workflow_error = sli[f"{service}_workflows_error"]
+
+            if "ErrorMetricRetrieval" not in [v for v in service_metrics.values()]:
+
                 total_workflows = (
-                    int(sli[f"{service}_reports"])
-                    + int(sli[f"{service}_avg_workflows_failed"])
-                    + int(sli[f"{service}_avg_workflows_error"])
+                    int(number_reports)
+                    + int(number_workflow_failed)
+                    + int(number_workflow_error)
                 )
-                if total_workflows:
+                if int(number_reports) > 0:
                     successfull_percentage = (
                         (
-                            int(sli[f"{service}_reports"])
-                            - int(sli[f"{service}_avg_workflows_failed"])
-                            - int(sli[f"{service}_avg_workflows_error"])
+                            int(number_reports)
+                            - int(number_workflow_failed)
+                            - int(number_workflow_error)
                         )
                         / total_workflows
                     ) * 100
+                    html_inputs[service] = abs(round(successfull_percentage, 3))
 
-                html_inputs[service] = round(successfull_percentage, 3)
+                else:
+                    html_inputs[service] = "Nan"
 
             else:
-
                 html_inputs[service] = "Nan"
 
         report = HTMLTemplates.thoth_services_template(html_inputs=html_inputs)
