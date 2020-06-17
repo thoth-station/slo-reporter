@@ -38,16 +38,16 @@ if not Configuration.DRY_RUN:
     REGISTERED_SERVICES = {
         "adviser": {
             "entrypoint": "adviser",
-            "namespace": Configuration._BACKEND_NAMESPACE
+            "namespace": Configuration._BACKEND_NAMESPACE,
         },
         "solver": {
             "entrypoint": 'solve-and-sync',
-            "namespace": Configuration._MIDDLETIER_NAMESPACE
+            "namespace": Configuration._MIDDLETIER_NAMESPACE,
         },
         "inspection": {
             "entrypoint": "main",
-            "namespace": Configuration._AMUN_INSPECTION_NAMESPACE
-        }
+            "namespace": Configuration._AMUN_INSPECTION_NAMESPACE,
+        },
     }
 else:
     REGISTERED_SERVICES = {}
