@@ -73,3 +73,6 @@ all the things that you see...
 * Correct docstring
 * Add reference descriptions
 * Add Thoth reports references
+
+## Release 0.3.1 (2020-06-17T12:14:38)
+* relock
