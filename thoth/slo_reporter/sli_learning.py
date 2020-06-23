@@ -58,11 +58,11 @@ class SLILearning(SLIBase):
             "max_learning_rate": f"max_over_time(\
                 increase(\
                     thoth_graphdb_unsolved_python_package_versions_change_total{query_labels}[1h]\
-                        )[{Configuration._INTERVAL}:1h])",
+                        )[{Configuration.INTERVAL}:1h])",
             "learned_packages": f"sum(delta(\
-                thoth_graphdb_total_number_solved_python_packages{query_labels}[{Configuration._INTERVAL}]))",
+                thoth_graphdb_total_number_solved_python_packages{query_labels}[{Configuration.INTERVAL}]))",
             "solvers": f"thoth_graphdb_total_number_solvers{query_labels}",
-            "new_solvers": f"delta(thoth_graphdb_total_number_solvers{query_labels}[{Configuration._INTERVAL}])",
+            "new_solvers": f"delta(thoth_graphdb_total_number_solvers{query_labels}[{Configuration.INTERVAL}])",
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:

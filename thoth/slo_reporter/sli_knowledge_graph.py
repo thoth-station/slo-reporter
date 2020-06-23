@@ -31,7 +31,6 @@ _INSTANCE = "dry_run"
 if not Configuration.DRY_RUN:
     _INSTANCE = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND"]
 
-_INTERVAL = "7d"
 _LOGGER = logging.getLogger(__name__)
 
 _REGISTERED_KNOWLEDGE_QUANTITY = {
@@ -60,10 +59,10 @@ class SLIKnowledgeGraph(SLIBase):
             "python_indices_registered": f"thoth_graphdb_total_python_indexes{query_labels}",
             "total_packages": f"thoth_graphdb_sum_python_packages_per_indexes{query_labels}",
             "new_packages": f"delta(\
-                thoth_graphdb_sum_python_packages_per_indexes{query_labels}[{_INTERVAL}])",
+                thoth_graphdb_sum_python_packages_per_indexes{query_labels}[{Configuration.INTERVAL}])",
             "total_releases": f"thoth_graphdb_number_python_package_versions{query_labels}",
             "new_packages_releases": f"delta(\
-                thoth_graphdb_number_python_package_versions{query_labels}[{_INTERVAL}])",
+                thoth_graphdb_number_python_package_versions{query_labels}[{Configuration.INTERVAL}])",
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:

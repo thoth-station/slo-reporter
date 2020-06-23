@@ -49,7 +49,7 @@ class SLIKebechet(SLIBase):
         return {
             "Total active repositories": f"thoth_kebechet_total_active_repo_count{query_labels}",
             "Change in active repositories since last week": f"delta(\
-                thoth_kebechet_total_active_repo_count{query_labels}[{Configuration._INTERVAL}])",
+                thoth_kebechet_total_active_repo_count{query_labels}[{Configuration.INTERVAL}])",
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:

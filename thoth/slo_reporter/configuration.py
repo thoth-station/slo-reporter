@@ -38,8 +38,6 @@ class Configuration:
     START_TIME_EPOCH = int(START_TIME.timestamp() * 1000)
     END_TIME_EPOCH = int(END_TIME.timestamp() * 1000)
 
-    STEP = "2h"
-
     if DRY_RUN:
         _ENVIRONMENT = "dry_run"
 
@@ -59,4 +57,6 @@ class Configuration:
         _MIDDLETIER_NAMESPACE = os.environ["THOTH_MIDDLETIER_NAMESPACE"]
         _AMUN_INSPECTION_NAMESPACE = os.environ["THOTH_AMUN_INSPECTION_NAMESPACE"]
 
-    _INTERVAL = "7d"
+        STEP = "2h"
+
+    INTERVAL = "7d"

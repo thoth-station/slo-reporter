@@ -62,10 +62,10 @@ class SLIPyPIKnowledgeGraph(SLIBase):
         return {
             "total_packages": f"thoth_pypi_stats{query_labels_packages}",
             "new_packages": f"delta(\
-                thoth_pypi_stats{query_labels_packages}[{Configuration._INTERVAL}])",
+                thoth_pypi_stats{query_labels_packages}[{Configuration.INTERVAL}])",
             "total_releases": f"thoth_pypi_stats{query_labels_releases}",
             "new_packages_releases": f"delta(\
-                thoth_pypi_stats{query_labels_releases}[{Configuration._INTERVAL}])",
+                thoth_pypi_stats{query_labels_releases}[{Configuration.INTERVAL}])",
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:

@@ -80,16 +80,16 @@ class SLIWorkflowQuality(SLIBase):
         return {
             f"{service}_workflows_succeeded": {
                 "query": f"sum(argo_workflow_status_phase{query_labels_workflows_s})",
-                "requires_range": True
+                "requires_range": True,
             },
             f"{service}_workflows_failed": {
                 "query": f"sum(argo_workflow_status_phase{query_labels_workflows_f})",
-                "requires_range": True
+                "requires_range": True,
             },
             f"{service}_workflows_error": {
                 "query": f"sum(argo_workflow_status_phase{query_labels_workflows_e})",
-                "requires_range": True
-            }
+                "requires_range": True,
+            },
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:
