@@ -24,6 +24,7 @@ import datetime
 import base64
 import webbrowser
 import tempfile
+import statistics
 
 from typing import Dict
 from pathlib import Path
@@ -77,25 +78,43 @@ def collect_metrics():
         _LOGGER.info(f"Retrieving data for... {sli_name}")
         collected_info[sli_name] = {}
 
-        for query_name, query in sli_methods["query"].items():
+        for query_name, query_inputs in sli_methods["query"].items():
+
+            requires_range = False
+
+            if isinstance(query_inputs, dict):
+                query = query_inputs["query"]
+                requires_range = query_inputs["requires_range"]
+            else:
+                query = query_inputs
+
             _LOGGER.info(f"Querying... {query_name}")
             _LOGGER.info(f"Using query... {query}")
 
             try:
                 if not _DRY_RUN:
-                    is_aggregation:
+
+                    if requires_range:
                         metric_data = pc.custom_query_range(
                             query=query,
-                            start=Configuration.START_TIME,
-                            end=Configuration.START_TIME,
+                            start_time=Configuration.START_TIME,
+                            end_time=Configuration.START_TIME,
                             step=Configuration.STEP
                         )
-                    metric_data = pc.custom_query(query=query)
+
+                    else:
+                        metric_data = pc.custom_query(query=query)
+
                     _LOGGER.info(f"Metric obtained... {metric_data}")
+
                 else:
                     metric_data = [{"metric": "dry run", "value": [datetime.datetime.utcnow(), 0]}]
 
-                collected_info[sli_name][query_name] = float(metric_data[0]["value"][1])
+                if requires_range:
+                    results = [float(v[1]) for v in metric_data[0]["values"]]
+                    collected_info[sli_name][query_name] = statistics.mean(results)
+                else:
+                    collected_info[sli_name][query_name] = float(metric_data[0]["value"][1])
 
             except Exception as e:
                 _LOGGER.exception(f"Could not gather metric for {sli_name}-{query_name}...{e}")
