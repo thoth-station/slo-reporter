@@ -102,11 +102,13 @@ parameters:
     required: true
     name: IMAGE_STREAM_TAG
     value: 'latest'
+
   - description: Thamos Advise setup tag value
     displayName: THOTH_ADVISE
     required: true
     name: THOTH_ADVISE
     value: "0"
+
   - description: Thamos Provenance Check setup tag flag
     displayName: THOTH_PROVENANCE_CHECK
     required: false

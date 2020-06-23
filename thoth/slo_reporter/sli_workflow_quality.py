@@ -36,18 +36,11 @@ _LOGGER = logging.getLogger(__name__)
 
 if not Configuration.DRY_RUN:
     REGISTERED_SERVICES = {
-        "adviser": {
-            "entrypoint": "adviser",
-            "namespace": Configuration._BACKEND_NAMESPACE,
-        },
-        "solver": {
-            "entrypoint": 'solve-and-sync',
-            "namespace": Configuration._MIDDLETIER_NAMESPACE,
-        },
-        "inspection": {
-            "entrypoint": "main",
-            "namespace": Configuration._AMUN_INSPECTION_NAMESPACE,
-        },
+        "adviser": {"entrypoint": "adviser", "namespace": Configuration._BACKEND_NAMESPACE},
+        "kebechet": {"entrypoint": "kebechet-job", "namespace": Configuration._BACKEND_NAMESPACE},
+        "inspection": {"entrypoint": "main", "namespace": Configuration._AMUN_INSPECTION_NAMESPACE},
+        "qeb-hwt": {"entrypoint": "qeb-hwt", "namespace": Configuration._BACKEND_NAMESPACE},
+        "solver": {"entrypoint": "solve-and-sync", "namespace": Configuration._MIDDLETIER_NAMESPACE},
     }
 else:
     REGISTERED_SERVICES = {}
@@ -77,19 +70,26 @@ class SLIWorkflowQuality(SLIBase):
         """Aggregate service queries."""
         query_labels_reports = f'{{instance="{_INSTANCE}", result_type="{service}"}}'
 
-        entrypoint = REGISTERED_SERVICES[service]['entrypoint']
-        namespace = REGISTERED_SERVICES[service]['namespace']
+        entrypoint = REGISTERED_SERVICES[service]["entrypoint"]
+        namespace = REGISTERED_SERVICES[service]["namespace"]
 
+        query_labels_workflows_s = f'{{entrypoint="{entrypoint}", namespace="{namespace}", phase="Succeeded"}}'
         query_labels_workflows_f = f'{{entrypoint="{entrypoint}", namespace="{namespace}", phase="Failed"}}'
         query_labels_workflows_e = f'{{entrypoint="{entrypoint}", namespace="{namespace}", phase="Error"}}'
 
         return {
-            f"{service}_reports": f"delta(\
-                thoth_ceph_results_number{query_labels_reports}[{Configuration._INTERVAL}])",
-            f"{service}_workflows_failed": f"sum(\
-                argo_workflow_status_phase{query_labels_workflows_f})",
-            f"{service}_workflows_error": f"sum(\
-                argo_workflow_status_phase{query_labels_workflows_e})",
+            f"{service}_workflows_succeeded": {
+                "query": f"sum(argo_workflow_status_phase{query_labels_workflows_s})",
+                "requires_range": True
+            },
+            f"{service}_workflows_failed": {
+                "query": f"sum(argo_workflow_status_phase{query_labels_workflows_f})",
+                "requires_range": True
+            },
+            f"{service}_workflows_error": {
+                "query": f"sum(argo_workflow_status_phase{query_labels_workflows_e})",
+                "requires_range": True
+            }
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:
@@ -101,37 +101,36 @@ class SLIWorkflowQuality(SLIBase):
 
         for service in REGISTERED_SERVICES:
             service_metrics = {}
+
             for metric, value in sli.items():
+
                 if service in metric:
                     service_metrics[metric] = value
 
-            number_reports = sli[f"{service}_reports"]
-            number_workflow_failed = sli[f"{service}_workflows_failed"]
-            number_workflow_error = sli[f"{service}_workflows_error"]
+            number_workflows_succeeded = sli[f"{service}_workflows_succeeded"]
+            number_workflows_failed = sli[f"{service}_workflows_failed"]
+            number_workflows_error = sli[f"{service}_workflows_error"]
 
             if "ErrorMetricRetrieval" not in [v for v in service_metrics.values()]:
 
                 total_workflows = (
-                    int(number_reports)
-                    + int(number_workflow_failed)
-                    + int(number_workflow_error)
+                    int(number_workflows_succeeded) + int(number_workflows_failed) + int(number_workflows_error)
                 )
-                if int(number_reports) > 0:
+                if int(number_workflows_succeeded) > 0:
+
                     successfull_percentage = (
-                        (
-                            int(number_reports)
-                            - int(number_workflow_failed)
-                            - int(number_workflow_error)
-                        )
+                        (int(number_workflows_succeeded) - int(number_workflows_failed) - int(number_workflows_error))
                         / total_workflows
                     ) * 100
+
                     html_inputs[service] = abs(round(successfull_percentage, 3))
 
                 else:
-                    html_inputs[service] = "Nan"
+                    html_inputs[service] = 0
 
             else:
                 html_inputs[service] = "Nan"
 
         report = HTMLTemplates.thoth_services_template(html_inputs=html_inputs)
+
         return report
