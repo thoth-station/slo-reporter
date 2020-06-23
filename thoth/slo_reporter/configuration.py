@@ -21,8 +21,9 @@ import logging
 import os
 import datetime
 
+_DAYS_REPORT = 7
 _END_TIME = datetime.datetime.utcnow()
-_START_TIME = _END_TIME - datetime.timedelta(days=7)
+_START_TIME = _END_TIME - datetime.timedelta(days=_DAYS_REPORT)
 
 _LOGGER = logging.getLogger(__name__)
 
