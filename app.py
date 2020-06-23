@@ -99,7 +99,7 @@ def collect_metrics():
                             query=query,
                             start_time=Configuration.START_TIME,
                             end_time=Configuration.START_TIME,
-                            step=Configuration.STEP
+                            step=Configuration.STEP,
                         )
 
                     else:
