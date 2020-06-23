@@ -19,6 +19,10 @@
 
 import logging
 import os
+import datetime
+
+_END_TIME = datetime.datetime.utcnow()
+_START_TIME = _END_TIME - datetime.timedelta(days=7)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -27,6 +31,13 @@ class Configuration:
     """Configuration of SLO-reporter."""
 
     DRY_RUN = bool(int(os.getenv("DRY_RUN", 0)))
+
+    START_TIME = _START_TIME
+    END_TIME = _END_TIME
+    START_TIME_EPOCH = int(START_TIME.timestamp() * 1000)
+    END_TIME_EPOCH = int(END_TIME.timestamp() * 1000)
+
+    STEP = "2h"
 
     if DRY_RUN:
         _ENVIRONMENT = "dry_run"

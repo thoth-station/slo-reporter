@@ -18,7 +18,6 @@
 """This file contains all sli metrics that should be included in the report."""
 
 import os
-import datetime
 import logging
 
 from .configuration import Configuration
@@ -33,11 +32,6 @@ from .sli_kebechet import SLIKebechet
 from .sli_template import HTMLTemplates
 
 
-_END_TIME = datetime.datetime.utcnow()
-_START_TIME = _END_TIME - datetime.timedelta(days=7)
-_START_TIME_EPOCH = int(_START_TIME.timestamp() * 1000)
-_END_TIME_EPOCH = int(_END_TIME.timestamp() * 1000)
-
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -46,17 +40,18 @@ class SLIReport:
 
     REPORT_SUBJECT = (
         f"Thoth Service Level Indicators Update Week"
-        + f" ({_START_TIME.strftime('%Y-%m-%d')} - {_END_TIME.strftime('%Y-%m-%d')})"
+        + f" ({Configuration.START_TIME.strftime('%Y-%m-%d')} - {Configuration.END_TIME.strftime('%Y-%m-%d')})"
     )
+    _LOGGER.info(REPORT_SUBJECT)
 
     REPORT_START = HTMLTemplates.thoth_report_start_template()
 
     REPORT_INTRO = HTMLTemplates.thoth_report_intro_template(
         html_inputs={
             "environment": Configuration._ENVIRONMENT,
-            "start_time": str(_START_TIME.strftime("%Y-%m-%d")),
-            "end_time": str(_END_TIME.strftime("%Y-%m-%d")),
-        },
+            "start_time": str(Configuration.START_TIME.strftime("%Y-%m-%d")),
+            "end_time": str(Configuration.END_TIME.strftime("%Y-%m-%d")),
+        }
     )
 
     REPORT_STYLE = HTMLTemplates.thoth_report_style_template()
@@ -70,6 +65,6 @@ class SLIReport:
         SLIWorkflowQuality._SLI_NAME: SLIWorkflowQuality()._aggregate_info(),
     }
 
-    REPORT_REFERENCES = _add_dashbords(_START_TIME_EPOCH, _END_TIME_EPOCH)
+    REPORT_REFERENCES = _add_dashbords(Configuration.START_TIME_EPOCH, Configuration.END_TIME_EPOCH)
 
     REPORT_END = HTMLTemplates.thoth_report_end_template()
