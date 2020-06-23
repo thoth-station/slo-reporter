@@ -27,7 +27,7 @@ a dictionary with the following info need to be added:
 
 - name of the component that uses Argo workflows;
 - entrypoint of the Argo workflow as stated in the template with Workflow object;
-- namespace where the Argo workflow is running;
+- namespace where the Argo workflow runs;
 
 Examples:
 
