@@ -72,19 +72,31 @@ def collect_metrics():
         )
 
     collected_info = {}
+
     for sli_name, sli_methods in SLIReport.REPORT_SLI_CONTEXT.items():
         _LOGGER.info(f"Retrieving data for... {sli_name}")
         collected_info[sli_name] = {}
+
         for query_name, query in sli_methods["query"].items():
             _LOGGER.info(f"Querying... {query_name}")
             _LOGGER.info(f"Using query... {query}")
+
             try:
                 if not _DRY_RUN:
+                    is_aggregation:
+                        metric_data = pc.custom_query_range(
+                            query=query,
+                            start=Configuration.START_TIME,
+                            end=Configuration.START_TIME,
+                            step=Configuration.STEP
+                        )
                     metric_data = pc.custom_query(query=query)
                     _LOGGER.info(f"Metric obtained... {metric_data}")
                 else:
-                    metric_data = [{"metric": "dry run", "value": [datetime.datetime.utcnow(), 1]}]
+                    metric_data = [{"metric": "dry run", "value": [datetime.datetime.utcnow(), 0]}]
+
                 collected_info[sli_name][query_name] = float(metric_data[0]["value"][1])
+
             except Exception as e:
                 _LOGGER.exception(f"Could not gather metric for {sli_name}-{query_name}...{e}")
                 pass
@@ -96,8 +108,11 @@ def collect_metrics():
 def push_thoth_sli_weekly_metrics(weekly_metrics: Dict[str, Metric]):
     """Push Thoth SLI weekly metric to PushGateway."""
     for sli_type, metric_data in weekly_metrics.items():
+
         for metric_name, weekly_value_metric in metric_data.items():
+
             if weekly_value_metric != "ErrorMetricRetrieval":
+
                 _THOTH_WEEKLY_SLI.labels(sli_type=sli_type, metric_name=metric_name).set(weekly_value_metric)
                 _LOGGER.info("(sli_type=%r, metric_name=%r)=%r", sli_type, metric_name, weekly_value_metric)
 
@@ -112,6 +127,7 @@ def generate_email(sli_metrics: Dict[str, float]):
     message += SLIReport.REPORT_INTRO
 
     for sli_name, metric_data in sli_metrics.items():
+
         report_method = SLIReport.REPORT_SLI_CONTEXT[sli_name]["report_method"]
         message += "\n" + report_method(metric_data)
 
@@ -161,9 +177,11 @@ def main():
     email_message = generate_email(weekly_sli_values_map)
 
     if _DRY_RUN:
+
         with tempfile.NamedTemporaryFile("w", delete=False, suffix=".html") as f:
             url = "file://" + f.name
             f.write(email_message)
+
         webbrowser.open(url)
 
     if not _DRY_RUN:
