@@ -58,11 +58,17 @@ class SLIKnowledgeGraph(SLIBase):
         return {
             "python_indices_registered": f"thoth_graphdb_total_python_indexes{query_labels}",
             "total_packages": f"thoth_graphdb_sum_python_packages_per_indexes{query_labels}",
-            "new_packages": f"delta(\
-                thoth_graphdb_sum_python_packages_per_indexes{query_labels}[{Configuration.INTERVAL}])",
+            "new_packages": {
+                "query": f"thoth_graphdb_sum_python_packages_per_indexes{query_labels}",
+                "requires_range": True,
+                "type": "min_max",
+            },
             "total_releases": f"thoth_graphdb_number_python_package_versions{query_labels}",
-            "new_packages_releases": f"delta(\
-                thoth_graphdb_number_python_package_versions{query_labels}[{Configuration.INTERVAL}])",
+            "new_packages_releases": {
+                "query": f"thoth_graphdb_number_python_package_versions{query_labels}",
+                "requires_range": True,
+                "type": "min_max",
+            },
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:
@@ -73,7 +79,7 @@ class SLIKnowledgeGraph(SLIBase):
         html_inputs = []
         for knowledge_quantity in _REGISTERED_KNOWLEDGE_QUANTITY.keys():
             if sli[knowledge_quantity] != "ErrorMetricRetrieval":
-                value = abs(int(sli[knowledge_quantity]))
+                value = int(sli[knowledge_quantity])
             else:
                 value = "Nan"
 

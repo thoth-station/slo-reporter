@@ -69,10 +69,16 @@ class HTMLTemplates:
         template = ENV.get_template("templates/thoth_user_api.html")
         return template.render(**parameters)
 
-    def thoth_services_template(html_inputs: Dict[str, Any]):
+    def thoth_services_quality_template(html_inputs: Dict[str, Any]):
         """Create HTML template to be used for Thoth services."""
         parameters = locals()
-        template = ENV.get_template("templates/thoth_service.html")
+        template = ENV.get_template("templates/thoth_service_quality.html")
+        return template.render(**parameters)
+
+    def thoth_services_latency_template(html_inputs: Dict[str, Any]):
+        """Create HTML template to be used for Thoth services."""
+        parameters = locals()
+        template = ENV.get_template("templates/thoth_service_latency.html")
         return template.render(**parameters)
 
     def thoth_kebechet_template(html_inputs: Dict[str, Any]):

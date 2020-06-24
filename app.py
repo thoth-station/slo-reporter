@@ -85,6 +85,7 @@ def collect_metrics():
             if isinstance(query_inputs, dict):
                 query = query_inputs["query"]
                 requires_range = query_inputs["requires_range"]
+                type_result = query_inputs["type"]
             else:
                 query = query_inputs
 
@@ -98,7 +99,7 @@ def collect_metrics():
                         metric_data = pc.custom_query_range(
                             query=query,
                             start_time=Configuration.START_TIME,
-                            end_time=Configuration.START_TIME,
+                            end_time=Configuration.END_TIME,
                             step=Configuration.STEP,
                         )
 
@@ -111,8 +112,23 @@ def collect_metrics():
                     metric_data = [{"metric": "dry run", "value": [datetime.datetime.utcnow(), 0]}]
 
                 if requires_range:
-                    results = [float(v[1]) for v in metric_data[0]["values"]]
-                    collected_info[sli_name][query_name] = statistics.mean(results)
+                    # Make sure 0 results are not considered
+                    results = [float(v[1]) for v in metric_data[0]["values"] if float(v[1]) > 0]
+
+                    if results:
+
+                        if type_result == "min_max":
+                            collected_info[sli_name][query_name] = max(results) - min(results)
+
+                        elif type_result == "average":
+                            collected_info[sli_name][query_name] = statistics.mean(results)
+
+                        elif type_result == "latest":
+                            collected_info[sli_name][query_name] = results[-1]
+
+                    else:
+                        collected_info[sli_name][query_name] = 0
+
                 else:
                     collected_info[sli_name][query_name] = float(metric_data[0]["value"][1])
 
