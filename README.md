@@ -2,6 +2,10 @@
 
 This is Thoth SLO Reporter to share its achievements and behaviour with the outside world.
 
+## Data collection
+
+Data collection for SLO report relies on [prometheus-api-client library](https://github.com/AICoE/prometheus-api-client-python).
+
 ## Adding a new SLI report
 
 1. Add a class under [thoth/slo_reporter](https://github.com/thoth-station/slo-reporter/tree/master/thoth/slo_reporter) if it doesn't exist for the kind of report. This class would inherit the base class `SLIBase` from [sli_base.py](https://github.com/thoth-station/slo-reporter/blob/master/thoth/slo_reporter/sli_base.py).
@@ -22,7 +26,7 @@ This is Thoth SLO Reporter to share its achievements and behaviour with the outs
 ## Adding a new workflow to be monitored
 
 1. Add env variable for the namespace where the Argo workflow is running (if not existing already) in [configuration.py](https://github.com/thoth-station/slo-reporter/blob/master/thoth/slo_reporter/configuration.py).
-1. In the ``REGISTERED_SERVICES`` dictionary in [sli_workflow_quality.py](https://github.com/thoth-station/slo-reporter/blob/master/thoth/slo_reporter/sli_workflow_quality.py),
+2. In the ``REGISTERED_SERVICES`` dictionary in [configuration.py](https://github.com/thoth-station/slo-reporter/blob/master/thoth/slo_reporter/configuration.py),
 a dictionary with the following info need to be added:
 
 - name of the component that uses Argo workflows;
@@ -35,23 +39,23 @@ Examples:
 REGISTERED_SERVICES = {
     "adviser": {
         "entrypoint": "adviser",
-        "namespace": Configuration._BACKEND_NAMESPACE,
+        "namespace": _BACKEND_NAMESPACE,
     },
     "kebechet": {
         "entrypoint": "kebechet-job",
-        "namespace": Configuration._BACKEND_NAMESPACE,
+        "namespace": _BACKEND_NAMESPACE,
     },
     "inspection": {
         "entrypoint": "main",
-        "namespace": Configuration._AMUN_INSPECTION_NAMESPACE,
+        "namespace": _AMUN_INSPECTION_NAMESPACE,
     },
     "qeb-hwt": {
         "entrypoint": "qeb-hwt",
-        "namespace": Configuration._BACKEND_NAMESPACE,
+        "namespace": _BACKEND_NAMESPACE,
     },
     "solver": {
         "entrypoint": 'solve-and-sync',
-        "namespace": Configuration._MIDDLETIER_NAMESPACE,
+        "namespace": _MIDDLETIER_NAMESPACE,
     },
 }
 ```
