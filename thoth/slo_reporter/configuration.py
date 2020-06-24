@@ -57,6 +57,14 @@ class Configuration:
         _MIDDLETIER_NAMESPACE = os.environ["THOTH_MIDDLETIER_NAMESPACE"]
         _AMUN_INSPECTION_NAMESPACE = os.environ["THOTH_AMUN_INSPECTION_NAMESPACE"]
 
+        REGISTERED_SERVICES = {
+            "adviser": {"entrypoint": "adviser", "namespace": _BACKEND_NAMESPACE},
+            "kebechet": {"entrypoint": "kebechet-job", "namespace": _BACKEND_NAMESPACE},
+            "inspection": {"entrypoint": "main", "namespace": _AMUN_INSPECTION_NAMESPACE},
+            "qeb-hwt": {"entrypoint": "qeb-hwt", "namespace": _BACKEND_NAMESPACE},
+            "solver": {"entrypoint": "solve-and-sync", "namespace": _MIDDLETIER_NAMESPACE},
+        }
+
         STEP = "2h"
 
     INTERVAL = "7d"
