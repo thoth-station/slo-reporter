@@ -66,10 +66,12 @@ class SLIWorkflowLatency(SLIBase):
 
         return {
             f"{service}_workflows_latency": {
-                "query": f"avg(argo_workflow_completion_time{query_labels_workflows} - argo_workflow_start_time{query_labels_workflows})",
+                "query": f"avg(\
+                    argo_workflow_completion_time{query_labels_workflows} \
+                        - argo_workflow_start_time{query_labels_workflows})",
                 "requires_range": True,
                 "type": "average",
-            }
+            },
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:

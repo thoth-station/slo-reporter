@@ -42,21 +42,25 @@ class Configuration:
         _ENVIRONMENT = "dry_run"
 
     if not DRY_RUN:
-        _ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
 
+        # Email variables
         _SERVER = os.environ["SMTP_SERVER"]
         _SENDER_ADDRESS = os.environ["SENDER_ADDRESS"]
         _ADDRESS_RECIPIENTS = os.environ["EMAIL_RECIPIENTS"]
 
+        # Prometheus and Thanos
         _PUSHGATEWAY_ENDPOINT = os.environ["PROMETHEUS_PUSHGATEWAY_URL"]
 
         _THANOS_URL = os.environ["THANOS_ENDPOINT"]
         _THANOS_TOKEN = os.environ["THANOS_ACCESS_TOKEN"]
 
+        # Thoth
+        _ENVIRONMENT = os.environ["THOTH_ENVIRONMENT"]
         _BACKEND_NAMESPACE = os.environ["THOTH_BACKEND_NAMESPACE"]
         _MIDDLETIER_NAMESPACE = os.environ["THOTH_MIDDLETIER_NAMESPACE"]
         _AMUN_INSPECTION_NAMESPACE = os.environ["THOTH_AMUN_INSPECTION_NAMESPACE"]
 
+        # Registered services (Argo workflows)
         REGISTERED_SERVICES = {
             "adviser": {"entrypoint": "adviser", "namespace": _BACKEND_NAMESPACE},
             "kebechet": {"entrypoint": "kebechet-job", "namespace": _BACKEND_NAMESPACE},
@@ -65,6 +69,8 @@ class Configuration:
             "solver": {"entrypoint": "solve-and-sync", "namespace": _MIDDLETIER_NAMESPACE},
         }
 
+        # Step for query range
         STEP = "2h"
 
+    # Interval for report
     INTERVAL = "7d"

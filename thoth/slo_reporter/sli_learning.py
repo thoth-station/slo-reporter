@@ -40,6 +40,8 @@ _REGISTERED_LEARNING_MEASUREMENT_UNIT = {
     "new_solvers": {"name": "New Solvers", "measurement_unit": ""},
 }
 
+_LEARNING_RATE_INTERVAL = "2h"
+
 
 class SLILearning(SLIBase):
     """This class contains functions for Learning Rate SLI."""
@@ -55,10 +57,13 @@ class SLILearning(SLIBase):
         query_labels = f'{{instance="{_INSTANCE}", job="Thoth Metrics ({Configuration._ENVIRONMENT})"}}'
 
         return {
-            "max_learning_rate": f"max_over_time(\
-                increase(\
-                    thoth_graphdb_unsolved_python_package_versions_change_total{query_labels}[1h]\
-                        )[{Configuration.INTERVAL}:1h])",
+            "average_learning_rate": {
+                "query": f"increase(\
+                    thoth_graphdb_unsolved_python_package_versions_change_total{query_labels}[{_LEARNING_RATE_INTERVAL}]\
+                        )",
+                "requires_range": True,
+                "type": "average",
+            },
             "learned_packages": {
                 "query": f"thoth_graphdb_total_number_solved_python_packages{query_labels}",
                 "requires_range": True,
