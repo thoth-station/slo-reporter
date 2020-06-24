@@ -34,17 +34,6 @@ if not Configuration.DRY_RUN:
 
 _LOGGER = logging.getLogger(__name__)
 
-if not Configuration.DRY_RUN:
-    REGISTERED_SERVICES = {
-        "adviser": {"entrypoint": "adviser", "namespace": Configuration._BACKEND_NAMESPACE},
-        "kebechet": {"entrypoint": "kebechet-job", "namespace": Configuration._BACKEND_NAMESPACE},
-        "inspection": {"entrypoint": "main", "namespace": Configuration._AMUN_INSPECTION_NAMESPACE},
-        "qeb-hwt": {"entrypoint": "qeb-hwt", "namespace": Configuration._BACKEND_NAMESPACE},
-        "solver": {"entrypoint": "solve-and-sync", "namespace": Configuration._MIDDLETIER_NAMESPACE},
-    }
-else:
-    REGISTERED_SERVICES = {}
-
 
 class SLIWorkflowQuality(SLIBase):
     """This class contains functions for Workflow Quality SLI (Thoth services)."""
@@ -58,7 +47,7 @@ class SLIWorkflowQuality(SLIBase):
     def _query_sli(self) -> List[str]:
         """Aggregate queries for solver_quality SLI Report."""
         queries = {}
-        for service in REGISTERED_SERVICES:
+        for service in Configuration.REGISTERED_SERVICES:
             result = self._aggregate_queries(service=service)
             for query_name, query in result.items():
                 queries[query_name] = query
@@ -70,8 +59,8 @@ class SLIWorkflowQuality(SLIBase):
         """Aggregate service queries."""
         query_labels_reports = f'{{instance="{_INSTANCE}", result_type="{service}"}}'
 
-        entrypoint = REGISTERED_SERVICES[service]["entrypoint"]
-        namespace = REGISTERED_SERVICES[service]["namespace"]
+        entrypoint = Configuration.REGISTERED_SERVICES[service]["entrypoint"]
+        namespace = Configuration.REGISTERED_SERVICES[service]["namespace"]
 
         query_labels_workflows_s = f'{{entrypoint="{entrypoint}", namespace="{namespace}", phase="Succeeded"}}'
         query_labels_workflows_f = f'{{entrypoint="{entrypoint}", namespace="{namespace}", phase="Failed"}}'
@@ -81,14 +70,17 @@ class SLIWorkflowQuality(SLIBase):
             f"{service}_workflows_succeeded": {
                 "query": f"sum(argo_workflow_status_phase{query_labels_workflows_s})",
                 "requires_range": True,
+                "type": "average",
             },
             f"{service}_workflows_failed": {
                 "query": f"sum(argo_workflow_status_phase{query_labels_workflows_f})",
                 "requires_range": True,
+                "type": "average",
             },
             f"{service}_workflows_error": {
                 "query": f"sum(argo_workflow_status_phase{query_labels_workflows_e})",
                 "requires_range": True,
+                "type": "average",
             },
         }
 
@@ -99,7 +91,7 @@ class SLIWorkflowQuality(SLIBase):
         """
         html_inputs = {}
 
-        for service in REGISTERED_SERVICES:
+        for service in Configuration.REGISTERED_SERVICES:
             service_metrics = {}
 
             for metric, value in sli.items():
@@ -118,10 +110,7 @@ class SLIWorkflowQuality(SLIBase):
                 )
                 if int(number_workflows_succeeded) > 0:
 
-                    successfull_percentage = (
-                        (int(number_workflows_succeeded) - int(number_workflows_failed) - int(number_workflows_error))
-                        / total_workflows
-                    ) * 100
+                    successfull_percentage = (int(number_workflows_succeeded) / total_workflows) * 100
 
                     html_inputs[service] = abs(round(successfull_percentage, 3))
 
@@ -131,6 +120,6 @@ class SLIWorkflowQuality(SLIBase):
             else:
                 html_inputs[service] = "Nan"
 
-        report = HTMLTemplates.thoth_services_template(html_inputs=html_inputs)
+        report = HTMLTemplates.thoth_services_quality_template(html_inputs=html_inputs)
 
         return report

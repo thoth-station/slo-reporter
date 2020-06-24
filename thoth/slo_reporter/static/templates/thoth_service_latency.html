@@ -1,21 +1,22 @@
 {% extends "templates/base.html" %}
 {% block table_name %} <strong> Thoth Components </strong> {% endblock %}
-{% block table_info %} <strong> Status of Thoth services </strong> {% endblock %}
+{% block table_info %} <strong> Status of Thoth services (average latency) </strong> {% endblock %}
 {% block classes %}
         <thead>
             <tr>
                 <th>Component</th>
-                <th>Succeeded</th>
+                <th>minutes</th>
+                <th>seconds</th>
             </tr>
         </thead>
         {% endblock %}
         {% block inputs %}
         <tbody>
-            {% for service, successfull_percentage in html_inputs.items() %}
+            {% for service, latency in html_inputs.items() %}
             <tr>
                 <td>{{ service }}</td>
-                <td>{{ successfull_percentage }}</td>
-                <td> % </td>
+                <td>{{ latency['minutes'] }}</td>
+                <td>{{ latency['seconds'] }}</td>
             </tr>
             {% endfor %}
         </tbody>
