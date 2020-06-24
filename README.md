@@ -2,6 +2,10 @@
 
 This is Thoth SLO Reporter to share its achievements and behaviour with the outside world.
 
+## Data collection
+
+Data collection for SLO report relies on [prometheus-api-client library](https://github.com/AICoE/prometheus-api-client-python).
+
 ## Adding a new SLI report
 
 1. Add a class under [thoth/slo_reporter](https://github.com/thoth-station/slo-reporter/tree/master/thoth/slo_reporter) if it doesn't exist for the kind of report. This class would inherit the base class `SLIBase` from [sli_base.py](https://github.com/thoth-station/slo-reporter/blob/master/thoth/slo_reporter/sli_base.py).
@@ -18,6 +22,44 @@ This is Thoth SLO Reporter to share its achievements and behaviour with the outs
 
 6. Remember to import the class in [sli_report.py](https://github.com/thoth-station/slo-reporter/blob/master/thoth/slo_reporter/sli_report.py) and add it to the `REPORT_SLI_CONTEXT` dictionary. The order of the class in `REPORT_SLI_CONTEXT`, is the order which the report is populated. The general practice for the adding order of reports is - Python world description of packages/releases from indexes (e.g. PyPI, AICoE), Thoth Learning and Thoth Knoweldge Graph, Thoth adviser integrations (e.g. Qeb-Hwt, Kebechet), analytics for requests (e.g. User-API) and backend processes (e.g. Argo workflows).
 7. The HTML report structure can be tested using the command stated below.
+
+## Adding a new workflow to be monitored
+
+1. Add env variable for the namespace where the Argo workflow is running (if not existing already) in [configuration.py](https://github.com/thoth-station/slo-reporter/blob/master/thoth/slo_reporter/configuration.py).
+2. In the ``REGISTERED_SERVICES`` dictionary in [configuration.py](https://github.com/thoth-station/slo-reporter/blob/master/thoth/slo_reporter/configuration.py),
+a dictionary with the following info need to be added:
+
+- name of the component that uses Argo workflows;
+- entrypoint of the Argo workflow as stated in the template with Workflow object;
+- namespace where the Argo workflow runs;
+
+Examples:
+
+```python
+REGISTERED_SERVICES = {
+    "adviser": {
+        "entrypoint": "adviser",
+        "namespace": _BACKEND_NAMESPACE,
+    },
+    "kebechet": {
+        "entrypoint": "kebechet-job",
+        "namespace": _BACKEND_NAMESPACE,
+    },
+    "inspection": {
+        "entrypoint": "main",
+        "namespace": _AMUN_INSPECTION_NAMESPACE,
+    },
+    "qeb-hwt": {
+        "entrypoint": "qeb-hwt",
+        "namespace": _BACKEND_NAMESPACE,
+    },
+    "solver": {
+        "entrypoint": 'solve-and-sync',
+        "namespace": _MIDDLETIER_NAMESPACE,
+    },
+}
+```
+
 
 ## Testing (dry run)
 

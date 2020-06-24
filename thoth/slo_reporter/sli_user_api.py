@@ -61,7 +61,7 @@ class SLIUserAPI(SLIBase):
                 (avg(flask_http_request_total{query_labels_get_total}) + \
                 avg(flask_http_request_total{query_labels_post_total})) / \
                 sum(flask_http_request_total{query_labels}))",
-            "avg_up_time": f"avg_over_time(up{query_labels_up}[{Configuration._INTERVAL}])",
+            "avg_up_time": f"avg_over_time(up{query_labels_up}[{Configuration.INTERVAL}])",
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:

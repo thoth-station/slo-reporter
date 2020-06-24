@@ -47,9 +47,16 @@ class SLIKebechet(SLIBase):
         """Aggregate queries for Kebechet SLI Report."""
         query_labels = f'{{instance="{_INSTANCE}", job="Thoth Metrics ({Configuration._ENVIRONMENT})"}}'
         return {
-            "Total active repositories": f"thoth_kebechet_total_active_repo_count{query_labels}",
-            "Change in active repositories since last week": f"delta(\
-                thoth_kebechet_total_active_repo_count{query_labels}[{Configuration._INTERVAL}])",
+            "Total active repositories": {
+                "query": f"thoth_kebechet_total_active_repo_count{query_labels}",
+                "requires_range": True,
+                "type": "latest",
+            },
+            "Change in active repositories since last week": {
+                "query": f"thoth_kebechet_total_active_repo_count{query_labels}",
+                "requires_range": True,
+                "type": "min_max",
+            },
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:
@@ -60,7 +67,7 @@ class SLIKebechet(SLIBase):
         html_inputs = []
         for knowledge_quantity in sli.keys():
             if sli[knowledge_quantity] != "ErrorMetricRetrieval":
-                value = abs(int(sli[knowledge_quantity]))
+                value = int(sli[knowledge_quantity])
             else:
                 value = "Nan"
 

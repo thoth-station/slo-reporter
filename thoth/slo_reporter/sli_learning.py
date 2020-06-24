@@ -34,11 +34,13 @@ if not Configuration.DRY_RUN:
 _LOGGER = logging.getLogger(__name__)
 
 _REGISTERED_LEARNING_MEASUREMENT_UNIT = {
-    "max_learning_rate": {"name": "Learning Rate", "measurement_unit": "packages/hour"},
+    "average_learning_rate": {"name": "Learning Rate", "measurement_unit": "packages/hour"},
     "learned_packages": {"name": "Knowledge increase", "measurement_unit": "packages"},
     "solvers": {"name": "Number of Solvers", "measurement_unit": ""},
     "new_solvers": {"name": "New Solvers", "measurement_unit": ""},
 }
+
+_LEARNING_RATE_INTERVAL = "2h"
 
 
 class SLILearning(SLIBase):
@@ -55,14 +57,28 @@ class SLILearning(SLIBase):
         query_labels = f'{{instance="{_INSTANCE}", job="Thoth Metrics ({Configuration._ENVIRONMENT})"}}'
 
         return {
-            "max_learning_rate": f"max_over_time(\
-                increase(\
-                    thoth_graphdb_unsolved_python_package_versions_change_total{query_labels}[1h]\
-                        )[{Configuration._INTERVAL}:1h])",
-            "learned_packages": f"sum(delta(\
-                thoth_graphdb_total_number_solved_python_packages{query_labels}[{Configuration._INTERVAL}]))",
-            "solvers": f"thoth_graphdb_total_number_solvers{query_labels}",
-            "new_solvers": f"delta(thoth_graphdb_total_number_solvers{query_labels}[{Configuration._INTERVAL}])",
+            "average_learning_rate": {
+                "query": f"increase(\
+                    thoth_graphdb_unsolved_python_package_versions_change_total{query_labels}[{_LEARNING_RATE_INTERVAL}]\
+                        )",
+                "requires_range": True,
+                "type": "average",
+            },
+            "learned_packages": {
+                "query": f"sum(thoth_graphdb_total_number_solved_python_packages{query_labels})",
+                "requires_range": True,
+                "type": "min_max_only_ascending",
+            },
+            "solvers": {
+                "query": f"thoth_graphdb_total_number_solvers{query_labels}",
+                "requires_range": True,
+                "type": "latest",
+            },
+            "new_solvers": {
+                "query": f"thoth_graphdb_total_number_solvers{query_labels}",
+                "requires_range": True,
+                "type": "min_max",
+            },
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:
