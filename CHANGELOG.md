@@ -76,3 +76,22 @@ all the things that you see...
 
 ## Release 0.3.1 (2020-06-17T12:14:38)
 * relock
+
+## Release 0.4.0 (2020-06-24T13:36:35)
+* Add min max only ascending order
+* Missing sum
+* Correct key
+* Add env variable for learning rate
+* Make sure we have a result even with holes in prometheus
+* Move workflow to configuratin and aupdate README
+* Add type of query range: min_max, latest, average
+* Introduce latency
+* Add env template
+* Correct variable
+* Correct verb
+* make coala happy
+* Add new variable
+* Add docs on worklows
+* Add requires_range variable
+* Generalize time envs to be used
+* Add query_range
