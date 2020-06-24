@@ -120,6 +120,26 @@ def collect_metrics():
                         if type_result == "min_max":
                             collected_info[sli_name][query_name] = max(results) - min(results)
 
+                        elif type_result == "min_max_only_ascending":
+                            counter = 0
+                            modified_results = []
+
+                            for retrieved_value in results:
+                                if counter == 0:
+                                    modified_results.append(retrieved_value)
+
+                                else:
+
+                                    if retrieved_value > results[counter - 1]:
+                                        modified_results.append(retrieved_value)
+
+                                    else:
+                                        pass
+
+                                counter += 1
+
+                            collected_info[sli_name][query_name] = max(modified_results) - min(modified_results)
+
                         elif type_result == "average":
                             collected_info[sli_name][query_name] = statistics.mean(results)
 

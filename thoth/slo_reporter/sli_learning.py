@@ -67,7 +67,7 @@ class SLILearning(SLIBase):
             "learned_packages": {
                 "query": f"sum(thoth_graphdb_total_number_solved_python_packages{query_labels})",
                 "requires_range": True,
-                "type": "min_max",
+                "type": "min_max_only_ascending",
             },
             "solvers": {
                 "query": f"thoth_graphdb_total_number_solvers{query_labels}",
