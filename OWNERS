@@ -1,0 +1,10 @@
+# See the OWNERS docs at https://go.k8s.io/owners
+
+reviewers:
+  - harshad16
+approvers:
+  - pacospace
+  - goern
+  
+labels:
+- service-management
