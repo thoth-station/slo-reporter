@@ -81,7 +81,7 @@ class SLIUserAPI(SLIBase):
                     _USER_API_MEASUREMENT_UNIT[user_api_quantity]["name"],
                     value,
                     _USER_API_MEASUREMENT_UNIT[user_api_quantity]["measurement_unit"],
-                ],
+                ]
             )
         report = HTMLTemplates.thoth_user_api_template(html_inputs=html_inputs)
         return report

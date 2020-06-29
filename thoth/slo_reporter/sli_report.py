@@ -40,8 +40,8 @@ class SLIReport:
     """This class contains all sections included in a report."""
 
     REPORT_SUBJECT = (
-        f"Thoth Service Level Indicators Update Week"
-        + f" ({Configuration.START_TIME.strftime('%Y-%m-%d')} - {Configuration.END_TIME.strftime('%Y-%m-%d')})"
+        f"Thoth Service Level Indicators Update Day"
+        + f" ({Configuration.END_TIME.strftime('%Y-%m-%d')})"
     )
     _LOGGER.info(REPORT_SUBJECT)
 
@@ -52,7 +52,7 @@ class SLIReport:
             "environment": Configuration._ENVIRONMENT,
             "start_time": str(Configuration.START_TIME.strftime("%Y-%m-%d")),
             "end_time": str(Configuration.END_TIME.strftime("%Y-%m-%d")),
-        },
+        }
     )
 
     REPORT_STYLE = HTMLTemplates.thoth_report_style_template()

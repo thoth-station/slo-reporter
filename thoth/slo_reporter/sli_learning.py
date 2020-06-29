@@ -98,7 +98,7 @@ class SLILearning(SLIBase):
                     _REGISTERED_LEARNING_MEASUREMENT_UNIT[learning_quantity]["name"],
                     value,
                     _REGISTERED_LEARNING_MEASUREMENT_UNIT[learning_quantity]["measurement_unit"],
-                ],
+                ]
             )
 
         report = HTMLTemplates.thoth_learning_template(html_inputs=html_inputs)
