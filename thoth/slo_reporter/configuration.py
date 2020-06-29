@@ -22,7 +22,7 @@ import os
 import datetime
 
 _DAYS_REPORT = 1
-_END_TIME = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+_END_TIME = datetime.datetime.utcnow() - datetime.timedelta(days=3)
 _START_TIME = _END_TIME - datetime.timedelta(days=_DAYS_REPORT)
 
 _LOGGER = logging.getLogger(__name__)
@@ -66,9 +66,9 @@ class Configuration:
         _MIDDLETIER_NAMESPACE = os.environ["THOTH_MIDDLETIER_NAMESPACE"]
         _AMUN_INSPECTION_NAMESPACE = os.environ["THOTH_AMUN_INSPECTION_NAMESPACE"]
 
-        _CEPH_PREFIX = f"data/thoth"
-        _CEPH_BUCKET = "thoth"
-        _PUBLIC_CEPH_BUCKET= "DH-PLAYPEN"
+        _PUBLIC_CEPH_BUCKET= os.environ["THOTH_PUBLIC_CEPH_BUCKET"]
+
+        _CEPH_BUCKET_PREFIX = os.environ["THOTH_CEPH_BUCKET_PREFIX"]
 
     # Registered services (Argo workflows)
     REGISTERED_SERVICES = {
@@ -91,6 +91,6 @@ def _get_sli_metrics_prefix() -> str:
 
     This configuration matches sli report classes.
     """
-    bucket_prefix = Configuration._CEPH_PREFIX
+    bucket_prefix = Configuration._CEPH_BUCKET_PREFIX
     deployment_name = os.environ["THOTH_DEPLOYMENT_NAME"]
     return f'{bucket_prefix}/{deployment_name}/thoth-sli-metrics-{Configuration._ENVIRONMENT}'

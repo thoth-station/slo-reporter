@@ -140,7 +140,7 @@ def store_sli_weekly_metrics_to_ceph(weekly_metrics: Dict[str, Metric]):
     sli_metrics_id = f"sli-thoth-{datetime}"
     _LOGGER.info(f"Start storing Thoth weekly SLI metrics for {sli_metrics_id}.")
 
-    ceph_sli = connect_to_ceph(bucket=Configuration._CEPH_BUCKET)
+    ceph_sli = connect_to_ceph()
     public_ceph_sli = connect_to_ceph(bucket=Configuration._PUBLIC_CEPH_BUCKET)
 
     for metric_class in weekly_metrics:
