@@ -5,6 +5,6 @@ reviewers:
 approvers:
   - pacospace
   - goern
-  
+
 labels:
 - service-management
