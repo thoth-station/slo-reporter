@@ -71,7 +71,7 @@ class SLIWorkflowLatency(SLIBase):
                         - argo_workflow_start_time{query_labels_workflows})",
                 "requires_range": True,
                 "type": "average",
-            }
+            },
         }
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:

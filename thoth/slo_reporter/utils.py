@@ -89,11 +89,12 @@ def connect_to_ceph(bucket: Optional[str] = None) -> CephStore:
     ceph.connect()
     return ceph
 
+
 def store_thoth_sli_on_ceph(
-    ceph_sli: CephStore, metric_class: str, metrics_df: pd.DataFrame, ceph_path: str, is_public: bool = False
+    ceph_sli: CephStore, metric_class: str, metrics_df: pd.DataFrame, ceph_path: str, is_public: bool = False,
 ) -> None:
     """Store Thoth SLI on Ceph."""
-    metrics_csv = metrics_df.to_csv(index=False, header = False)
+    metrics_csv = metrics_df.to_csv(index=False, header=False)
     if is_public:
         _LOGGER.info(f"Storing on public bucket... {ceph_path}")
     else:

@@ -154,7 +154,7 @@ def store_sli_weekly_metrics_to_ceph(weekly_metrics: Dict[str, Metric]):
 
         try:
             store_thoth_sli_on_ceph(
-                ceph_sli=ceph_sli, metric_class=metric_class, metrics_df=metrics_df, ceph_path=ceph_path
+                ceph_sli=ceph_sli, metric_class=metric_class, metrics_df=metrics_df, ceph_path=ceph_path,
             )
         except Exception as e_ceph:
             _LOGGER.exception(f"Could not store metrics on Thoth bucket on Ceph...{e_ceph}")

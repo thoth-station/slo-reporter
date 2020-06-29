@@ -66,7 +66,7 @@ class Configuration:
         _MIDDLETIER_NAMESPACE = os.environ["THOTH_MIDDLETIER_NAMESPACE"]
         _AMUN_INSPECTION_NAMESPACE = os.environ["THOTH_AMUN_INSPECTION_NAMESPACE"]
 
-        _PUBLIC_CEPH_BUCKET= os.environ["THOTH_PUBLIC_CEPH_BUCKET"]
+        _PUBLIC_CEPH_BUCKET = os.environ["THOTH_PUBLIC_CEPH_BUCKET"]
 
         _CEPH_BUCKET_PREFIX = os.environ["THOTH_CEPH_BUCKET_PREFIX"]
 
@@ -93,4 +93,4 @@ def _get_sli_metrics_prefix() -> str:
     """
     bucket_prefix = Configuration._CEPH_BUCKET_PREFIX
     deployment_name = os.environ["THOTH_DEPLOYMENT_NAME"]
-    return f'{bucket_prefix}/{deployment_name}/thoth-sli-metrics-{Configuration._ENVIRONMENT}'
+    return f"{bucket_prefix}/{deployment_name}/thoth-sli-metrics-{Configuration._ENVIRONMENT}"
