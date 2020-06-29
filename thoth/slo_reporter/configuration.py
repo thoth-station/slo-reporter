@@ -21,8 +21,8 @@ import logging
 import os
 import datetime
 
-_DAYS_REPORT = 7
-_END_TIME = datetime.datetime.utcnow()
+_DAYS_REPORT = 1
+_END_TIME = datetime.datetime.utcnow() - datetime.timedelta(days=2)
 _START_TIME = _END_TIME - datetime.timedelta(days=_DAYS_REPORT)
 
 _LOGGER = logging.getLogger(__name__)
@@ -33,13 +33,19 @@ class Configuration:
 
     DRY_RUN = bool(int(os.getenv("DRY_RUN", 0)))
 
+    ONLY_STORE_ON_CEPH = bool(int(os.getenv("THOTH_SLO_REPORTER_ONLY_STORE_ON_CEPH", 0)))
+
     START_TIME = _START_TIME
     END_TIME = _END_TIME
     START_TIME_EPOCH = int(START_TIME.timestamp() * 1000)
     END_TIME_EPOCH = int(END_TIME.timestamp() * 1000)
 
     if DRY_RUN:
+        # Thoth
         _ENVIRONMENT = "dry_run"
+        _BACKEND_NAMESPACE = "thoth-dry-run"
+        _MIDDLETIER_NAMESPACE = "thoth-dry-run"
+        _AMUN_INSPECTION_NAMESPACE = "thoth-dry-run"
 
     if not DRY_RUN:
 
@@ -60,17 +66,31 @@ class Configuration:
         _MIDDLETIER_NAMESPACE = os.environ["THOTH_MIDDLETIER_NAMESPACE"]
         _AMUN_INSPECTION_NAMESPACE = os.environ["THOTH_AMUN_INSPECTION_NAMESPACE"]
 
-        # Registered services (Argo workflows)
-        REGISTERED_SERVICES = {
-            "adviser": {"entrypoint": "adviser", "namespace": _BACKEND_NAMESPACE},
-            "kebechet": {"entrypoint": "kebechet-job", "namespace": _BACKEND_NAMESPACE},
-            "inspection": {"entrypoint": "main", "namespace": _AMUN_INSPECTION_NAMESPACE},
-            "qeb-hwt": {"entrypoint": "qeb-hwt", "namespace": _BACKEND_NAMESPACE},
-            "solver": {"entrypoint": "solve-and-sync", "namespace": _MIDDLETIER_NAMESPACE},
-        }
+        _CEPH_PREFIX = f"data/thoth"
+        _CEPH_BUCKET = "thoth"
+        _PUBLIC_CEPH_BUCKET= "DH-PLAYPEN"
 
-        # Step for query range
-        STEP = "2h"
+    # Registered services (Argo workflows)
+    REGISTERED_SERVICES = {
+        "adviser": {"entrypoint": "adviser", "namespace": _BACKEND_NAMESPACE},
+        "kebechet": {"entrypoint": "kebechet-job", "namespace": _BACKEND_NAMESPACE},
+        "inspection": {"entrypoint": "main", "namespace": _AMUN_INSPECTION_NAMESPACE},
+        "qeb-hwt": {"entrypoint": "qeb-hwt", "namespace": _BACKEND_NAMESPACE},
+        "solver": {"entrypoint": "solve-and-sync", "namespace": _MIDDLETIER_NAMESPACE},
+    }
+
+    # Step for query range
+    STEP = "2h"
 
     # Interval for report
     INTERVAL = "7d"
+
+
+def _get_sli_metrics_prefix() -> str:
+    """Get prefix where sli metrics are stored.
+
+    This configuration matches sli report classes.
+    """
+    bucket_prefix = Configuration._CEPH_PREFIX
+    deployment_name = os.environ["THOTH_DEPLOYMENT_NAME"]
+    return f'{bucket_prefix}/{deployment_name}/thoth-sli-metrics-{Configuration._ENVIRONMENT}'
