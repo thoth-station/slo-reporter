@@ -1,24 +1,22 @@
-
-    <div class="container-fluid container-cards-pf">
-        <div class="row row-cards-pf">
-            <div class="col-xs-12 col-sm-12 col-md-12">
-                <div class="card-pf card-pf-accented card-pf-aggregate-status">
-                    <h2 class="card-pf-title">
-                        <span class="fa fa-info"></span>{% block table_info %}{% endblock %}
-                    </h2>
-                    <div class="card-pf-body">
-                        <p class="card-pf-aggregate-status-notifications">
-                            <span class="card-pf-aggregate-status-notification">
-                                {% block table_name %}{% endblock %}
-                            </span>
-                        </p>
-                    </div>
+<div class="container-fluid container-cards-pf">
+    <div class="row row-cards-pf">
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <div class="card-pf card-pf-accented card-pf-aggregate-status">
+                <h2 class="card-pf-title">
+                    <span class="fa fa-info"></span>{% block table_info %}{% endblock %}
+                </h2>
+                <div class="card-pf-body">
+                    <p class="card-pf-aggregate-status-notifications">
+                        <span class="card-pf-aggregate-status-notification">
+                            {% block table_name %}{% endblock %}
+                        </span>
+                    </p>
                 </div>
             </div>
         </div>
-
-        <table class="table table-bordered table-hover table-treegrid" border="5">
-            {% block classes %}{% endblock %}
-            {% block inputs %}{% endblock %}
-        </table>
     </div>
+    <table class="table table-bordered table-hover table-treegrid" border="5">
+        {% block classes %}{% endblock %}
+        {% block inputs %}{% endblock %}
+    </table>
+</div>
