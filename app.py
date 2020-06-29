@@ -24,7 +24,9 @@ import datetime
 import base64
 import webbrowser
 import tempfile
-import statistics
+import copy
+
+import pandas as pd
 
 from typing import Dict
 from pathlib import Path
@@ -39,6 +41,8 @@ from email.mime.text import MIMEText
 from thoth.slo_reporter.sli_report import SLIReport
 from thoth.slo_reporter import __service_version__
 from thoth.slo_reporter.configuration import Configuration
+from thoth.slo_reporter.utils import manipulate_retrieved_metrics_vector
+from thoth.slo_reporter.utils import store_thoth_sli_on_ceph, connect_to_ceph
 
 
 _LOGGER = logging.getLogger("thoth.slo_reporter")
@@ -85,7 +89,7 @@ def collect_metrics():
             if isinstance(query_inputs, dict):
                 query = query_inputs["query"]
                 requires_range = query_inputs["requires_range"]
-                type_result = query_inputs["type"]
+                action_type = query_inputs["type"]
             else:
                 query = query_inputs
 
@@ -108,49 +112,19 @@ def collect_metrics():
 
                     _LOGGER.info(f"Metric obtained... {metric_data}")
 
-                else:
-                    metric_data = [{"metric": "dry run", "value": [datetime.datetime.utcnow(), 0]}]
+                    if requires_range:
+                        metrics_vector = [float(v[1]) for v in metric_data[0]["values"] if float(v[1]) > 0]
+                        result = manipulate_retrieved_metrics_vector(metrics_vector=metrics_vector, action=action_type)
 
-                if requires_range:
-                    # Make sure 0 results are not considered
-                    results = [float(v[1]) for v in metric_data[0]["values"] if float(v[1]) > 0]
-
-                    if results:
-
-                        if type_result == "min_max":
-                            collected_info[sli_name][query_name] = max(results) - min(results)
-
-                        elif type_result == "min_max_only_ascending":
-                            counter = 0
-                            modified_results = []
-
-                            for retrieved_value in results:
-                                if counter == 0:
-                                    modified_results.append(retrieved_value)
-
-                                else:
-
-                                    if retrieved_value > results[counter - 1]:
-                                        modified_results.append(retrieved_value)
-
-                                    else:
-                                        pass
-
-                                counter += 1
-
-                            collected_info[sli_name][query_name] = max(modified_results) - min(modified_results)
-
-                        elif type_result == "average":
-                            collected_info[sli_name][query_name] = statistics.mean(results)
-
-                        elif type_result == "latest":
-                            collected_info[sli_name][query_name] = results[-1]
+                        collected_info[sli_name][query_name] = result
 
                     else:
-                        collected_info[sli_name][query_name] = 0
+                        collected_info[sli_name][query_name] = float(metric_data[0]["value"][1])
 
                 else:
-                    collected_info[sli_name][query_name] = float(metric_data[0]["value"][1])
+                    metric_data = [{"metric": "dry run", "value": [datetime.datetime.utcnow(), 0]}]
+                    result = float(metric_data[0]["value"][1])
+                    collected_info[sli_name][query_name] = result
 
             except Exception as e:
                 _LOGGER.exception(f"Could not gather metric for {sli_name}-{query_name}...{e}")
@@ -158,6 +132,45 @@ def collect_metrics():
                 collected_info[sli_name][query_name] = "ErrorMetricRetrieval"
 
     return collected_info
+
+
+def store_sli_weekly_metrics_to_ceph(weekly_metrics: Dict[str, Metric]):
+    """Store weekly metrics to ceph."""
+    datetime = str(Configuration.END_TIME.strftime("%Y-%m-%d"))
+    sli_metrics_id = f"sli-thoth-{datetime}"
+    _LOGGER.info(f"Start storing Thoth weekly SLI metrics for {sli_metrics_id}.")
+
+    ceph_sli = connect_to_ceph(bucket=Configuration._CEPH_BUCKET)
+    public_ceph_sli = connect_to_ceph(bucket=Configuration._PUBLIC_CEPH_BUCKET)
+
+    for metric_class in weekly_metrics:
+        metrics = copy.deepcopy(weekly_metrics[metric_class])
+        metrics["datetime"] = datetime
+        metrics["timestamp"] = Configuration.END_TIME_EPOCH
+
+        metrics_df = pd.DataFrame([metrics])
+        _LOGGER.info(f"Storing... \n{metrics_df}")
+        ceph_path = f"{metric_class}/{metric_class}-{datetime}.csv"
+
+        try:
+            store_thoth_sli_on_ceph(
+                ceph_sli=ceph_sli, metric_class=metric_class, metrics_df=metrics_df, ceph_path=ceph_path
+            )
+        except Exception as e_ceph:
+            _LOGGER.exception(f"Could not store metrics on Thoth bucket on Ceph...{e_ceph}")
+            pass
+
+        try:
+            store_thoth_sli_on_ceph(
+                ceph_sli=public_ceph_sli,
+                metric_class=metric_class,
+                metrics_df=metrics_df,
+                ceph_path=ceph_path,
+                is_public=True,
+            )
+        except Exception as e_ceph:
+            _LOGGER.exception(f"Could not store metrics on Public bucket on Ceph...{e_ceph}")
+            pass
 
 
 def push_thoth_sli_weekly_metrics(weekly_metrics: Dict[str, Metric]):
@@ -182,6 +195,8 @@ def generate_email(sli_metrics: Dict[str, float]):
     message += SLIReport.REPORT_INTRO
 
     for sli_name, metric_data in sli_metrics.items():
+
+        _LOGGER.debug(f"Generating report for: {sli_name}")
 
         report_method = SLIReport.REPORT_SLI_CONTEXT[sli_name]["report_method"]
         message += "\n" + report_method(metric_data)
@@ -227,19 +242,25 @@ def main():
     weekly_sli_values_map = collect_metrics()
 
     if not _DRY_RUN:
-        push_thoth_sli_weekly_metrics(weekly_sli_values_map)
+        store_sli_weekly_metrics_to_ceph(weekly_sli_values_map)
 
-    email_message = generate_email(weekly_sli_values_map)
+        try:
+            push_thoth_sli_weekly_metrics(weekly_sli_values_map)
+        except Exception as e_pushgateway:
+            _LOGGER.exception(f"Could not push metrics to Pushgateway...{e_pushgateway}")
+            pass
 
-    if _DRY_RUN:
+    if not Configuration.ONLY_STORE_ON_CEPH:
+        email_message = generate_email(weekly_sli_values_map)
 
+    if not _DRY_RUN and not Configuration.ONLY_STORE_ON_CEPH:
         with tempfile.NamedTemporaryFile("w", delete=False, suffix=".html") as f:
             url = "file://" + f.name
             f.write(email_message)
 
         webbrowser.open(url)
 
-    if not _DRY_RUN:
+    if not _DRY_RUN and not Configuration.ONLY_STORE_ON_CEPH:
         send_sli_email(email_message)
 
 
