@@ -91,7 +91,6 @@ class SLILearning(SLIBase):
         html_inputs = {}
 
         for learning_quantity in _REGISTERED_LEARNING_MEASUREMENT_UNIT.keys():
-
             learning_quantity_data = _REGISTERED_LEARNING_MEASUREMENT_UNIT[learning_quantity]
             html_inputs[learning_quantity] = {}
 

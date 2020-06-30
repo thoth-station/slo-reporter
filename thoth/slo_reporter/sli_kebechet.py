@@ -36,7 +36,11 @@ if not Configuration.DRY_RUN:
 _LOGGER = logging.getLogger(__name__)
 
 
+<<<<<<< HEAD
 _REGISTERED_KEBECHET_QUANTITY = {
+=======
+_REGISTERED_KNOWLEDGE_QUANTITY = {
+>>>>>>> Add method and standardize Thoth Learning SLI
     "total_active_repositories": "Total active repositories",
     "delta_total_active_repositories": "Change in active repositories since last week",
 }
@@ -89,7 +93,7 @@ class SLIKebechet(SLIBase):
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
-        html_inputs = _evaluate_sli(sli=sli)
+        html_inputs = self._evaluate_sli(sli=sli)
         report = HTMLTemplates.thoth_kebechet_template(html_inputs=html_inputs)
 
         return report
