@@ -35,12 +35,7 @@ if not Configuration.DRY_RUN:
 
 _LOGGER = logging.getLogger(__name__)
 
-
-<<<<<<< HEAD
 _REGISTERED_KEBECHET_QUANTITY = {
-=======
-_REGISTERED_KNOWLEDGE_QUANTITY = {
->>>>>>> Add method and standardize Thoth Learning SLI
     "total_active_repositories": "Total active repositories",
     "delta_total_active_repositories": "Change in active repositories since last week",
 }
