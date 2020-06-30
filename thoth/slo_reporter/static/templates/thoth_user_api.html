@@ -11,11 +11,11 @@
         {% endblock %}
         {% block inputs %}
         <tbody>
-            {% for item in html_inputs %}
+            {% for value in html_inputs.values() %}
             <tr>
-                <td>{{ item[0] }}</td>
-                <td>{{ item[1] }}</td>
-                <td>{{ item[2] }}</td>
+                <td>{{ value['name'] }}</td>
+                <td>{{ value['value'] }}</td>
+                <td>{{ value['measurement_unit'] }}</td>
             </tr>
             {% endfor %}
         </tbody>

@@ -21,6 +21,8 @@ import logging
 import os
 import datetime
 
+import numpy as np
+
 from typing import Dict, List, Any
 
 from .sli_base import SLIBase
@@ -47,7 +49,7 @@ class SLIUserAPI(SLIBase):
 
     def _aggregate_info(self):
         """Aggregate info required for User-API SLI Report."""
-        return {"query": self._query_sli(), "report_method": self._report_sli}
+        return {"query": self._query_sli(), "evaluation_method": self._evaluate_sli, "report_method": self._report_sli}
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for User-API SLI Report."""
@@ -64,24 +66,34 @@ class SLIUserAPI(SLIBase):
             "avg_up_time": f"avg_over_time(up{query_labels_up}[{Configuration.INTERVAL}])",
         }
 
+    def _evaluate_sli(self, sli: Dict[str, Any]) -> Dict[str, float]:
+        """Evaluate SLI for report for User-API SLI.
+
+        @param sli: It's a dict of SLI associated with the SLI type.
+        """
+        html_inputs = {}
+
+        for user_api_quantity in _USER_API_MEASUREMENT_UNIT.keys():
+
+            user_api_quantity_data = _USER_API_MEASUREMENT_UNIT[user_api_quantity]
+            html_inputs[user_api_quantity] = {}
+
+            if sli[user_api_quantity] != "ErrorMetricRetrieval":
+                html_inputs[user_api_quantity]["value"] = abs(round(sli[user_api_quantity] * 100, 3))
+            else:
+                html_inputs[user_api_quantity]["value"] = np.nan
+
+            html_inputs[user_api_quantity]["name"] = user_api_quantity_data["name"]
+            html_inputs[user_api_quantity]["measurement_unit"] = user_api_quantity_data["measurement_unit"]
+
+        return html_inputs
+
     def _report_sli(self, sli: Dict[str, Any]) -> str:
         """Create report for User-API SLI.
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
-        html_inputs = []
-        for user_api_quantity in _USER_API_MEASUREMENT_UNIT.keys():
-            if sli[user_api_quantity] != "ErrorMetricRetrieval":
-                value = abs(round(sli[user_api_quantity] * 100, 3))
-            else:
-                value = "Nan"
+        html_inputs = self._evaluate_sli(sli=sli)
 
-            html_inputs.append(
-                [
-                    _USER_API_MEASUREMENT_UNIT[user_api_quantity]["name"],
-                    value,
-                    _USER_API_MEASUREMENT_UNIT[user_api_quantity]["measurement_unit"],
-                ],
-            )
         report = HTMLTemplates.thoth_user_api_template(html_inputs=html_inputs)
         return report

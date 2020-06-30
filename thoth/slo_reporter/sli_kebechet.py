@@ -36,7 +36,7 @@ if not Configuration.DRY_RUN:
 _LOGGER = logging.getLogger(__name__)
 
 
-_REGISTERED_KNOWLEDGE_QUANTITY = {
+_REGISTERED_KEBECHET_QUANTITY = {
     "total_active_repositories": "Total active repositories",
     "delta_total_active_repositories": "Change in active repositories since last week",
 }
@@ -73,9 +73,9 @@ class SLIKebechet(SLIBase):
         """
         html_inputs = {}
 
-        for knowledge_quantity in _REGISTERED_KNOWLEDGE_QUANTITY.keys():
+        for knowledge_quantity in _REGISTERED_KEBECHET_QUANTITY.keys():
             html_inputs[knowledge_quantity] = {}
-            html_inputs[knowledge_quantity]['name'] = _REGISTERED_KNOWLEDGE_QUANTITY[knowledge_quantity]
+            html_inputs[knowledge_quantity]['name'] = _REGISTERED_KEBECHET_QUANTITY[knowledge_quantity]
 
             if sli[knowledge_quantity] != "ErrorMetricRetrieval":
                 html_inputs[knowledge_quantity]['value'] = int(sli[knowledge_quantity])
