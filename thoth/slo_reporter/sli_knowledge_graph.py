@@ -74,15 +74,17 @@ class SLIKnowledgeGraph(SLIBase):
         }
 
     def _evaluate_sli(self, sli: Dict[str, Any]) -> Dict[str, float]:
-        """Evaluate SLI for report for Kebechet SLI.
+        """Evaluate SLI for report for knowledge graph SLI.
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
         html_inputs = {}
 
         for knowledge_quantity in _REGISTERED_KNOWLEDGE_QUANTITY.keys():
+
             html_inputs[knowledge_quantity] = {}
             html_inputs[knowledge_quantity]['name'] = _REGISTERED_KNOWLEDGE_QUANTITY[knowledge_quantity]
+
             if sli[knowledge_quantity] != "ErrorMetricRetrieval":
                 html_inputs[knowledge_quantity]['value'] = int(sli[knowledge_quantity])
 

@@ -84,13 +84,14 @@ class SLILearning(SLIBase):
         }
 
     def _evaluate_sli(self, sli: Dict[str, Any]) -> Dict[str, float]:
-        """Evaluate SLI for report for Kebechet SLI.
+        """Evaluate SLI for report for learning quantities SLI.
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
         html_inputs = {}
 
         for learning_quantity in _REGISTERED_LEARNING_MEASUREMENT_UNIT.keys():
+
             learning_quantity_data = _REGISTERED_LEARNING_MEASUREMENT_UNIT[learning_quantity]
             html_inputs[learning_quantity] = {}
 
