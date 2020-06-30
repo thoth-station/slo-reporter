@@ -130,7 +130,7 @@ class SLIWorkflowQuality(SLIBase):
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
-
+        html_inputs = self._evaluate_sli(sli=sli)
 
         report = HTMLTemplates.thoth_services_quality_template(html_inputs=html_inputs)
 

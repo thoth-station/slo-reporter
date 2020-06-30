@@ -27,8 +27,9 @@ import tempfile
 import copy
 
 import pandas as pd
+from pandas.io.json import json_normalize
 
-from typing import Dict
+from typing import Dict, Any
 from pathlib import Path
 
 from prometheus_api_client import Metric, MetricsList, PrometheusConnect
@@ -134,7 +135,7 @@ def collect_metrics():
     return collected_info
 
 
-def store_sli_weekly_metrics_to_ceph(weekly_metrics: Dict[str, Metric]):
+def store_sli_weekly_metrics_to_ceph(weekly_metrics: Dict[str, Any]):
     """Store weekly metrics to ceph."""
     datetime = str(Configuration.END_TIME.strftime("%Y-%m-%d"))
     sli_metrics_id = f"sli-thoth-{datetime}"
@@ -144,11 +145,17 @@ def store_sli_weekly_metrics_to_ceph(weekly_metrics: Dict[str, Metric]):
     public_ceph_sli = connect_to_ceph(bucket=Configuration._PUBLIC_CEPH_BUCKET)
 
     for metric_class in weekly_metrics:
-        metrics = copy.deepcopy(weekly_metrics[metric_class])
+        metrics = {}
         metrics["datetime"] = datetime
         metrics["timestamp"] = Configuration.END_TIME_EPOCH
 
-        metrics_df = pd.DataFrame([metrics])
+        evaluation_method = SLIReport.REPORT_SLI_CONTEXT[metric_class]["evaluation_method"]
+        total_ceph_sli = evaluation_method(weekly_metrics[metric_class])
+
+        for metric in total_ceph_sli:
+            metrics[metric] = total_ceph_sli[metric]['value']
+
+        metrics_df = pd.DataFrame(json_normalize(metrics))
         _LOGGER.info(f"Storing... \n{metrics_df}")
         ceph_path = f"{metric_class}/{metric_class}-{datetime}.csv"
 
@@ -188,7 +195,7 @@ def push_thoth_sli_weekly_metrics(weekly_metrics: Dict[str, Metric]):
     _LOGGER.info(f"Pushed Thoth weekly SLI to Prometheus Pushgateway.")
 
 
-def generate_email(sli_metrics: Dict[str, float]):
+def generate_email(sli_metrics: Dict[str, Any]):
     """Generate email to be sent."""
     message = SLIReport.REPORT_START
     message += SLIReport.REPORT_STYLE
@@ -250,10 +257,8 @@ def main():
             _LOGGER.exception(f"Could not push metrics to Pushgateway...{e_pushgateway}")
             pass
 
-    if not Configuration.ONLY_STORE_ON_CEPH:
+    if _DRY_RUN:
         email_message = generate_email(weekly_sli_values_map)
-
-    if not _DRY_RUN and not Configuration.ONLY_STORE_ON_CEPH:
         with tempfile.NamedTemporaryFile("w", delete=False, suffix=".html") as f:
             url = "file://" + f.name
             f.write(email_message)
@@ -261,6 +266,7 @@ def main():
         webbrowser.open(url)
 
     if not _DRY_RUN and not Configuration.ONLY_STORE_ON_CEPH:
+        email_message = generate_email(weekly_sli_values_map)
         send_sli_email(email_message)
 
 
