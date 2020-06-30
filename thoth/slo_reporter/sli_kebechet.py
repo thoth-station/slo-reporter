@@ -73,14 +73,14 @@ class SLIKebechet(SLIBase):
         """
         html_inputs = {}
 
-        for knowledge_quantity in sli.keys():
+        for knowledge_quantity in _REGISTERED_KEBECHET_QUANTITY.keys():
+            html_inputs[knowledge_quantity] = {}
+            html_inputs[knowledge_quantity]['name'] = _REGISTERED_KEBECHET_QUANTITY[knowledge_quantity]
 
             if sli[knowledge_quantity] != "ErrorMetricRetrieval":
-                html_inputs[knowledge_quantity] = int(sli[knowledge_quantity])
+                html_inputs[knowledge_quantity]['value'] = int(sli[knowledge_quantity])
             else:
-                html_inputs[knowledge_quantity] = np.nan
-
-            html_inputs.append([knowledge_quantity, value])
+                html_inputs[knowledge_quantity]['value'] = np.nan
 
         return html_inputs
 
