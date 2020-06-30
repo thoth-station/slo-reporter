@@ -20,6 +20,8 @@
 import logging
 import os
 
+import numpy as np
+
 from typing import Dict, List, Any
 
 from .sli_base import SLIBase
@@ -49,7 +51,7 @@ class SLIKnowledgeGraph(SLIBase):
 
     def _aggregate_info(self):
         """Aggregate info required for knowledge graph SLI Report."""
-        return {"query": self._query_sli(), "report_method": self._report_sli}
+        return {"query": self._query_sli(), "evaluation_method": self._evaluate_sli, "report_method": self._report_sli}
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for knowledge graph SLI Report."""
@@ -71,18 +73,28 @@ class SLIKnowledgeGraph(SLIBase):
             },
         }
 
+    def _evaluate_sli(self, sli: Dict[str, Any]) -> Dict[str, float]:
+        """Evaluate SLI for report for Kebechet SLI.
+
+        @param sli: It's a dict of SLI associated with the SLI type.
+        """
+        html_inputs = {}
+
+        for knowledge_quantity in _REGISTERED_KNOWLEDGE_QUANTITY.keys():
+
+            if sli[knowledge_quantity] != "ErrorMetricRetrieval":
+                html_inputs[knowledge_quantity] = int(sli[knowledge_quantity])
+            else:
+                html_inputs[knowledge_quantity] = np.nan
+
+        return html_inputs
+
     def _report_sli(self, sli: Dict[str, Any]) -> str:
         """Create report for knowledge graph SLI.
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
-        html_inputs = []
-        for knowledge_quantity in _REGISTERED_KNOWLEDGE_QUANTITY.keys():
-            if sli[knowledge_quantity] != "ErrorMetricRetrieval":
-                value = int(sli[knowledge_quantity])
-            else:
-                value = "Nan"
+        html_inputs = _evaluate_sli(sli=sli)
 
-            html_inputs.append([_REGISTERED_KNOWLEDGE_QUANTITY[knowledge_quantity], value])
         report = HTMLTemplates.thoth_knowledge_template(html_inputs=html_inputs)
         return report
