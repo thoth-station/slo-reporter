@@ -27,10 +27,17 @@ class SLIBase:
 
     def _aggregate_info(self):
         """Aggregate info required for specific SLI Report."""
-        return {"query": self._query_sli(), "report_method": self._report_sli}
+        return {"query": self._query_sli(), "evaluation_method": self._evaluate_sli, "report_method": self._report_sli}
 
     def _query_sli(self) -> Dict[str, str]:
         """Aggregate queries for specific SLI Report."""
+        raise NotImplementedError
+
+    def _evaluate_sli(self, sli: Dict[str, Any]) -> Dict[str, float]:
+        """Evaluate SLI for report for specific SLI.
+
+        @param sli: It's a dict of SLI associated with the SLI type.
+        """
         raise NotImplementedError
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:
