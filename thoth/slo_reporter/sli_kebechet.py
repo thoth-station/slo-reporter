@@ -36,6 +36,11 @@ if not Configuration.DRY_RUN:
 _LOGGER = logging.getLogger(__name__)
 
 
+_REGISTERED_KNOWLEDGE_QUANTITY = {
+    "total_active_repositories": "Total active repositories",
+    "delta_total_active_repositories": "Change in active repositories since last week",
+}
+
 class SLIKebechet(SLIBase):
     """This class contain functions for Kebechet SLI."""
 
@@ -49,12 +54,12 @@ class SLIKebechet(SLIBase):
         """Aggregate queries for Kebechet SLI Report."""
         query_labels = f'{{instance="{_INSTANCE}", job="Thoth Metrics ({Configuration._ENVIRONMENT})"}}'
         return {
-            "Total active repositories": {
+            "total_active_repositories": {
                 "query": f"thoth_kebechet_total_active_repo_count{query_labels}",
                 "requires_range": True,
                 "type": "latest",
             },
-            "Change in active repositories since last week": {
+            "delta_total_active_repositories": {
                 "query": f"thoth_kebechet_total_active_repo_count{query_labels}",
                 "requires_range": True,
                 "type": "min_max",
@@ -68,14 +73,14 @@ class SLIKebechet(SLIBase):
         """
         html_inputs = {}
 
-        for knowledge_quantity in sli.keys():
+        for knowledge_quantity in _REGISTERED_KNOWLEDGE_QUANTITY.keys():
+            html_inputs[knowledge_quantity] = {}
+            html_inputs[knowledge_quantity]['name'] = _REGISTERED_KNOWLEDGE_QUANTITY[knowledge_quantity]
 
             if sli[knowledge_quantity] != "ErrorMetricRetrieval":
-                html_inputs[knowledge_quantity] = int(sli[knowledge_quantity])
+                html_inputs[knowledge_quantity]['value'] = int(sli[knowledge_quantity])
             else:
-                html_inputs[knowledge_quantity] = np.nan
-
-            html_inputs.append([knowledge_quantity, value])
+                html_inputs[knowledge_quantity]['value'] = np.nan
 
         return html_inputs
 
@@ -84,7 +89,7 @@ class SLIKebechet(SLIBase):
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
-        html_inputs = _evaluate_sli(sli=sli)
+        html_inputs = self._evaluate_sli(sli=sli)
         report = HTMLTemplates.thoth_kebechet_template(html_inputs=html_inputs)
 
         return report
