@@ -40,7 +40,7 @@ class SLIReport:
     """This class contains all sections included in a report."""
 
     def __init__(self, configuration: Configuration):
-        """Initialize SLI Report"""
+        """Initialize SLI Report."""
         self.configuration = configuration
 
         self.report_subject = (
@@ -55,18 +55,18 @@ class SLIReport:
                 "environment": self.configuration.environment,
                 "start_time": str(self.configuration.start_time.strftime("%Y-%m-%d")),
                 "end_time": str(self.configuration.end_time.strftime("%Y-%m-%d")),
-            }
+            },
         )
 
         self.report_style = HTMLTemplates.thoth_report_style_template()
 
         self.report_sli_context = {
-            # SLIPyPIKnowledgeGraph._SLI_NAME: SLIPyPIKnowledgeGraph(configuration=self.configuration)._aggregate_info(),
+            SLIPyPIKnowledgeGraph._SLI_NAME: SLIPyPIKnowledgeGraph(configuration=self.configuration)._aggregate_info(),
             SLIKnowledgeGraph._SLI_NAME: SLIKnowledgeGraph(configuration=self.configuration)._aggregate_info(),
             SLILearning._SLI_NAME: SLILearning(configuration=self.configuration)._aggregate_info(),
-            # SLIKebechet._SLI_NAME: SLIKebechet(configuration=self.configuration)._aggregate_info(),
-            # SLIUserAPI._SLI_NAME: SLIUserAPI(configuration=self.configuration)._aggregate_info(),
-            # SLIWorkflowQuality._SLI_NAME: SLIWorkflowQuality(configuration=self.configuration)._aggregate_info(),
+            SLIKebechet._SLI_NAME: SLIKebechet(configuration=self.configuration)._aggregate_info(),
+            SLIUserAPI._SLI_NAME: SLIUserAPI(configuration=self.configuration)._aggregate_info(),
+            SLIWorkflowQuality._SLI_NAME: SLIWorkflowQuality(configuration=self.configuration)._aggregate_info(),
             SLIWorkflowLatency._SLI_NAME: SLIWorkflowLatency(configuration=self.configuration)._aggregate_info(),
         }
 
