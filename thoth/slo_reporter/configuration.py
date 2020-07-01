@@ -75,7 +75,7 @@ class Configuration:
         "adviser": {"entrypoint": "adviser", "namespace": _BACKEND_NAMESPACE},
         "kebechet": {"entrypoint": "kebechet-job", "namespace": _BACKEND_NAMESPACE},
         "inspection": {"entrypoint": "main", "namespace": _AMUN_INSPECTION_NAMESPACE},
-        "qeb-hwt": {"entrypoint": "qeb-hwt", "namespace": _BACKEND_NAMESPACE},
+        "qeb_hwt": {"entrypoint": "qeb-hwt", "namespace": _BACKEND_NAMESPACE},
         "solver": {"entrypoint": "solve-and-sync", "namespace": _MIDDLETIER_NAMESPACE},
     }
 
@@ -83,7 +83,7 @@ class Configuration:
     STEP = "2h"
 
     # Interval for report
-    INTERVAL = "7d"
+    INTERVAL = f"{_DAYS_REPORT}d"
 
 
 def _get_sli_metrics_prefix() -> str:

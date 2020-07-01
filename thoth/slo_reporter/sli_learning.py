@@ -20,6 +20,8 @@
 import logging
 import os
 
+import numpy as np
+
 from typing import Dict, List, Any
 
 from .sli_base import SLIBase
@@ -46,11 +48,11 @@ _LEARNING_RATE_INTERVAL = "2h"
 class SLILearning(SLIBase):
     """This class contains functions for Learning Rate SLI."""
 
-    _SLI_NAME = "learning_rate"
+    _SLI_NAME = "learning"
 
     def _aggregate_info(self):
         """Aggregate info required for learning quantities SLI Report."""
-        return {"query": self._query_sli(), "report_method": self._report_sli}
+        return {"query": self._query_sli(), "evaluation_method": self._evaluate_sli, "report_method": self._report_sli}
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for learning quantities SLI Report."""
@@ -81,25 +83,34 @@ class SLILearning(SLIBase):
             },
         }
 
+    def _evaluate_sli(self, sli: Dict[str, Any]) -> Dict[str, float]:
+        """Evaluate SLI for report for learning quantities SLI.
+
+        @param sli: It's a dict of SLI associated with the SLI type.
+        """
+        html_inputs = {}
+
+        for learning_quantity in _REGISTERED_LEARNING_MEASUREMENT_UNIT.keys():
+
+            learning_quantity_data = _REGISTERED_LEARNING_MEASUREMENT_UNIT[learning_quantity]
+            html_inputs[learning_quantity] = {}
+
+            if sli[learning_quantity] != "ErrorMetricRetrieval":
+                html_inputs[learning_quantity]["value"] = abs(int(sli[learning_quantity]))
+            else:
+                html_inputs[learning_quantity]["value"] = np.nan
+
+            html_inputs[learning_quantity]["name"] = learning_quantity_data["name"]
+            html_inputs[learning_quantity]["measurement_unit"] = learning_quantity_data["measurement_unit"]
+
+        return html_inputs
+
     def _report_sli(self, sli: Dict[str, Any]) -> str:
         """Create report for learning quantities SLI.
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
-        html_inputs = []
-        for learning_quantity in _REGISTERED_LEARNING_MEASUREMENT_UNIT.keys():
-            if sli[learning_quantity] != "ErrorMetricRetrieval":
-                value = abs(int(sli[learning_quantity]))
-            else:
-                value = "Nan"
-
-            html_inputs.append(
-                [
-                    _REGISTERED_LEARNING_MEASUREMENT_UNIT[learning_quantity]["name"],
-                    value,
-                    _REGISTERED_LEARNING_MEASUREMENT_UNIT[learning_quantity]["measurement_unit"],
-                ],
-            )
+        html_inputs = self._evaluate_sli(sli=sli)
 
         report = HTMLTemplates.thoth_learning_template(html_inputs=html_inputs)
         return report

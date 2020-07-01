@@ -21,6 +21,8 @@ import logging
 import os
 import datetime
 
+import numpy as np
+
 from typing import Dict, List, Any
 
 from .sli_base import SLIBase
@@ -41,11 +43,11 @@ class SLIWorkflowLatency(SLIBase):
     _SLI_NAME = "component_latency"
 
     def _aggregate_info(self):
-        """Aggregate info required for solver_latency SLI Report."""
-        return {"query": self._query_sli(), "report_method": self._report_sli}
+        """Aggregate info required for component_latency SLI Report."""
+        return {"query": self._query_sli(), "evaluation_method": self._evaluate_sli, "report_method": self._report_sli}
 
     def _query_sli(self) -> List[str]:
-        """Aggregate queries for solver_latency SLI Report."""
+        """Aggregate queries for component_latency SLI Report."""
         queries = {}
         for service in Configuration.REGISTERED_SERVICES:
             result = self._aggregate_queries(service=service)
@@ -74,8 +76,8 @@ class SLIWorkflowLatency(SLIBase):
             },
         }
 
-    def _report_sli(self, sli: Dict[str, Any]) -> str:
-        """Create report for solver_latency SLI.
+    def _evaluate_sli(self, sli: Dict[str, Any]) -> Dict[str, float]:
+        """Evaluate SLI for report for component_latency SLI.
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
@@ -90,9 +92,20 @@ class SLIWorkflowLatency(SLIBase):
                 seconds = number_workflows_latency_seconds % 60
                 html_inputs[service]["minutes"] = round(minutes)
                 html_inputs[service]["seconds"] = round(seconds)
+                html_inputs[service]["value"] = number_workflows_latency_seconds
             else:
-                html_inputs[service]["minutes"] = "Nan"
-                html_inputs[service]["seconds"] = "Nan"
+                html_inputs[service]["minutes"] = np.nan
+                html_inputs[service]["seconds"] = np.nan
+                html_inputs[service]["value"] = np.nan
+
+        return html_inputs
+
+    def _report_sli(self, sli: Dict[str, Any]) -> str:
+        """Create report for component_latency SLI.
+
+        @param sli: It's a dict of SLI associated with the SLI type.
+        """
+        html_inputs = self._evaluate_sli(sli=sli)
 
         report = HTMLTemplates.thoth_services_latency_template(html_inputs=html_inputs)
 
