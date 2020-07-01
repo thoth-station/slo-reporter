@@ -210,7 +210,7 @@ def generate_email(sli_metrics: Dict[str, Any], configuration: Configuration, sl
 
         _LOGGER.debug(f"Generating report for: {sli_name}")
 
-        report_method = sli_report.report_references[sli_name]["report_method"]
+        report_method = sli_report.report_sli_context[sli_name]["report_method"]
         message += "\n" + report_method(metric_data)
 
     message += sli_report.report_references
