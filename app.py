@@ -287,10 +287,10 @@ def run_slo_reporter(
 
 def main():
     """Execute the main function for Thoth Service Level Objectives (SLO) Reporter."""
-    INTERVAL_REPORT_DAYS = int(os.environ["THOTH_INTERVAL_REPORT_NUMBER_DAYS"]) or 1
+    INTERVAL_REPORT_DAYS = int(os.getenv("THOTH_INTERVAL_REPORT_NUMBER_DAYS", 1))
     _LOGGER.info(f"Considering interval for metrics of {INTERVAL_REPORT_DAYS} day/s.")
 
-    EVALUATION_METRICS_DAYS = int(os.environ["THOTH_EVALUATION_METRICS_NUMBER_DAYS"]) or 1
+    EVALUATION_METRICS_DAYS = int(os.getenv("THOTH_EVALUATION_METRICS_NUMBER_DAYS", 1))
     _LOGGER.info(f"THOTH_EVALUATION_METRICS_NUMBER_DAYS set to {EVALUATION_METRICS_DAYS}.")
 
     if EVALUATION_METRICS_DAYS == 0:
