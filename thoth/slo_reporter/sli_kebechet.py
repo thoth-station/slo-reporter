@@ -66,7 +66,7 @@ class SLIKebechet(SLIBase):
             "delta_total_active_repositories": {
                 "query": f"thoth_kebechet_total_active_repo_count{query_labels}",
                 "requires_range": True,
-                "type": "min_max",
+                "type": "delta",
             },
         }
 

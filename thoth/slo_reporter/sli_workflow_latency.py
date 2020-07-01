@@ -95,7 +95,7 @@ class SLIWorkflowLatency(SLIBase):
                 seconds = number_workflows_latency_seconds % 60
                 html_inputs[service]["minutes"] = round(minutes)
                 html_inputs[service]["seconds"] = round(seconds)
-                html_inputs[service]["value"] = minutes
+                html_inputs[service]["value"] = round(minutes)
             else:
                 html_inputs[service]["minutes"] = np.nan
                 html_inputs[service]["seconds"] = np.nan
