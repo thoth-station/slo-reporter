@@ -26,7 +26,7 @@ from typing import List, Dict, Optional
 
 from thoth.storages import CephStore
 
-from thoth.slo_reporter.configuration import _get_sli_metrics_prefix
+from thoth.slo_reporter.configuration import _get_sli_metrics_prefix, Configuration
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -82,16 +82,16 @@ def manipulate_retrieved_metrics_vector(metrics_vector: List[float], action: str
     return metric
 
 
-def connect_to_ceph(bucket: Optional[str] = None) -> CephStore:
+def connect_to_ceph(ceph_bucket_prefix: str, environment: str, bucket: Optional[str] = None) -> CephStore:
     """Connect to Ceph to store SLI metrics for Thoth."""
-    prefix = _get_sli_metrics_prefix()
+    prefix = _get_sli_metrics_prefix(ceph_bucket_prefix=ceph_bucket_prefix, environment=environment)
     ceph = CephStore(prefix=prefix, bucket=bucket)
     ceph.connect()
     return ceph
 
 
 def store_thoth_sli_on_ceph(
-    ceph_sli: CephStore, metric_class: str, metrics_df: pd.DataFrame, ceph_path: str, is_public: bool = False,
+    ceph_sli: CephStore, metric_class: str, metrics_df: pd.DataFrame, ceph_path: str, is_public: bool = False
 ) -> None:
     """Store Thoth SLI on Ceph."""
     metrics_csv = metrics_df.to_csv(index=False, header=False)

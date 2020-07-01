@@ -34,7 +34,7 @@ from pathlib import Path
 
 from prometheus_api_client import Metric, MetricsList, PrometheusConnect
 from prometheus_api_client.utils import parse_datetime, parse_timedelta
-from prometheus_client import CollectorRegistry, Gauge, push_to_gateway
+from prometheus_client import push_to_gateway
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -49,8 +49,8 @@ from thoth.slo_reporter.utils import store_thoth_sli_on_ceph, connect_to_ceph
 _LOGGER = logging.getLogger("thoth.slo_reporter")
 _LOGGER.info(f"Thoth SLO Reporter v%s", __service_version__)
 
-_DRY_RUN = Configuration.DRY_RUN
-
+_DRY_RUN = bool(int(os.getenv("DRY_RUN", 0)))
+_ONLY_STORE_ON_CEPH = bool(int(os.getenv("THOTH_ONLY_STORE_ON_CEPH", 0)))
 _DEBUG_LEVEL = bool(int(os.getenv("DEBUG_LEVEL", 0)))
 
 if _DEBUG_LEVEL:
@@ -58,28 +58,19 @@ if _DEBUG_LEVEL:
 else:
     logging.basicConfig(level=logging.INFO)
 
-if not _DRY_RUN:
-    _PROMETHEUS_REGISTRY = CollectorRegistry()
-    _THOTH_WEEKLY_SLI = Gauge(
-        f"thoth_sli_weekly_{Configuration._ENVIRONMENT}",
-        "Weekly Thoth Service Level Indicators",
-        ["sli_type", "metric_name"],
-        registry=_PROMETHEUS_REGISTRY,
-    )
 
-
-def collect_metrics():
+def collect_metrics(configuration: Configuration, sli_report: SLIReport):
     """Collect metrics from Prometheus/Thanos."""
     if not _DRY_RUN:
         pc = PrometheusConnect(
-            url=Configuration._THANOS_URL,
-            headers={"Authorization": f"bearer {Configuration._THANOS_TOKEN}"},
+            url=configuration.thanos_url,
+            headers={"Authorization": f"bearer {configuration.thanos_token}"},
             disable_ssl=True,
         )
 
     collected_info = {}
 
-    for sli_name, sli_methods in SLIReport.REPORT_SLI_CONTEXT.items():
+    for sli_name, sli_methods in sli_report.report_sli_context.items():
         _LOGGER.info(f"Retrieving data for... {sli_name}")
         collected_info[sli_name] = {}
 
@@ -103,9 +94,9 @@ def collect_metrics():
                     if requires_range:
                         metric_data = pc.custom_query_range(
                             query=query,
-                            start_time=Configuration.START_TIME,
-                            end_time=Configuration.END_TIME,
-                            step=Configuration.STEP,
+                            start_time=configuration.start_time,
+                            end_time=configuration.end_time,
+                            step=configuration.step,
                         )
 
                     else:
@@ -135,25 +126,33 @@ def collect_metrics():
     return collected_info
 
 
-def store_sli_weekly_metrics_to_ceph(weekly_metrics: Dict[str, Any]):
+def store_sli_weekly_metrics_to_ceph(
+    weekly_metrics: Dict[str, Any], configuration: Configuration, sli_report: SLIReport
+):
     """Store weekly metrics to ceph."""
-    datetime = str(Configuration.END_TIME.strftime("%Y-%m-%d"))
+    datetime = str(configuration.end_time.strftime("%Y-%m-%d"))
     sli_metrics_id = f"sli-thoth-{datetime}"
     _LOGGER.info(f"Start storing Thoth weekly SLI metrics for {sli_metrics_id}.")
 
-    ceph_sli = connect_to_ceph()
-    public_ceph_sli = connect_to_ceph(bucket=Configuration._PUBLIC_CEPH_BUCKET)
+    ceph_sli = connect_to_ceph(
+        ceph_bucket_prefix=configuration.ceph_bucket_prefix, environment=configuration.environment
+    )
+    public_ceph_sli = connect_to_ceph(
+        ceph_bucket_prefix=configuration.ceph_bucket_prefix,
+        environment=configuration.environment,
+        bucket=configuration.public_ceph_bucket,
+    )
 
     for metric_class in weekly_metrics:
         metrics = {}
         metrics["datetime"] = datetime
-        metrics["timestamp"] = Configuration.END_TIME_EPOCH
+        metrics["timestamp"] = configuration.end_time_epoch
 
-        evaluation_method = SLIReport.REPORT_SLI_CONTEXT[metric_class]["evaluation_method"]
+        evaluation_method = sli_report.report_sli_context[metric_class]["evaluation_method"]
         total_ceph_sli = evaluation_method(weekly_metrics[metric_class])
 
         for metric in total_ceph_sli:
-            metrics[metric] = total_ceph_sli[metric]['value']
+            metrics[metric] = total_ceph_sli[metric]["value"]
 
         metrics_df = pd.DataFrame(json_normalize(metrics))
         _LOGGER.info(f"Storing... \n{metrics_df}")
@@ -161,7 +160,7 @@ def store_sli_weekly_metrics_to_ceph(weekly_metrics: Dict[str, Any]):
 
         try:
             store_thoth_sli_on_ceph(
-                ceph_sli=ceph_sli, metric_class=metric_class, metrics_df=metrics_df, ceph_path=ceph_path,
+                ceph_sli=ceph_sli, metric_class=metric_class, metrics_df=metrics_df, ceph_path=ceph_path
             )
         except Exception as e_ceph:
             _LOGGER.exception(f"Could not store metrics on Thoth bucket on Ceph...{e_ceph}")
@@ -180,7 +179,9 @@ def store_sli_weekly_metrics_to_ceph(weekly_metrics: Dict[str, Any]):
             pass
 
 
-def push_thoth_sli_weekly_metrics(weekly_metrics: Dict[str, Metric]):
+def push_thoth_sli_weekly_metrics(
+    weekly_metrics: Dict[str, Metric], configuration: Configuration, sli_report: SLIReport
+):
     """Push Thoth SLI weekly metric to PushGateway."""
     for sli_type, metric_data in weekly_metrics.items():
 
@@ -188,29 +189,33 @@ def push_thoth_sli_weekly_metrics(weekly_metrics: Dict[str, Metric]):
 
             if weekly_value_metric != "ErrorMetricRetrieval":
 
-                _THOTH_WEEKLY_SLI.labels(sli_type=sli_type, metric_name=metric_name).set(weekly_value_metric)
+                configuration.thoth_weekly_sli.labels(sli_type=sli_type, metric_name=metric_name).set(
+                    weekly_value_metric
+                )
                 _LOGGER.info("(sli_type=%r, metric_name=%r)=%r", sli_type, metric_name, weekly_value_metric)
 
-    push_to_gateway(Configuration._PUSHGATEWAY_ENDPOINT, job="Weekly Thoth SLI", registry=_PROMETHEUS_REGISTRY)
+    push_to_gateway(
+        configuration.pushgateway_endpoint, job="Weekly Thoth SLI", registry=configuration.prometheus_registry
+    )
     _LOGGER.info(f"Pushed Thoth weekly SLI to Prometheus Pushgateway.")
 
 
-def generate_email(sli_metrics: Dict[str, Any]):
+def generate_email(sli_metrics: Dict[str, Any], configuration: Configuration, sli_report: SLIReport):
     """Generate email to be sent."""
-    message = SLIReport.REPORT_START
-    message += SLIReport.REPORT_STYLE
-    message += SLIReport.REPORT_INTRO
+    message = sli_report.report_start
+    message += sli_report.report_style
+    message += sli_report.report_intro
 
     for sli_name, metric_data in sli_metrics.items():
 
         _LOGGER.debug(f"Generating report for: {sli_name}")
 
-        report_method = SLIReport.REPORT_SLI_CONTEXT[sli_name]["report_method"]
+        report_method = sli_report.report_references[sli_name]["report_method"]
         message += "\n" + report_method(metric_data)
 
-    message += SLIReport.REPORT_REFERENCES
+    message += sli_report.report_references
 
-    message += SLIReport.REPORT_END
+    message += sli_report.report_end
 
     html_message = MIMEText(message, "html")
     _LOGGER.debug(f"Email message: {html_message}")
@@ -225,14 +230,14 @@ def generate_email(sli_metrics: Dict[str, Any]):
     return html_message
 
 
-def send_sli_email(email_message: MIMEText):
+def send_sli_email(email_message: MIMEText, configuration: Configuration, sli_report: SLIReport):
     """Send email about Thoth Service Level Objectives."""
-    server = Configuration._SERVER
-    sender_address = Configuration._SENDER_ADDRESS
-    recipients = Configuration._ADDRESS_RECIPIENTS
+    server = configuration.server
+    sender_address = configuration.sender_address
+    recipients = configuration.address_recipients
 
     msg = MIMEMultipart()
-    msg["Subject"] = SLIReport.REPORT_SUBJECT
+    msg["Subject"] = sli_report.report_subject
     msg["From"] = sender_address
     msg["To"] = recipients
 
@@ -242,32 +247,67 @@ def send_sli_email(email_message: MIMEText):
     _LOGGER.info(f"Thoth weekly SLI correctly sent.")
 
 
-def main():
-    """Execute the main function for Thoth Service Level Objectives (SLO) Reporter."""
+def run_slo_reporter(
+    start_time: datetime.datetime, end_time: datetime.datetime, number_days: int, dry_run: bool
+) -> None:
+    """Run SLO reporter."""
+    configuration = Configuration(start_time=start_time, end_time=end_time, number_days=number_days, dry_run=dry_run)
+    sli_report = SLIReport(configuration=configuration)
+
+    # Collect metrics.
     if _DRY_RUN:
         _LOGGER.info("Dry run...")
-    weekly_sli_values_map = collect_metrics()
+    weekly_sli_values_map = collect_metrics(configuration=configuration, sli_report=sli_report)
 
+    # Store metrics on Ceph and push them to Pushgateway.
     if not _DRY_RUN:
-        store_sli_weekly_metrics_to_ceph(weekly_sli_values_map)
+        store_sli_weekly_metrics_to_ceph(
+            weekly_metrics=weekly_sli_values_map, configuration=configuration, sli_report=sli_report
+        )
 
         try:
-            push_thoth_sli_weekly_metrics(weekly_sli_values_map)
+            push_thoth_sli_weekly_metrics(weekly_sli_values_map, configuration=configuration, sli_report=sli_report)
         except Exception as e_pushgateway:
             _LOGGER.exception(f"Could not push metrics to Pushgateway...{e_pushgateway}")
             pass
 
     if _DRY_RUN:
-        email_message = generate_email(weekly_sli_values_map)
+        email_message = generate_email(weekly_sli_values_map, configuration=configuration, sli_report=sli_report)
         with tempfile.NamedTemporaryFile("w", delete=False, suffix=".html") as f:
             url = "file://" + f.name
             f.write(email_message)
 
         webbrowser.open(url)
 
-    if not _DRY_RUN and not Configuration.ONLY_STORE_ON_CEPH:
-        email_message = generate_email(weekly_sli_values_map)
-        send_sli_email(email_message)
+    # Generate HTML for email from metrics and send it.
+    if not _DRY_RUN and not _ONLY_STORE_ON_CEPH:
+        email_message = generate_email(weekly_sli_values_map, configuration=configuration, sli_report=sli_report)
+        send_sli_email(email_message, configuration=configuration, sli_report=sli_report)
+
+
+def main():
+    """Execute the main function for Thoth Service Level Objectives (SLO) Reporter."""
+    INTERVAL_REPORT_DAYS = int(os.environ["THOTH_INTERVAL_REPORT_NUMBER_DAYS"])
+    _LOGGER.info(f"Considering interval for metrics of {INTERVAL_REPORT_DAYS} day/s.")
+
+    EVALUATION_METRICS_DAYS = int(os.environ["THOTH_EVALUATION_METRICS_NUMBER_DAYS"])
+    _LOGGER.info(f"THOTH_EVALUATION_METRICS_NUMBER_DAYS set to {EVALUATION_METRICS_DAYS}.")
+
+    if EVALUATION_METRICS_DAYS == 0:
+        _LOGGER.info(f"No range of days to be collected, set THOTH_EVALUATION_METRICS_NUMBER_DAYS at least to 1.")
+
+    if EVALUATION_METRICS_DAYS > 1 and not _ONLY_STORE_ON_CEPH:
+        raise Exception(
+            "You need to set THOTH_ONLY_STORE_ON_CEPH to 1 if you want to evaluate metrics for more than one day."
+            f" Otherwise {EVALUATION_METRICS_DAYS} emails will be sent out."
+        )
+
+    for i in range(0, EVALUATION_METRICS_DAYS):
+        _END_TIME = datetime.datetime.utcnow() - datetime.timedelta(days=i)
+        _START_TIME = _END_TIME - datetime.timedelta(days=INTERVAL_REPORT_DAYS)
+        _LOGGER.info(f"Interval: {_START_TIME.strftime('%Y-%m-%d')} - {_END_TIME.strftime('%Y-%m-%d')}")
+
+        run_slo_reporter(start_time=_START_TIME, end_time=_END_TIME, number_days=INTERVAL_REPORT_DAYS, dry_run=_DRY_RUN)
 
 
 if __name__ == "__main__":
