@@ -28,10 +28,6 @@ from .sli_base import SLIBase
 from .sli_template import HTMLTemplates
 from .configuration import Configuration
 
-_INSTANCE = "dry_run"
-
-if not Configuration.DRY_RUN:
-    _INSTANCE = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND"]
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -48,18 +44,23 @@ class SLIPyPIKnowledgeGraph(SLIBase):
 
     _SLI_NAME = "pypi_knowledge_graph"
 
+    def __init__(self, configuration: Configuration):
+        """Initialize SLI class."""
+        self.configuration = configuration
+
+        if self.configuration.dry_run:
+            self.instance = "dry_run"
+        else:
+            self.instance = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND"]
+
     def _aggregate_info(self):
         """Aggregate info required for knowledge graph SLI Report."""
         return {"query": self._query_sli(), "evaluation_method": self._evaluate_sli, "report_method": self._report_sli}
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for knowledge graph SLI Report."""
-        query_labels_packages = (
-            f'{{instance="{_INSTANCE}", job="Thoth Metrics ({Configuration._ENVIRONMENT})", stats_type="packages"}}'
-        )
-        query_labels_releases = (
-            f'{{instance="{_INSTANCE}", job="Thoth Metrics ({Configuration._ENVIRONMENT})", stats_type="releases"}}'
-        )
+        query_labels_packages = f'{{instance="{self.instance}", job="Thoth Metrics ({self.configuration.environment})", stats_type="packages"}}'
+        query_labels_releases = f'{{instance="{self.instance}", job="Thoth Metrics ({self.configuration.environment})", stats_type="releases"}}'
 
         return {
             "total_packages": {
@@ -83,6 +84,7 @@ class SLIPyPIKnowledgeGraph(SLIBase):
                 "type": "min_max",
             },
         }
+
     def _evaluate_sli(self, sli: Dict[str, Any]) -> Dict[str, float]:
         """Evaluate SLI for report for PyPI knowledge graph SLI.
 
@@ -96,9 +98,9 @@ class SLIPyPIKnowledgeGraph(SLIBase):
             html_inputs[knowledge_quantity]["name"] = _REGISTERED_KNOWLEDGE_QUANTITY[knowledge_quantity]
 
             if sli[knowledge_quantity] != "ErrorMetricRetrieval":
-                html_inputs[knowledge_quantity]["value"]  = abs(int(sli[knowledge_quantity]))
+                html_inputs[knowledge_quantity]["value"] = abs(int(sli[knowledge_quantity]))
             else:
-                html_inputs[knowledge_quantity]["value"]  = np.nan
+                html_inputs[knowledge_quantity]["value"] = np.nan
 
         return html_inputs
 

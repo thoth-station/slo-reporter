@@ -28,11 +28,14 @@ from .sli_template import HTMLTemplates
 _LOGGER = logging.getLogger(__name__)
 
 
-def _add_dashbords(start_time_epoch: datetime.datetime, end_time_epoch: datetime.datetime):
+def _add_dashbords(configuration: Configuration):
     """Create dashboard link for report."""
+    start_time_epoch = configuration.start_time_epoch
+    end_time_epoch = configuration.end_time_epoch
+
     html_inputs = {}
 
-    knowledge_graph_dashboard_name = f"thoth-knowledge-graph-content-metrics-{Configuration._ENVIRONMENT}"
+    knowledge_graph_dashboard_name = f"thoth-knowledge-graph-content-metrics-{configuration.environment}"
     knowledge_graph_dashboard_url = (
         f"https://grafana.datahub.redhat.com/dashboard/db/{knowledge_graph_dashboard_name}?"
         + f"refresh=1m&orgId=1&from={start_time_epoch}&to={end_time_epoch}"

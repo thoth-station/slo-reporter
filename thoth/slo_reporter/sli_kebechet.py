@@ -28,11 +28,6 @@ from .sli_base import SLIBase
 from .sli_template import HTMLTemplates
 from .configuration import Configuration
 
-_INSTANCE = "dry_run"
-
-if not Configuration.DRY_RUN:
-    _INSTANCE = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND"]
-
 _LOGGER = logging.getLogger(__name__)
 
 _REGISTERED_KEBECHET_QUANTITY = {
@@ -40,10 +35,20 @@ _REGISTERED_KEBECHET_QUANTITY = {
     "delta_total_active_repositories": "Change in active repositories since last week",
 }
 
+
 class SLIKebechet(SLIBase):
     """This class contain functions for Kebechet SLI."""
 
     _SLI_NAME = "kebechet"
+
+    def __init__(self, configuration: Configuration):
+        """Initialize SLI class."""
+        self.configuration = configuration
+
+        if self.configuration.dry_run:
+            self.instance = "dry_run"
+        else:
+            self.instance = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND"]
 
     def _aggregate_info(self):
         """Aggregate info required for Kebechet SLI Report."""
@@ -51,7 +56,7 @@ class SLIKebechet(SLIBase):
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for Kebechet SLI Report."""
-        query_labels = f'{{instance="{_INSTANCE}", job="Thoth Metrics ({Configuration._ENVIRONMENT})"}}'
+        query_labels = f'{{instance="{self.instance}", job="Thoth Metrics ({self.configuration.environment})"}}'
         return {
             "total_active_repositories": {
                 "query": f"thoth_kebechet_total_active_repo_count{query_labels}",
@@ -74,12 +79,12 @@ class SLIKebechet(SLIBase):
 
         for knowledge_quantity in _REGISTERED_KEBECHET_QUANTITY.keys():
             html_inputs[knowledge_quantity] = {}
-            html_inputs[knowledge_quantity]['name'] = _REGISTERED_KEBECHET_QUANTITY[knowledge_quantity]
+            html_inputs[knowledge_quantity]["name"] = _REGISTERED_KEBECHET_QUANTITY[knowledge_quantity]
 
             if sli[knowledge_quantity] != "ErrorMetricRetrieval":
-                html_inputs[knowledge_quantity]['value'] = int(sli[knowledge_quantity])
+                html_inputs[knowledge_quantity]["value"] = int(sli[knowledge_quantity])
             else:
-                html_inputs[knowledge_quantity]['value'] = np.nan
+                html_inputs[knowledge_quantity]["value"] = np.nan
 
         return html_inputs
 

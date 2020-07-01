@@ -29,10 +29,6 @@ from .sli_base import SLIBase
 from .sli_template import HTMLTemplates
 from .configuration import Configuration
 
-_INSTANCE = "dry_run"
-
-if not Configuration.DRY_RUN:
-    _INSTANCE = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND"]
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -42,6 +38,15 @@ class SLIWorkflowQuality(SLIBase):
 
     _SLI_NAME = "component_quality"
 
+    def __init__(self, configuration: Configuration):
+        """Initialize SLI class."""
+        self.configuration = configuration
+
+        if self.configuration.dry_run:
+            self.instance = "dry_run"
+        else:
+            self.instance = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND"]
+
     def _aggregate_info(self):
         """Aggregate info required for solver_quality SLI Report."""
         return {"query": self._query_sli(), "evaluation_method": self._evaluate_sli, "report_method": self._report_sli}
@@ -49,20 +54,19 @@ class SLIWorkflowQuality(SLIBase):
     def _query_sli(self) -> List[str]:
         """Aggregate queries for solver_quality SLI Report."""
         queries = {}
-        for service in Configuration.REGISTERED_SERVICES:
+        for service in self.configuration.registered_services:
             result = self._aggregate_queries(service=service)
             for query_name, query in result.items():
                 queries[query_name] = query
 
         return queries
 
-    @staticmethod
-    def _aggregate_queries(service: str):
+    def _aggregate_queries(self, service: str):
         """Aggregate service queries."""
-        query_labels_reports = f'{{instance="{_INSTANCE}", result_type="{service}"}}'
+        query_labels_reports = f'{{instance="{self.instance}", result_type="{service}"}}'
 
-        entrypoint = Configuration.REGISTERED_SERVICES[service]["entrypoint"]
-        namespace = Configuration.REGISTERED_SERVICES[service]["namespace"]
+        entrypoint = self.configuration.registered_services[service]["entrypoint"]
+        namespace = self.configuration.registered_services[service]["namespace"]
 
         query_labels_workflows_s = f'{{entrypoint="{entrypoint}", namespace="{namespace}", phase="Succeeded"}}'
         query_labels_workflows_f = f'{{entrypoint="{entrypoint}", namespace="{namespace}", phase="Failed"}}'
@@ -93,7 +97,7 @@ class SLIWorkflowQuality(SLIBase):
         """
         html_inputs = {}
 
-        for service in Configuration.REGISTERED_SERVICES:
+        for service in self.configuration.registered_services:
             service_metrics = {}
             html_inputs[service] = {}
 

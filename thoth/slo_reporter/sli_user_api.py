@@ -29,10 +29,6 @@ from .sli_base import SLIBase
 from .sli_template import HTMLTemplates
 from .configuration import Configuration
 
-_INSTANCE = "dry_run"
-
-if not Configuration.DRY_RUN:
-    _INSTANCE = os.environ["PROMETHEUS_INSTANCE_USER_API"]
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -47,23 +43,34 @@ class SLIUserAPI(SLIBase):
 
     _SLI_NAME = "user_api"
 
+    def __init__(self, configuration: Configuration):
+        """Initialize SLI class."""
+        self.configuration = configuration
+
+        if self.configuration.dry_run:
+            self.instance = "dry_run"
+        else:
+            self.instance = os.environ["PROMETHEUS_INSTANCE_USER_API"]
+
     def _aggregate_info(self):
         """Aggregate info required for User-API SLI Report."""
         return {"query": self._query_sli(), "evaluation_method": self._evaluate_sli, "report_method": self._report_sli}
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for User-API SLI Report."""
-        query_labels = f'{{instance="{_INSTANCE}"}}'
-        query_labels_get_total = f'{{instance="{_INSTANCE}", status="200"}}'
-        query_labels_post_total = f'{{instance="{_INSTANCE}", status="202"}}'
-        query_labels_up = f'{{instance="{_INSTANCE}", job="Thoth User API Metrics ({Configuration._ENVIRONMENT})"}}'
+        query_labels = f'{{instance="{self.instance}"}}'
+        query_labels_get_total = f'{{instance="{self.instance}", status="200"}}'
+        query_labels_post_total = f'{{instance="{self.instance}", status="202"}}'
+        query_labels_up = (
+            f'{{instance="{self.instance}", job="Thoth User API Metrics ({self.configuration.environment})"}}'
+        )
 
         return {
             "avg_successfull_request": f"sum(\
                 (avg(flask_http_request_total{query_labels_get_total}) + \
                 avg(flask_http_request_total{query_labels_post_total})) / \
                 sum(flask_http_request_total{query_labels}))",
-            "avg_up_time": f"avg_over_time(up{query_labels_up}[{Configuration.INTERVAL}])",
+            "avg_up_time": f"avg_over_time(up{query_labels_up}[{self.configuration.interval}])",
         }
 
     def _evaluate_sli(self, sli: Dict[str, Any]) -> Dict[str, float]:
