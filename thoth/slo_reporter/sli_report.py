@@ -39,31 +39,37 @@ _LOGGER = logging.getLogger(__name__)
 class SLIReport:
     """This class contains all sections included in a report."""
 
-    REPORT_SUBJECT = f"Thoth Service Level Indicators Update Day" + f" ({Configuration.END_TIME.strftime('%Y-%m-%d')})"
-    _LOGGER.info(REPORT_SUBJECT)
+    def __init__(self, configuration: Configuration):
+        """Initialize SLI Report"""
+        self.configuration = configuration
 
-    REPORT_START = HTMLTemplates.thoth_report_start_template()
+        self.report_subject = (
+            f"Thoth Service Level Indicators Update Day" + f" ({self.configuration.end_time.strftime('%Y-%m-%d')})"
+        )
+        _LOGGER.info(self.report_subject)
 
-    REPORT_INTRO = HTMLTemplates.thoth_report_intro_template(
-        html_inputs={
-            "environment": Configuration._ENVIRONMENT,
-            "start_time": str(Configuration.START_TIME.strftime("%Y-%m-%d")),
-            "end_time": str(Configuration.END_TIME.strftime("%Y-%m-%d")),
-        },
-    )
+        self.report_start = HTMLTemplates.thoth_report_start_template()
 
-    REPORT_STYLE = HTMLTemplates.thoth_report_style_template()
+        self.report_intro = HTMLTemplates.thoth_report_intro_template(
+            html_inputs={
+                "environment": self.configuration.environment,
+                "start_time": str(self.configuration.start_time.strftime("%Y-%m-%d")),
+                "end_time": str(self.configuration.end_time.strftime("%Y-%m-%d")),
+            }
+        )
 
-    REPORT_SLI_CONTEXT = {
-        SLIPyPIKnowledgeGraph._SLI_NAME: SLIPyPIKnowledgeGraph()._aggregate_info(),
-        SLIKnowledgeGraph._SLI_NAME: SLIKnowledgeGraph()._aggregate_info(),
-        SLILearning._SLI_NAME: SLILearning()._aggregate_info(),
-        SLIKebechet._SLI_NAME: SLIKebechet()._aggregate_info(),
-        SLIUserAPI._SLI_NAME: SLIUserAPI()._aggregate_info(),
-        SLIWorkflowQuality._SLI_NAME: SLIWorkflowQuality()._aggregate_info(),
-        SLIWorkflowLatency._SLI_NAME: SLIWorkflowLatency()._aggregate_info(),
-    }
+        self.report_style = HTMLTemplates.thoth_report_style_template()
 
-    REPORT_REFERENCES = _add_dashbords(Configuration.START_TIME_EPOCH, Configuration.END_TIME_EPOCH)
+        self.report_sli_context = {
+            # SLIPyPIKnowledgeGraph._SLI_NAME: SLIPyPIKnowledgeGraph(configuration=self.configuration)._aggregate_info(),
+            SLIKnowledgeGraph._SLI_NAME: SLIKnowledgeGraph(configuration=self.configuration)._aggregate_info(),
+            SLILearning._SLI_NAME: SLILearning(configuration=self.configuration)._aggregate_info(),
+            # SLIKebechet._SLI_NAME: SLIKebechet(configuration=self.configuration)._aggregate_info(),
+            # SLIUserAPI._SLI_NAME: SLIUserAPI(configuration=self.configuration)._aggregate_info(),
+            # SLIWorkflowQuality._SLI_NAME: SLIWorkflowQuality(configuration=self.configuration)._aggregate_info(),
+            SLIWorkflowLatency._SLI_NAME: SLIWorkflowLatency(configuration=self.configuration)._aggregate_info(),
+        }
 
-    REPORT_END = HTMLTemplates.thoth_report_end_template()
+        self.report_references = _add_dashbords(configuration=configuration)
+
+        self.report_end = HTMLTemplates.thoth_report_end_template()
