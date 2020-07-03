@@ -95,3 +95,32 @@ all the things that you see...
 * Add requires_range variable
 * Generalize time envs to be used
 * Add query_range
+
+## Release 0.5.0 (2020-07-03T11:28:34)
+* Correct env variable
+* Add delta action
+* Make env optional with default to 1
+* Update env variables
+* Modify logic to allow multiple runs to collect previous data
+* Add initilization to use same configuration for all reports
+* Add initialization to the class for configuration
+* Add method and standardize User API SLI
+* Add method and standardize PyPI Knowledge Graph SLI
+* Add method and standardize Thoth Learning SLI
+* Add method and standardize Thoth Knowledge Graph SLI
+* Add method and standardize Kebechet SLI
+* Feature/standardize (#49)
+* Update OWNERS
+* Make pre-commit happy
+* Change configuration to 1 day
+* Add env variables to cronjob template
+* Modify CronJob to run every day EOB
+* Adjust files
+* Add env variables and adjust dry run
+* Add version of storages
+* Add method to parse data and store on Ceph
+* Add methods to store using CephStore
+* Add env variables for store
+* Add requirements for storages and process data
+* Create OWNERS
+* Change time
