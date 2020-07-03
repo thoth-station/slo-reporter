@@ -29,11 +29,6 @@ from .sli_base import SLIBase
 from .sli_template import HTMLTemplates
 from .configuration import Configuration
 
-_INSTANCE = "dry_run"
-
-if not Configuration.DRY_RUN:
-    _INSTANCE = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND"]
-
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -42,6 +37,15 @@ class SLIWorkflowLatency(SLIBase):
 
     _SLI_NAME = "component_latency"
 
+    def __init__(self, configuration: Configuration):
+        """Initialize SLI class."""
+        self.configuration = configuration
+
+        if self.configuration.dry_run:
+            self.instance = "dry_run"
+        else:
+            self.instance = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND"]
+
     def _aggregate_info(self):
         """Aggregate info required for component_latency SLI Report."""
         return {"query": self._query_sli(), "evaluation_method": self._evaluate_sli, "report_method": self._report_sli}
@@ -49,20 +53,19 @@ class SLIWorkflowLatency(SLIBase):
     def _query_sli(self) -> List[str]:
         """Aggregate queries for component_latency SLI Report."""
         queries = {}
-        for service in Configuration.REGISTERED_SERVICES:
+        for service in self.configuration.registered_services:
             result = self._aggregate_queries(service=service)
             for query_name, query in result.items():
                 queries[query_name] = query
 
         return queries
 
-    @staticmethod
-    def _aggregate_queries(service: str):
+    def _aggregate_queries(self, service: str):
         """Aggregate service queries."""
-        query_labels_reports = f'{{instance="{_INSTANCE}", result_type="{service}"}}'
+        query_labels_reports = f'{{instance="{self.instance}", result_type="{service}"}}'
 
-        entrypoint = Configuration.REGISTERED_SERVICES[service]["entrypoint"]
-        namespace = Configuration.REGISTERED_SERVICES[service]["namespace"]
+        entrypoint = self.configuration.registered_services[service]["entrypoint"]
+        namespace = self.configuration.registered_services[service]["namespace"]
 
         query_labels_workflows = f'{{entrypoint="{entrypoint}", namespace="{namespace}"}}'
 
@@ -83,7 +86,7 @@ class SLIWorkflowLatency(SLIBase):
         """
         html_inputs = {}
 
-        for service in Configuration.REGISTERED_SERVICES:
+        for service in self.configuration.registered_services:
             html_inputs[service] = {}
             number_workflows_latency_seconds = sli[f"{service}_workflows_latency"]
 
@@ -92,7 +95,7 @@ class SLIWorkflowLatency(SLIBase):
                 seconds = number_workflows_latency_seconds % 60
                 html_inputs[service]["minutes"] = round(minutes)
                 html_inputs[service]["seconds"] = round(seconds)
-                html_inputs[service]["value"] = number_workflows_latency_seconds
+                html_inputs[service]["value"] = round(minutes)
             else:
                 html_inputs[service]["minutes"] = np.nan
                 html_inputs[service]["seconds"] = np.nan

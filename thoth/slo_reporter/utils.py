@@ -26,7 +26,7 @@ from typing import List, Dict, Optional
 
 from thoth.storages import CephStore
 
-from thoth.slo_reporter.configuration import _get_sli_metrics_prefix
+from thoth.slo_reporter.configuration import _get_sli_metrics_prefix, Configuration
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -53,24 +53,12 @@ def manipulate_retrieved_metrics_vector(metrics_vector: List[float], action: str
     if action == "min_max":
         metric = max(metrics_vector) - min(metrics_vector)
 
+    elif action == "delta":
+        modified_results = _evaluate_ascending_results(metrics_vector=metrics_vector)
+        metric = metrics_vector[-1] - metrics_vector[0]
+
     elif action == "min_max_only_ascending":
-        counter = 0
-        modified_results = []
-
-        for retrieved_value in metrics_vector:
-            if counter == 0:
-                modified_results.append(retrieved_value)
-
-            else:
-
-                if retrieved_value > metrics_vector[counter - 1]:
-                    modified_results.append(retrieved_value)
-
-                else:
-                    pass
-
-            counter += 1
-
+        modified_results = _evaluate_ascending_results(metrics_vector=metrics_vector)
         metric = max(modified_results) - min(modified_results)
 
     elif action == "average":
@@ -81,10 +69,30 @@ def manipulate_retrieved_metrics_vector(metrics_vector: List[float], action: str
 
     return metric
 
+def _evaluate_ascending_results(metrics_vector: List[float]) -> List[float]:
+    """Evaluate vector with only ascending values."""
+    counter = 0
+    modified_vector = []
 
-def connect_to_ceph(bucket: Optional[str] = None) -> CephStore:
+    for retrieved_value in metrics_vector:
+        if counter == 0:
+            modified_vector.append(retrieved_value)
+
+        else:
+
+            if retrieved_value > metrics_vector[counter - 1]:
+                modified_vector.append(retrieved_value)
+
+            else:
+                pass
+
+        counter += 1
+
+    return modified_vector
+
+def connect_to_ceph(ceph_bucket_prefix: str, environment: str, bucket: Optional[str] = None) -> CephStore:
     """Connect to Ceph to store SLI metrics for Thoth."""
-    prefix = _get_sli_metrics_prefix()
+    prefix = _get_sli_metrics_prefix(ceph_bucket_prefix=ceph_bucket_prefix, environment=environment)
     ceph = CephStore(prefix=prefix, bucket=bucket)
     ceph.connect()
     return ceph

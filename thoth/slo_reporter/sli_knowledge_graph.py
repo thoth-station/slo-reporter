@@ -28,10 +28,6 @@ from .sli_base import SLIBase
 from .sli_template import HTMLTemplates
 from .configuration import Configuration
 
-_INSTANCE = "dry_run"
-
-if not Configuration.DRY_RUN:
-    _INSTANCE = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND"]
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -49,27 +45,48 @@ class SLIKnowledgeGraph(SLIBase):
 
     _SLI_NAME = "knowledge_graph"
 
+    def __init__(self, configuration: Configuration):
+        """Initialize SLI class."""
+        self.configuration = configuration
+
+        if self.configuration.dry_run:
+            self.instance = "dry_run"
+        else:
+            self.instance = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND"]
+
     def _aggregate_info(self):
         """Aggregate info required for knowledge graph SLI Report."""
         return {"query": self._query_sli(), "evaluation_method": self._evaluate_sli, "report_method": self._report_sli}
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for knowledge graph SLI Report."""
-        query_labels = f'{{instance="{_INSTANCE}", job="Thoth Metrics ({Configuration._ENVIRONMENT})"}}'
+        query_labels = f'{{instance="{self.instance}", job="Thoth Metrics ({self.configuration.environment})"}}'
 
         return {
-            "python_indices_registered": f"thoth_graphdb_total_python_indexes{query_labels}",
-            "total_packages": f"thoth_graphdb_sum_python_packages_per_indexes{query_labels}",
+            "python_indices_registered": {
+                "query": f"thoth_graphdb_total_python_indexes{query_labels}",
+                "requires_range": True,
+                "type": "latest",
+            },
+            "total_packages": {
+                "query": f"thoth_graphdb_sum_python_packages_per_indexes{query_labels}",
+                "requires_range": True,
+                "type": "latest",
+            },
             "new_packages": {
                 "query": f"thoth_graphdb_sum_python_packages_per_indexes{query_labels}",
                 "requires_range": True,
                 "type": "min_max",
             },
-            "total_releases": f"thoth_graphdb_number_python_package_versions{query_labels}",
+            "total_releases": {
+                "query": f"thoth_graphdb_number_python_package_versions{query_labels}",
+                "requires_range": True,
+                "type": "latest",
+            },
             "new_packages_releases": {
                 "query": f"thoth_graphdb_number_python_package_versions{query_labels}",
                 "requires_range": True,
-                "type": "min_max",
+                "type": "min_max_only_ascending",
             },
         }
 
@@ -83,13 +100,13 @@ class SLIKnowledgeGraph(SLIBase):
         for knowledge_quantity in _REGISTERED_KNOWLEDGE_QUANTITY.keys():
 
             html_inputs[knowledge_quantity] = {}
-            html_inputs[knowledge_quantity]['name'] = _REGISTERED_KNOWLEDGE_QUANTITY[knowledge_quantity]
+            html_inputs[knowledge_quantity]["name"] = _REGISTERED_KNOWLEDGE_QUANTITY[knowledge_quantity]
 
             if sli[knowledge_quantity] != "ErrorMetricRetrieval":
-                html_inputs[knowledge_quantity]['value'] = int(sli[knowledge_quantity])
+                html_inputs[knowledge_quantity]["value"] = int(sli[knowledge_quantity])
 
             else:
-                html_inputs[knowledge_quantity]['value'] = np.nan
+                html_inputs[knowledge_quantity]["value"] = np.nan
 
         return html_inputs
 

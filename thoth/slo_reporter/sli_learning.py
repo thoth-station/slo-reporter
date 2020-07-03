@@ -28,11 +28,6 @@ from .sli_base import SLIBase
 from .sli_template import HTMLTemplates
 from .configuration import Configuration
 
-_INSTANCE = "dry_run"
-
-if not Configuration.DRY_RUN:
-    _INSTANCE = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND"]
-
 _LOGGER = logging.getLogger(__name__)
 
 _REGISTERED_LEARNING_MEASUREMENT_UNIT = {
@@ -50,13 +45,22 @@ class SLILearning(SLIBase):
 
     _SLI_NAME = "learning"
 
+    def __init__(self, configuration: Configuration):
+        """Initialize SLI class."""
+        self.configuration = configuration
+
+        if self.configuration.dry_run:
+            self.instance = "dry_run"
+        else:
+            self.instance = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND"]
+
     def _aggregate_info(self):
         """Aggregate info required for learning quantities SLI Report."""
         return {"query": self._query_sli(), "evaluation_method": self._evaluate_sli, "report_method": self._report_sli}
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for learning quantities SLI Report."""
-        query_labels = f'{{instance="{_INSTANCE}", job="Thoth Metrics ({Configuration._ENVIRONMENT})"}}'
+        query_labels = f'{{instance="{self.instance}", job="Thoth Metrics ({self.configuration.environment})"}}'
 
         return {
             "average_learning_rate": {
