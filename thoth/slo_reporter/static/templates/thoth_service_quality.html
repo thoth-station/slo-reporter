@@ -14,7 +14,7 @@
             {% for service, successfull_percentage in html_inputs.items() %}
             <tr>
                 <td>{{ service }}</td>
-                <td>{{ successfull_percentage }}</td>
+                <td>{{ successfull_percentage['value'] }}</td>
                 <td> % </td>
             </tr>
             {% endfor %}
