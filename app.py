@@ -31,7 +31,6 @@ from pandas.io.json import json_normalize
 
 from typing import Dict, Any
 from pathlib import Path
-from datetime import date
 
 from prometheus_api_client import Metric, MetricsList, PrometheusConnect
 from prometheus_api_client.utils import parse_datetime, parse_timedelta
