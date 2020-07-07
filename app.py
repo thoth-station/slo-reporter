@@ -31,6 +31,7 @@ from pandas.io.json import json_normalize
 
 from typing import Dict, Any
 from pathlib import Path
+from datetime import date
 
 from prometheus_api_client import Metric, MetricsList, PrometheusConnect
 from prometheus_api_client.utils import parse_datetime, parse_timedelta
@@ -248,7 +249,7 @@ def send_sli_email(email_message: MIMEText, configuration: Configuration, sli_re
 
 
 def run_slo_reporter(
-    start_time: datetime.datetime, end_time: datetime.datetime, number_days: int, dry_run: bool,
+    start_time: datetime.datetime, end_time: datetime.datetime, number_days: int, dry_run: bool, day_of_week: str,
 ) -> None:
     """Run SLO reporter."""
     configuration = Configuration(start_time=start_time, end_time=end_time, number_days=number_days, dry_run=dry_run)
@@ -281,8 +282,14 @@ def run_slo_reporter(
 
     # Generate HTML for email from metrics and send it.
     if not _DRY_RUN and not _ONLY_STORE_ON_CEPH:
-        email_message = generate_email(weekly_sli_values_map, configuration=configuration, sli_report=sli_report)
-        send_sli_email(email_message, configuration=configuration, sli_report=sli_report)
+        if day_of_week == configuration.email_day:
+            _LOGGER.info(f"Today is: {day_of_week}, therefore I send email.")
+            email_message = generate_email(weekly_sli_values_map, configuration=configuration, sli_report=sli_report)
+            send_sli_email(email_message, configuration=configuration, sli_report=sli_report)
+        else:
+            _LOGGER.info(
+                f"Today is: {day_of_week}, I do not send emails. I send email only on {configuration.email_day}",
+            )
 
 
 def main():
@@ -307,7 +314,15 @@ def main():
         _START_TIME = _END_TIME - datetime.timedelta(days=INTERVAL_REPORT_DAYS)
         _LOGGER.info(f"Interval: {_START_TIME.strftime('%Y-%m-%d')} - {_END_TIME.strftime('%Y-%m-%d')}")
 
-        run_slo_reporter(start_time=_START_TIME, end_time=_END_TIME, number_days=INTERVAL_REPORT_DAYS, dry_run=_DRY_RUN)
+        day_of_week = _END_TIME.strftime("%A")
+
+        run_slo_reporter(
+            start_time=_START_TIME,
+            end_time=_END_TIME,
+            number_days=INTERVAL_REPORT_DAYS,
+            dry_run=_DRY_RUN,
+            day_of_week=day_of_week,
+        )
 
 
 if __name__ == "__main__":
