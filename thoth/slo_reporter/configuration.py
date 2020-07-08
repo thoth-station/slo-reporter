@@ -97,6 +97,8 @@ class Configuration:
         # Interval for report
         self.interval = f"{self.number_days}d"
 
+        self.email_day = "Friday"
+
 
 def _get_sli_metrics_prefix(ceph_bucket_prefix: str, environment: str) -> str:
     """Get prefix where sli metrics are stored.
