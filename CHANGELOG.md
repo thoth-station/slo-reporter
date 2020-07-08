@@ -127,3 +127,6 @@ all the things that you see...
 
 ## Release 0.5.1 (2020-07-03T14:30:25)
 * correct variable due to wrong rebase
+
+## Release 0.5.2 (2020-07-08T10:59:36)
+* Add day of week check to send emails (#56)
