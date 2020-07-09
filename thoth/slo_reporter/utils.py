@@ -69,6 +69,7 @@ def manipulate_retrieved_metrics_vector(metrics_vector: List[float], action: str
 
     return metric
 
+
 def _evaluate_ascending_results(metrics_vector: List[float]) -> List[float]:
     """Evaluate vector with only ascending values."""
     counter = 0
@@ -89,6 +90,7 @@ def _evaluate_ascending_results(metrics_vector: List[float]) -> List[float]:
         counter += 1
 
     return modified_vector
+
 
 def connect_to_ceph(ceph_bucket_prefix: str, environment: str, bucket: Optional[str] = None) -> CephStore:
     """Connect to Ceph to store SLI metrics for Thoth."""

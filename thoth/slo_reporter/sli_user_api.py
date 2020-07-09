@@ -33,7 +33,11 @@ from .configuration import Configuration
 _LOGGER = logging.getLogger(__name__)
 
 _USER_API_MEASUREMENT_UNIT = {
-    "avg_successfull_request": {"name": "Successfull requests User-API (avg)", "measurement_unit": "%"},
+    "avg_percentage_successfull_request": {
+        "name": "Successfull requests User-API (avg)",
+        "measurement_unit": "%",
+        "quantities": ["avg_total_request", "avg_successfull_request"],
+    },
     "avg_up_time": {"name": "Uptime User-API (avg)", "measurement_unit": "%"},
 }
 
@@ -59,17 +63,22 @@ class SLIUserAPI(SLIBase):
     def _query_sli(self) -> List[str]:
         """Aggregate queries for User-API SLI Report."""
         query_labels = f'{{instance="{self.instance}"}}'
-        query_labels_get_total = f'{{instance="{self.instance}", status="200"}}'
-        query_labels_post_total = f'{{instance="{self.instance}", status="202"}}'
+        query_labels_success = f'{{instance="{self.instance}", status=~"2.*"}}'
         query_labels_up = (
             f'{{instance="{self.instance}", job="Thoth User API Metrics ({self.configuration.environment})"}}'
         )
 
         return {
-            "avg_successfull_request": f"sum(\
-                (avg(flask_http_request_total{query_labels_get_total}) + \
-                avg(flask_http_request_total{query_labels_post_total})) / \
-                sum(flask_http_request_total{query_labels}))",
+            "avg_total_request": {
+                "query": f"sum(flask_http_request_total{query_labels})",
+                "requires_range": True,
+                "type": "average",
+            },
+            "avg_successfull_request": {
+                "query": f"sum(flask_http_request_total{query_labels_success})",
+                "requires_range": True,
+                "type": "average",
+            },
             "avg_up_time": f"avg_over_time(up{query_labels_up}[{self.configuration.interval}])",
         }
 
@@ -81,14 +90,32 @@ class SLIUserAPI(SLIBase):
         html_inputs = {}
 
         for user_api_quantity in _USER_API_MEASUREMENT_UNIT.keys():
-
             user_api_quantity_data = _USER_API_MEASUREMENT_UNIT[user_api_quantity]
             html_inputs[user_api_quantity] = {}
 
-            if sli[user_api_quantity] != "ErrorMetricRetrieval":
-                html_inputs[user_api_quantity]["value"] = abs(round(sli[user_api_quantity] * 100, 3))
+            if user_api_quantity == "avg_percentage_successfull_request":
+                results = {}
+                for quantity in user_api_quantity_data["quantities"]:
+                    if sli[quantity] != "ErrorMetricRetrieval":
+                        results[quantity] = sli[quantity]
+                    else:
+                        results[quantity] = np.nan
+
+                if all(single_quantity != np.nan for single_quantity in results.values()):
+                    if results["avg_total_request"] > 0:
+                        percentage = results["avg_successfull_request"] / results["avg_total_request"]
+                    else:
+                        percentage = 0
+
+                    html_inputs[user_api_quantity]["value"] = abs(round(percentage * 100, 3))
+                else:
+                    html_inputs[user_api_quantity]["value"] = np.nan
+
             else:
-                html_inputs[user_api_quantity]["value"] = np.nan
+                if sli[user_api_quantity] != "ErrorMetricRetrieval":
+                    html_inputs[user_api_quantity]["value"] = abs(round(sli[user_api_quantity] * 100, 3))
+                else:
+                    html_inputs[user_api_quantity]["value"] = np.nan
 
             html_inputs[user_api_quantity]["name"] = user_api_quantity_data["name"]
             html_inputs[user_api_quantity]["measurement_unit"] = user_api_quantity_data["measurement_unit"]
