@@ -130,3 +130,7 @@ all the things that you see...
 
 ## Release 0.5.2 (2020-07-08T10:59:36)
 * Add day of week check to send emails (#56)
+
+## Release 0.5.3 (2020-07-10T06:44:26)
+* :pushpin: Automatic update of dependency thoth-storages from 0.24.0 to 0.24.3 (#60)
+* Adjust User-API SLI retrieve (#59)

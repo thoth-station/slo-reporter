@@ -21,6 +21,6 @@
 from thoth.storages import __version__ as __storages__version__
 
 
-__version__ = "0.5.2"
+__version__ = "0.5.3"
 __service_version__ = f"{__version__}+\
     storages.{__storages__version__}"
