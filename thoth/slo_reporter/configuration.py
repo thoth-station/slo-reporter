@@ -88,6 +88,7 @@ class Configuration:
             "kebechet": {"entrypoint": "kebechet-job", "namespace": self.backend_namespace},
             "inspection": {"entrypoint": "main", "namespace": self.amun_inspection_namespace},
             "qeb_hwt": {"entrypoint": "qeb-hwt", "namespace": self.backend_namespace},
+            "security": {"entrypoint": "security-indicators", "namespace": self.middletier_namespace},
             "solver": {"entrypoint": "solve-and-sync", "namespace": self.middletier_namespace},
         }
 
