@@ -83,7 +83,7 @@ class SLILearning(SLIBase):
             "new_solvers": {
                 "query": f"thoth_graphdb_total_number_solvers{query_labels}",
                 "requires_range": True,
-                "type": "min_max",
+                "type": "delta",
             },
         }
 
@@ -100,7 +100,12 @@ class SLILearning(SLIBase):
             html_inputs[learning_quantity] = {}
 
             if sli[learning_quantity] != "ErrorMetricRetrieval":
-                html_inputs[learning_quantity]["value"] = abs(int(sli[learning_quantity]))
+
+                # if quntity uses delta
+                if learning_quantity == "new_solvers":
+                    html_inputs[learning_quantity]["value"] = int(sli[learning_quantity])
+                else:
+                    html_inputs[learning_quantity]["value"] = abs(int(sli[learning_quantity]))
             else:
                 html_inputs[learning_quantity]["value"] = np.nan
 
