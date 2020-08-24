@@ -134,3 +134,13 @@ all the things that you see...
 ## Release 0.5.3 (2020-07-10T06:44:26)
 * :pushpin: Automatic update of dependency thoth-storages from 0.24.0 to 0.24.3 (#60)
 * Adjust User-API SLI retrieve (#59)
+
+## Release 0.5.4 (2020-08-24T08:54:11)
+* :pushpin: Automatic update of dependency thoth-storages from 0.24.5 to 0.25.5 (#72)
+* Modify environment variable (#70)
+* :pushpin: Automatic update of dependency pandas from 1.0.5 to 1.1.0 (#68)
+* :pushpin: Automatic update of dependency pandas from 1.0.5 to 1.1.0 (#67)
+* :pushpin: Automatic update of dependency thoth-storages from 0.24.3 to 0.24.5 (#66)
+* :pushpin: Automatic update of dependency thoth-storages from 0.24.3 to 0.24.5 (#65)
+* :pushpin: Automatic update of dependency prometheus-api-client from 0.3.1 to 0.4.0 (#64)
+* Add SLI for security workflow (#63)
