@@ -48,19 +48,14 @@ class SLIPyPIKnowledgeGraph(SLIBase):
         """Initialize SLI class."""
         self.configuration = configuration
 
-        if self.configuration.dry_run:
-            self.instance = "dry_run"
-        else:
-            self.instance = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND"]
-
     def _aggregate_info(self):
         """Aggregate info required for knowledge graph SLI Report."""
         return {"query": self._query_sli(), "evaluation_method": self._evaluate_sli, "report_method": self._report_sli}
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for knowledge graph SLI Report."""
-        query_labels_packages = f'{{instance="{self.instance}", job="Thoth Metrics ({self.configuration.environment})", stats_type="packages"}}'
-        query_labels_releases = f'{{instance="{self.instance}", job="Thoth Metrics ({self.configuration.environment})", stats_type="releases"}}'
+        query_labels_packages = f'{{instance="{self.configuration.instance}", job="Thoth Metrics ({self.configuration.environment})", stats_type="packages"}}'
+        query_labels_releases = f'{{instance="{self.configuration.instance}", job="Thoth Metrics ({self.configuration.environment})", stats_type="releases"}}'
 
         return {
             "total_packages": {
