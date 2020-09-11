@@ -144,3 +144,14 @@ all the things that you see...
 * :pushpin: Automatic update of dependency thoth-storages from 0.24.3 to 0.24.5 (#65)
 * :pushpin: Automatic update of dependency prometheus-api-client from 0.3.1 to 0.4.0 (#64)
 * Add SLI for security workflow (#63)
+
+## Release 0.5.5 (2020-09-11T13:20:06)
+### Features
+* Update reference dashboard (#83)
+### Automatic Updates
+* :pushpin: Automatic update of dependency pandas from 1.1.1 to 1.1.2 (#86)
+* :pushpin: Automatic update of dependency thoth-storages from 0.25.5 to 0.25.7 (#85)
+* :pushpin: Automatic update of dependency prometheus-api-client from 0.4.0 to 0.4.1 (#84)
+* :pushpin: Automatic update of dependency pandas from 1.1.0 to 1.1.1 (#77)
+* :pushpin: Automatic update of dependency pandas from 1.1.0 to 1.1.1 (#76)
+* :pushpin: Automatic update of dependency pandas from 1.1.0 to 1.1.1 (#74)
