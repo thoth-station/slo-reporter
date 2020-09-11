@@ -35,10 +35,12 @@ def _add_dashbords(configuration: Configuration):
 
     html_inputs = {}
 
-    knowledge_graph_dashboard_name = f"thoth-knowledge-graph-content-metrics-{configuration.environment}"
+    knowledge_graph_dashboard_name = f"thoth-knowledge-graph-content-metrics"
     knowledge_graph_dashboard_url = (
         f"https://grafana.datahub.redhat.com/dashboard/db/{knowledge_graph_dashboard_name}?"
-        + f"refresh=1m&orgId=1&from={start_time_epoch}&to={end_time_epoch}"
+        + f"refresh=1m&orgId=1&from={start_time_epoch}&to={end_time_epoch}&"
+        + f"var-instance={configuration.instance}&"
+        + f"var-environment={configuration.environment}"
     )
     html_inputs["Thoth Knowledge Graph"] = {
         "url": knowledge_graph_dashboard_url,

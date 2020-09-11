@@ -42,11 +42,6 @@ class SLIWorkflowQuality(SLIBase):
         """Initialize SLI class."""
         self.configuration = configuration
 
-        if self.configuration.dry_run:
-            self.instance = "dry_run"
-        else:
-            self.instance = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_FRONTEND"]
-
     def _aggregate_info(self):
         """Aggregate info required for solver_quality SLI Report."""
         return {"query": self._query_sli(), "evaluation_method": self._evaluate_sli, "report_method": self._report_sli}
@@ -63,7 +58,7 @@ class SLIWorkflowQuality(SLIBase):
 
     def _aggregate_queries(self, service: str):
         """Aggregate service queries."""
-        query_labels_reports = f'{{instance="{self.instance}", result_type="{service}"}}'
+        query_labels_reports = f'{{instance="{self.configuration.instance}", result_type="{service}"}}'
 
         entrypoint = self.configuration.registered_services[service]["entrypoint"]
         namespace = self.configuration.registered_services[service]["namespace"]

@@ -50,10 +50,13 @@ class Configuration:
             self.backend_namespace = "thoth-dry-run"
             self.middletier_namespace = "thoth-dry-run"
             self.amun_inspection_namespace = "thoth-dry-run"
+            self.instance = "dry_run"
 
         if not dry_run:
 
             # Thoth
+            self.instance = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_INFRA"]
+
             self.environment = os.environ["THOTH_DEPLOYMENT_NAME"].split("-")[1]  #e.g. ocp-stage, take only stage
             self.backend_namespace = os.environ["THOTH_BACKEND_NAMESPACE"]
             self.middletier_namespace = os.environ["THOTH_MIDDLETIER_NAMESPACE"]
