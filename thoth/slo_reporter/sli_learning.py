@@ -68,7 +68,7 @@ class SLILearning(SLIBase):
             "learned_packages": {
                 "query": f"sum(thoth_graphdb_total_number_solved_python_packages{query_labels})",
                 "requires_range": True,
-                "type": "min_max_only_ascending",
+                "type": "delta",
             },
             "solvers": {
                 "query": f"thoth_graphdb_total_number_solvers{query_labels}",
@@ -98,6 +98,8 @@ class SLILearning(SLIBase):
 
                 # if quntity uses delta
                 if learning_quantity == "new_solvers":
+                    html_inputs[learning_quantity]["value"] = int(sli[learning_quantity])
+                elif learning_quantity == "learned_packages":
                     html_inputs[learning_quantity]["value"] = int(sli[learning_quantity])
                 else:
                     html_inputs[learning_quantity]["value"] = abs(int(sli[learning_quantity]))
