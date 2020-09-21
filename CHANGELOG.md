@@ -155,3 +155,11 @@ all the things that you see...
 * :pushpin: Automatic update of dependency pandas from 1.1.0 to 1.1.1 (#77)
 * :pushpin: Automatic update of dependency pandas from 1.1.0 to 1.1.1 (#76)
 * :pushpin: Automatic update of dependency pandas from 1.1.0 to 1.1.1 (#74)
+
+## Release 0.5.6 (2020-09-21T07:03:17)
+### Features
+* Update evaluation method (#92)
+### Automatic Updates
+* :pushpin: Automatic update of dependency thoth-storages from 0.25.9 to 0.25.10 (#94)
+* :pushpin: Automatic update of dependency thoth-storages from 0.25.7 to 0.25.9 (#90)
+* :pushpin: Automatic update of dependency thoth-storages from 0.25.7 to 0.25.9 (#89)
