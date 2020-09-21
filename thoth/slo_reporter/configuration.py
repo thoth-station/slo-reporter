@@ -22,6 +22,7 @@ import os
 import datetime
 
 from prometheus_client import CollectorRegistry, Gauge
+from thoth.storages.graph.enums import ThothAdviserIntegrationEnum
 
 from typing import Optional
 
@@ -57,7 +58,7 @@ class Configuration:
             # Thoth
             self.instance = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_INFRA"]
 
-            self.environment = os.environ["THOTH_DEPLOYMENT_NAME"].split("-")[1]  #e.g. ocp-stage, take only stage
+            self.environment = os.environ["THOTH_DEPLOYMENT_NAME"].split("-")[1]  # e.g. ocp-stage, take only stage
             self.backend_namespace = os.environ["THOTH_BACKEND_NAMESPACE"]
             self.middletier_namespace = os.environ["THOTH_MIDDLETIER_NAMESPACE"]
             self.amun_inspection_namespace = os.environ["THOTH_AMUN_INSPECTION_NAMESPACE"]
@@ -94,6 +95,13 @@ class Configuration:
             "security": {"entrypoint": "security-indicators", "namespace": self.middletier_namespace},
             "solver": {"entrypoint": "solve-and-sync", "namespace": self.middletier_namespace},
         }
+
+        integrations = []
+
+        for thoth_integration in ThothAdviserIntegrationEnum._member_names_:
+            integrations.append(thoth_integration)
+
+        self.thoth_integrations = integrations
 
         # Step for query range
         self.step = "2h"

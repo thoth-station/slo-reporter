@@ -1,0 +1,23 @@
+{% extends "templates/base.html" %}
+{% block table_name %} <strong> Thoth Integrations </strong> {% endblock %}
+{% block table_info %} <strong> Integrations Info </strong> {% endblock %}
+{% block classes %}
+        <thead>
+            <tr>
+                <th>Integration</th>
+                <th>New use</th>
+                <th>Total use</th>
+            </tr>
+        </thead>
+        {% endblock %}
+        {% block inputs %}
+        <tbody>
+            {% for metric_type, metric in html_inputs.items() %}
+                <tr>
+                    <td>{{ metric_type }}</td>
+                    <td>{{ metric['periodic'] }}</td>
+                    <td>{{ metric['total'] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+{% endblock %}
