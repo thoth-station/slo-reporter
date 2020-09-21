@@ -9,8 +9,17 @@ prometheus-api-client = "*"
 jinja2 = "*"
 thoth-storages = "*"
 pandas = "*"
+thoth-common = "*"
 
 [dev-packages]
+pytest = "*"
+pytest-timeout = "*"
+pytest-cov = "*"
+hypothesis-auto = "*"
+hypothesis = "*"
+pytest-mypy = "*"
+mypy = "*"
+pre-commit = "==2.0.1"
 
 [requires]
 python_version = "3.6"
