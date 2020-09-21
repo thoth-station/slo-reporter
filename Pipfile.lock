@@ -722,11 +722,11 @@
         },
         "thoth-storages": {
             "hashes": [
-                "sha256:3da5aa54ec216a1c9b9c58880b5456740c4276472f68081b34ec81713528f804",
-                "sha256:7ccbe2d0f1ea8c459156f4384053bac6117cfcf071ad4d4b2b07f9109f8fbeb4"
+                "sha256:39af02ad010c1618dee342262b10ea1ffc8d665554d7a6d4294fb9e00e04e282",
+                "sha256:f7204f5f1ae559096ad45ccbd7d0f9467cc15cd4cfef2643dc6e1a4c842e24ad"
             ],
             "index": "pypi",
-            "version": "==0.25.10"
+            "version": "==0.25.11"
         },
         "toml": {
             "hashes": [
@@ -761,9 +761,10 @@
         },
         "voluptuous": {
             "hashes": [
-                "sha256:2abc341dbc740c5e2302c7f9b8e2e243194fb4772585b991931cb5b22e9bf456"
+                "sha256:0fff348a097c9a74f9f4a991d2cf01a6185780e997ad953bde49cb3efbb411be",
+                "sha256:3a4ef294e16f6950c79de4cba88f31092a107e6e3aaa29950b43e2bb9e1bb2dc"
             ],
-            "version": "==0.11.7"
+            "version": "==0.12.0"
         },
         "websocket-client": {
             "hashes": [
