@@ -102,7 +102,7 @@ class SLIKebechet(SLIBase):
         return report
 
     def _create_inputs_for_df_sli(
-        self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime
+        self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime,
     ) -> Dict[str, Any]:
         """Create inputs for SLI dataframe to be stored.
 

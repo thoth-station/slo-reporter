@@ -127,7 +127,7 @@ def collect_metrics(configuration: Configuration, sli_report: SLIReport):
 
 
 def store_sli_periodic_metrics_to_ceph(
-    periodic_metrics: Dict[str, Any], configuration: Configuration, sli_report: SLIReport
+    periodic_metrics: Dict[str, Any], configuration: Configuration, sli_report: SLIReport,
 ):
     """Store weekly metrics to ceph."""
     datetime = str(configuration.end_time.strftime("%Y-%m-%d"))
@@ -135,7 +135,7 @@ def store_sli_periodic_metrics_to_ceph(
     _LOGGER.info(f"Start storing Thoth weekly SLI metrics for {sli_metrics_id}.")
 
     ceph_sli = connect_to_ceph(
-        ceph_bucket_prefix=configuration.ceph_bucket_prefix, environment=configuration.environment
+        ceph_bucket_prefix=configuration.ceph_bucket_prefix, environment=configuration.environment,
     )
     public_ceph_sli = connect_to_ceph(
         ceph_bucket_prefix=configuration.ceph_bucket_prefix,
@@ -146,7 +146,7 @@ def store_sli_periodic_metrics_to_ceph(
     for metric_class in periodic_metrics:
         evaluation_method = sli_report.report_sli_context[metric_class]["df_method"]
         inputs_for_df_sli = evaluation_method(
-            periodic_metrics[metric_class], datetime=datetime, timestamp=configuration.end_time_epoch
+            periodic_metrics[metric_class], datetime=datetime, timestamp=configuration.end_time_epoch,
         )
 
         metrics_df = pd.DataFrame(json_normalize(inputs_for_df_sli))
@@ -155,7 +155,7 @@ def store_sli_periodic_metrics_to_ceph(
 
         try:
             store_thoth_sli_on_ceph(
-                ceph_sli=ceph_sli, metric_class=metric_class, metrics_df=metrics_df, ceph_path=ceph_path
+                ceph_sli=ceph_sli, metric_class=metric_class, metrics_df=metrics_df, ceph_path=ceph_path,
             )
         except Exception as e_ceph:
             _LOGGER.exception(f"Could not store metrics on Thoth bucket on Ceph...{e_ceph}")
@@ -175,7 +175,7 @@ def store_sli_periodic_metrics_to_ceph(
 
 
 def push_thoth_sli_periodic_metrics(
-    periodic_metrics: Dict[str, Metric], configuration: Configuration, sli_report: SLIReport
+    periodic_metrics: Dict[str, Metric], configuration: Configuration, sli_report: SLIReport,
 ):
     """Push Thoth SLI weekly metric to PushGateway."""
     for sli_type, metric_data in periodic_metrics.items():
@@ -185,12 +185,12 @@ def push_thoth_sli_periodic_metrics(
             if weekly_value_metric != "ErrorMetricRetrieval":
 
                 configuration.thoth_weekly_sli.labels(sli_type=sli_type, metric_name=metric_name).set(
-                    weekly_value_metric
+                    weekly_value_metric,
                 )
                 _LOGGER.info("(sli_type=%r, metric_name=%r)=%r", sli_type, metric_name, weekly_value_metric)
 
     push_to_gateway(
-        configuration.pushgateway_endpoint, job="Weekly Thoth SLI", registry=configuration.prometheus_registry
+        configuration.pushgateway_endpoint, job="Weekly Thoth SLI", registry=configuration.prometheus_registry,
     )
     _LOGGER.info(f"Pushed Thoth weekly SLI to Prometheus Pushgateway.")
 
@@ -243,7 +243,7 @@ def send_sli_email(email_message: MIMEText, configuration: Configuration, sli_re
 
 
 def run_slo_reporter(
-    start_time: datetime.datetime, end_time: datetime.datetime, number_days: int, dry_run: bool, day_of_week: str
+    start_time: datetime.datetime, end_time: datetime.datetime, number_days: int, dry_run: bool, day_of_week: str,
 ) -> None:
     """Run SLO reporter."""
     configuration = Configuration(start_time=start_time, end_time=end_time, number_days=number_days, dry_run=dry_run)
@@ -257,7 +257,7 @@ def run_slo_reporter(
     # Store metrics on Ceph and push them to Pushgateway.
     if not _DRY_RUN:
         store_sli_periodic_metrics_to_ceph(
-            periodic_metrics=sli_values_map, configuration=configuration, sli_report=sli_report
+            periodic_metrics=sli_values_map, configuration=configuration, sli_report=sli_report,
         )
 
         try:
@@ -300,7 +300,7 @@ def main():
     if EVALUATION_METRICS_DAYS > 1 and not _ONLY_STORE_ON_CEPH:
         raise Exception(
             "You need to set THOTH_ONLY_STORE_ON_CEPH to 1 if you want to evaluate metrics for more than one day."
-            f" Otherwise {EVALUATION_METRICS_DAYS} emails will be sent out."
+            f" Otherwise {EVALUATION_METRICS_DAYS} emails will be sent out.",
         )
 
     for i in range(0, EVALUATION_METRICS_DAYS):

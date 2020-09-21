@@ -101,7 +101,7 @@ def connect_to_ceph(ceph_bucket_prefix: str, environment: str, bucket: Optional[
 
 
 def store_thoth_sli_on_ceph(
-    ceph_sli: CephStore, metric_class: str, metrics_df: pd.DataFrame, ceph_path: str, is_public: bool = False
+    ceph_sli: CephStore, metric_class: str, metrics_df: pd.DataFrame, ceph_path: str, is_public: bool = False,
 ) -> None:
     """Store Thoth SLI on Ceph."""
     metrics_csv = metrics_df.to_csv(index=False, header=False)
