@@ -87,6 +87,12 @@ class HTMLTemplates:
         template = ENV.get_template("templates/thoth_kebechet.html")
         return template.render(**parameters)
 
+    def thoth_integrations_template(html_inputs: Dict[str, Any]):
+        """Create HTML template to be used for Thoth Integrations."""
+        parameters = locals()
+        template = ENV.get_template("templates/thoth_integrations.html")
+        return template.render(**parameters)
+
     def thoth_references_template(html_inputs: Dict[str, Any]):
         """Create HTML template to be used for Thoth references."""
         parameters = locals()

@@ -43,7 +43,12 @@ class SLIWorkflowLatency(SLIBase):
 
     def _aggregate_info(self):
         """Aggregate info required for component_latency SLI Report."""
-        return {"query": self._query_sli(), "evaluation_method": self._evaluate_sli, "report_method": self._report_sli}
+        return {
+            "query": self._query_sli(),
+            "evaluation_method": self._evaluate_sli,
+            "report_method": self._report_sli,
+            "df_method": self._create_inputs_for_df_sli,
+        }
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for component_latency SLI Report."""
@@ -70,7 +75,7 @@ class SLIWorkflowLatency(SLIBase):
                 f"- argo_workflow_start_time{query_labels_workflows})",
                 "requires_range": True,
                 "type": "average",
-            },
+            }
         }
 
     def _evaluate_sli(self, sli: Dict[str, Any]) -> Dict[str, float]:
@@ -107,3 +112,17 @@ class SLIWorkflowLatency(SLIBase):
         report = HTMLTemplates.thoth_services_latency_template(html_inputs=html_inputs)
 
         return report
+
+    def _create_inputs_for_df_sli(
+        self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime
+    ) -> Dict[str, Any]:
+        """Create inputs for SLI dataframe to be stored.
+
+        @param sli: It's a dict of SLI associated with the SLI type.
+        """
+        parameters = locals()
+        parameters.pop("self")
+
+        output = self._create_default_inputs_for_df_sli(**parameters)
+
+        return output

@@ -23,13 +23,16 @@ import logging
 from .configuration import Configuration
 
 from .sli_references import _add_dashbords
-from .sli_pypi_knowledge_graph import SLIPyPIKnowledgeGraph
-from .sli_knowledge_graph import SLIKnowledgeGraph
+
 from .sli_learning import SLILearning
+from .sli_kebechet import SLIKebechet
+from .sli_knowledge_graph import SLIKnowledgeGraph
+from .sli_pypi_knowledge_graph import SLIPyPIKnowledgeGraph
+from .sli_thoth_integration import SLIThothIntegrations
 from .sli_user_api import SLIUserAPI
 from .sli_workflow_quality import SLIWorkflowQuality
 from .sli_workflow_latency import SLIWorkflowLatency
-from .sli_kebechet import SLIKebechet
+
 from .sli_template import HTMLTemplates
 
 
@@ -55,7 +58,7 @@ class SLIReport:
                 "environment": self.configuration.environment,
                 "start_time": str(self.configuration.start_time.strftime("%Y-%m-%d")),
                 "end_time": str(self.configuration.end_time.strftime("%Y-%m-%d")),
-            },
+            }
         )
 
         self.report_style = HTMLTemplates.thoth_report_style_template()
@@ -64,10 +67,11 @@ class SLIReport:
             SLIPyPIKnowledgeGraph._SLI_NAME: SLIPyPIKnowledgeGraph(configuration=self.configuration)._aggregate_info(),
             SLIKnowledgeGraph._SLI_NAME: SLIKnowledgeGraph(configuration=self.configuration)._aggregate_info(),
             SLILearning._SLI_NAME: SLILearning(configuration=self.configuration)._aggregate_info(),
+            SLIThothIntegrations._SLI_NAME: SLIThothIntegrations(configuration=self.configuration)._aggregate_info(),
             SLIKebechet._SLI_NAME: SLIKebechet(configuration=self.configuration)._aggregate_info(),
             SLIUserAPI._SLI_NAME: SLIUserAPI(configuration=self.configuration)._aggregate_info(),
-            SLIWorkflowQuality._SLI_NAME: SLIWorkflowQuality(configuration=self.configuration)._aggregate_info(),
-            SLIWorkflowLatency._SLI_NAME: SLIWorkflowLatency(configuration=self.configuration)._aggregate_info(),
+            # SLIWorkflowQuality._SLI_NAME: SLIWorkflowQuality(configuration=self.configuration)._aggregate_info(),
+            # SLIWorkflowLatency._SLI_NAME: SLIWorkflowLatency(configuration=self.configuration)._aggregate_info(),
         }
 
         self.report_references = _add_dashbords(configuration=configuration)
