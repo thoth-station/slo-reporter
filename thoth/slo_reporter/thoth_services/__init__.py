@@ -15,10 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-"""Thoth integrations SLI."""
+"""Thoth services SLI."""
 
-from .sli_thoth_integration import SLIThothIntegrations
+from .sli_kebechet import SLIKebechet
 
 __all__ = [
-    "SLIThothIntegrations"
+    "SLIKebechet",
 ]
