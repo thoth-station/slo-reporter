@@ -25,9 +25,9 @@ import numpy as np
 
 from typing import Dict, List, Any
 
-from .sli_base import SLIBase
-from .sli_template import HTMLTemplates
-from .configuration import Configuration
+from thoth.slo_reporter.sli_base import SLIBase
+from thoth.slo_reporter.sli_template import HTMLTemplates
+from thoth.slo_reporter.configuration import Configuration
 
 
 _LOGGER = logging.getLogger(__name__)
