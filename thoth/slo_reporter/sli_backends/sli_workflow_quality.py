@@ -25,16 +25,16 @@ import numpy as np
 
 from typing import Dict, List, Any
 
-from .sli_base import SLIBase
-from .sli_template import HTMLTemplates
-from .configuration import Configuration
+from thoth.slo_reporter.sli_base import SLIBase
+from thoth.slo_reporter.sli_template import HTMLTemplates
+from thoth.slo_reporter.configuration import Configuration
 
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class SLIWorkflowQuality(SLIBase):
-    """This class contains functions for Workflow Quality SLI (Thoth services)."""
+    """This class contains functions for Workflow Quality SLI (Thoth components)."""
 
     _SLI_NAME = "component_quality"
 
@@ -43,7 +43,7 @@ class SLIWorkflowQuality(SLIBase):
         self.configuration = configuration
 
     def _aggregate_info(self):
-        """Aggregate info required for solver_quality SLI Report."""
+        """Aggregate info required for component_quality SLI Report."""
         return {
             "query": self._query_sli(),
             "evaluation_method": self._evaluate_sli,
@@ -52,38 +52,38 @@ class SLIWorkflowQuality(SLIBase):
         }
 
     def _query_sli(self) -> List[str]:
-        """Aggregate queries for solver_quality SLI Report."""
+        """Aggregate queries for component_quality SLI Report."""
         queries = {}
-        for service in self.configuration.registered_services:
-            result = self._aggregate_queries(service=service)
+        for component in self.configuration.registered_components:
+            result = self._aggregate_queries(component=component)
             for query_name, query in result.items():
                 queries[query_name] = query
 
         return queries
 
-    def _aggregate_queries(self, service: str):
-        """Aggregate service queries."""
-        query_labels_reports = f'{{instance="{self.configuration.instance}", result_type="{service}"}}'
+    def _aggregate_queries(self, component: str):
+        """Aggregate component queries."""
+        query_labels_reports = f'{{instance="{self.configuration.instance}", result_type="{component}"}}'
 
-        entrypoint = self.configuration.registered_services[service]["entrypoint"]
-        namespace = self.configuration.registered_services[service]["namespace"]
+        entrypoint = self.configuration.registered_components[component]["entrypoint"]
+        namespace = self.configuration.registered_components[component]["namespace"]
 
         query_labels_workflows_s = f'{{entrypoint="{entrypoint}", namespace="{namespace}", phase="Succeeded"}}'
         query_labels_workflows_f = f'{{entrypoint="{entrypoint}", namespace="{namespace}", phase="Failed"}}'
         query_labels_workflows_e = f'{{entrypoint="{entrypoint}", namespace="{namespace}", phase="Error"}}'
 
         return {
-            f"{service}_workflows_succeeded": {
+            f"{component}_workflows_succeeded": {
                 "query": f"sum(argo_workflow_status_phase{query_labels_workflows_s})",
                 "requires_range": True,
                 "type": "average",
             },
-            f"{service}_workflows_failed": {
+            f"{component}_workflows_failed": {
                 "query": f"sum(argo_workflow_status_phase{query_labels_workflows_f})",
                 "requires_range": True,
                 "type": "average",
             },
-            f"{service}_workflows_error": {
+            f"{component}_workflows_error": {
                 "query": f"sum(argo_workflow_status_phase{query_labels_workflows_e})",
                 "requires_range": True,
                 "type": "average",
@@ -97,18 +97,18 @@ class SLIWorkflowQuality(SLIBase):
         """
         html_inputs = {}
 
-        for service in self.configuration.registered_services:
+        for component in self.configuration.registered_components:
             service_metrics = {}
-            html_inputs[service] = {}
+            html_inputs[component] = {}
 
             for metric, value in sli.items():
 
-                if service in metric:
+                if component in metric:
                     service_metrics[metric] = value
 
-            number_workflows_succeeded = sli[f"{service}_workflows_succeeded"]
-            number_workflows_failed = sli[f"{service}_workflows_failed"]
-            number_workflows_error = sli[f"{service}_workflows_error"]
+            number_workflows_succeeded = sli[f"{component}_workflows_succeeded"]
+            number_workflows_failed = sli[f"{component}_workflows_failed"]
+            number_workflows_error = sli[f"{component}_workflows_error"]
 
             if "ErrorMetricRetrieval" not in [v for v in service_metrics.values()]:
 
@@ -119,13 +119,13 @@ class SLIWorkflowQuality(SLIBase):
 
                     successfull_percentage = (int(number_workflows_succeeded) / total_workflows) * 100
 
-                    html_inputs[service]["value"] = abs(round(successfull_percentage, 3))
+                    html_inputs[component]["value"] = abs(round(successfull_percentage, 3))
 
                 else:
-                    html_inputs[service]["value"] = 0
+                    html_inputs[component]["value"] = 0
 
             else:
-                html_inputs[service]["value"] = np.nan
+                html_inputs[component]["value"] = np.nan
 
         return html_inputs
 

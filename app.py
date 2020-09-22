@@ -276,14 +276,14 @@ def run_slo_reporter(
 
     # Generate HTML for email from metrics and send it.
     if not _DRY_RUN and not _ONLY_STORE_ON_CEPH:
-        # if day_of_week == configuration.email_day:
-        _LOGGER.info(f"Today is: {day_of_week}, therefore I send email.")
-        email_message = generate_email(sli_values_map, configuration=configuration, sli_report=sli_report)
-        send_sli_email(email_message, configuration=configuration, sli_report=sli_report)
-        # else:
-        #     _LOGGER.info(
-        #         f"Today is: {day_of_week}, I do not send emails. I send email only on {configuration.email_day}",
-        #     )
+        if day_of_week == configuration.email_day:
+            _LOGGER.info(f"Today is: {day_of_week}, therefore I send email.")
+            email_message = generate_email(sli_values_map, configuration=configuration, sli_report=sli_report)
+            send_sli_email(email_message, configuration=configuration, sli_report=sli_report)
+        else:
+            _LOGGER.info(
+                f"Today is: {day_of_week}, I do not send emails. I send email only on {configuration.email_day}",
+            )
 
 
 def main():

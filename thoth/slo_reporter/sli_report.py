@@ -24,14 +24,14 @@ from .configuration import Configuration
 
 from .sli_references import _add_dashbords
 
-from .sli_learning import SLILearning
-from .sli_kebechet import SLIKebechet
-from .sli_knowledge_graph import SLIKnowledgeGraph
-from .sli_pypi_knowledge_graph import SLIPyPIKnowledgeGraph
-from .sli_thoth_integration import SLIThothIntegrations
-from .sli_user_api import SLIUserAPI
-from .sli_workflow_quality import SLIWorkflowQuality
-from .sli_workflow_latency import SLIWorkflowLatency
+from thoth.slo_reporter.sli_learning import SLILearning
+from thoth.slo_reporter.sli_thoth_services import SLIKebechet
+from thoth.slo_reporter.sli_knowledge_graph import SLIKnowledgeGraph
+from thoth.slo_reporter.sli_python_knowledge_graph import SLIPyPIKnowledgeGraph
+from thoth.slo_reporter.sli_thoth_integrations import SLIThothIntegrations
+from thoth.slo_reporter.sli_apis import SLIUserAPI
+from thoth.slo_reporter.sli_backends import SLIWorkflowQuality
+from thoth.slo_reporter.sli_backends import SLIWorkflowLatency
 
 from .sli_template import HTMLTemplates
 
@@ -70,8 +70,8 @@ class SLIReport:
             SLIThothIntegrations._SLI_NAME: SLIThothIntegrations(configuration=self.configuration)._aggregate_info(),
             SLIKebechet._SLI_NAME: SLIKebechet(configuration=self.configuration)._aggregate_info(),
             SLIUserAPI._SLI_NAME: SLIUserAPI(configuration=self.configuration)._aggregate_info(),
-            # SLIWorkflowQuality._SLI_NAME: SLIWorkflowQuality(configuration=self.configuration)._aggregate_info(),
-            # SLIWorkflowLatency._SLI_NAME: SLIWorkflowLatency(configuration=self.configuration)._aggregate_info(),
+            SLIWorkflowQuality._SLI_NAME: SLIWorkflowQuality(configuration=self.configuration)._aggregate_info(),
+            SLIWorkflowLatency._SLI_NAME: SLIWorkflowLatency(configuration=self.configuration)._aggregate_info(),
         }
 
         self.report_references = _add_dashbords(configuration=configuration)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # slo-reporter
-# Copyright(C) 2020 Sai Sankar Gochhayat
+# Copyright(C) 2020 Francesco Murdaca
 #
 # This program is free software: you can redistribute it and / or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-"""This file contains class for Kebechet."""
+"""This file contains class for PyPI Knowledge Graph."""
 
 import logging
 import os
@@ -25,29 +25,32 @@ import numpy as np
 
 from typing import Dict, List, Any
 
-from .sli_base import SLIBase
-from .sli_template import HTMLTemplates
-from .configuration import Configuration
+from thoth.slo_reporter.sli_base import SLIBase
+from thoth.slo_reporter.sli_template import HTMLTemplates
+from thoth.slo_reporter.configuration import Configuration
+
 
 _LOGGER = logging.getLogger(__name__)
 
-_REGISTERED_KEBECHET_QUANTITY = {
-    "total_active_repositories": "Total active repositories",
-    "delta_total_active_repositories": "Change in active repositories since last week",
+_REGISTERED_KNOWLEDGE_QUANTITY = {
+    "total_packages": "Python Packages",
+    "new_packages": "New Python Packages",
+    "total_releases": "Python Packages Releases",
+    "new_packages_releases": "New Python Packages Releases",
 }
 
 
-class SLIKebechet(SLIBase):
-    """This class contain functions for Kebechet SLI."""
+class SLIPyPIKnowledgeGraph(SLIBase):
+    """This class contain functions for PyPI Knowledge Graph SLI."""
 
-    _SLI_NAME = "kebechet"
+    _SLI_NAME = "pypi_knowledge_graph"
 
     def __init__(self, configuration: Configuration):
         """Initialize SLI class."""
         self.configuration = configuration
 
     def _aggregate_info(self):
-        """Aggregate info required for Kebechet SLI Report."""
+        """Aggregate info required for knowledge graph SLI Report."""
         return {
             "query": self._query_sli(),
             "evaluation_method": self._evaluate_sli,
@@ -56,49 +59,60 @@ class SLIKebechet(SLIBase):
         }
 
     def _query_sli(self) -> List[str]:
-        """Aggregate queries for Kebechet SLI Report."""
-        query_labels = (
-            f'{{instance="{self.configuration.instance}", job="Thoth Metrics ({self.configuration.environment})"}}'
-        )
+        """Aggregate queries for knowledge graph SLI Report."""
+        query_labels_packages = f'{{instance="{self.configuration.instance}", job="Thoth Metrics ({self.configuration.environment})", stats_type="packages"}}'
+        query_labels_releases = f'{{instance="{self.configuration.instance}", job="Thoth Metrics ({self.configuration.environment})", stats_type="releases"}}'
+
         return {
-            "total_active_repositories": {
-                "query": f"thoth_kebechet_total_active_repo_count{query_labels}",
+            "total_packages": {
+                "query": f"thoth_pypi_stats{query_labels_packages}",
                 "requires_range": True,
                 "type": "latest",
             },
-            "delta_total_active_repositories": {
-                "query": f"thoth_kebechet_total_active_repo_count{query_labels}",
+            "new_packages": {
+                "query": f"thoth_pypi_stats{query_labels_packages}",
                 "requires_range": True,
-                "type": "delta",
+                "type": "min_max",
+            },
+            "total_releases": {
+                "query": f"thoth_pypi_stats{query_labels_releases}",
+                "requires_range": True,
+                "type": "latest",
+            },
+            "new_packages_releases": {
+                "query": f"thoth_pypi_stats{query_labels_releases}",
+                "requires_range": True,
+                "type": "min_max",
             },
         }
 
     def _evaluate_sli(self, sli: Dict[str, Any]) -> Dict[str, float]:
-        """Evaluate SLI for report for Kebechet SLI.
+        """Evaluate SLI for report for PyPI knowledge graph SLI.
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
         html_inputs = {}
 
-        for knowledge_quantity in _REGISTERED_KEBECHET_QUANTITY.keys():
+        for knowledge_quantity in _REGISTERED_KNOWLEDGE_QUANTITY.keys():
+
             html_inputs[knowledge_quantity] = {}
-            html_inputs[knowledge_quantity]["name"] = _REGISTERED_KEBECHET_QUANTITY[knowledge_quantity]
+            html_inputs[knowledge_quantity]["name"] = _REGISTERED_KNOWLEDGE_QUANTITY[knowledge_quantity]
 
             if sli[knowledge_quantity] != "ErrorMetricRetrieval":
-                html_inputs[knowledge_quantity]["value"] = int(sli[knowledge_quantity])
+                html_inputs[knowledge_quantity]["value"] = abs(int(sli[knowledge_quantity]))
             else:
                 html_inputs[knowledge_quantity]["value"] = np.nan
 
         return html_inputs
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:
-        """Create report for Kebechet SLI.
+        """Create report for PyPI knowledge graph SLI.
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
         html_inputs = self._evaluate_sli(sli=sli)
-        report = HTMLTemplates.thoth_kebechet_template(html_inputs=html_inputs)
 
+        report = HTMLTemplates.thoth_pypi_knowledge_template(html_inputs=html_inputs)
         return report
 
     def _create_inputs_for_df_sli(
