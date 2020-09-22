@@ -86,8 +86,8 @@ class Configuration:
             self.public_ceph_bucket = os.environ["THOTH_PUBLIC_CEPH_BUCKET"]
             self.ceph_bucket_prefix = os.environ["THOTH_CEPH_BUCKET_PREFIX"]
 
-        # Registered services (Argo workflows)
-        self.registered_services = {
+        # Registered components (Argo workflows)
+        self.registered_components = {
             "adviser": {"entrypoint": "adviser", "namespace": self.backend_namespace},
             "kebechet": {"entrypoint": "kebechet-job", "namespace": self.backend_namespace},
             "inspection": {"entrypoint": "main", "namespace": self.amun_inspection_namespace},
