@@ -8,3 +8,5 @@ Thoth integrations SLI is selected to have an overview of which integration in T
 per day, the value obtained is relative to the number of times a certain Thoth integration is used in that period, therefore it is called `periodic result`.
 
 - `{thoth_integration}_counts_total` considers how many times has been used since we started to collect the SLI.
+
+![SLIThothIntegrations](https://raw.githubusercontent.com/thoth-station/slo_reporter/master/thoth/slo_reporter/sli_thoth_integrations/SLIThothIntegrations.png)
