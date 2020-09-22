@@ -9,4 +9,4 @@ per day, the value obtained is relative to the number of times a certain Thoth i
 
 - `{thoth_integration}_counts_total` considers how many times has been used since we started to collect the SLI.
 
-![SLIThothIntegrations](https://raw.githubusercontent.com/thoth-station/slo_reporter/master/thoth/slo_reporter/sli_thoth_integrations/SLIThothIntegrations.png)
+![SLIThothIntegrations](https://raw.githubusercontent.com/thoth-station/slo-reporter/master/thoth/slo_reporter/sli_thoth_integrations/SLIThothIntegrations.png)
