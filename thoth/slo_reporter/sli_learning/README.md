@@ -29,13 +29,13 @@ For example if the average learning rate is 100 -> learning rate is 1000 package
 
 This value is customizable, each time might want to focus on longer periods (e.g. weekly or quarterly)
 
-![SLILearning](https://raw.githubusercontent.com/thoth-station/slo_reporter/master/thoth/slo_reporter/sli_learning/SLILearning.png)
+![SLILearning](https://raw.githubusercontent.com/thoth-station/slo-reporter/master/thoth/slo_reporter/sli_learning/SLILearning.png)
 
 - `solved_packages` this value is directly linked to the learning rate of solved packages. It shows the number of packages learned in the period of evaluation
 for SLO reporter, typically per day.
 
-![SLILearningSolvedPackages](https://raw.githubusercontent.com/thoth-station/slo_reporter/master/thoth/slo_reporter/sli_learning/SLILearningSolvedPackages.png)
+![SLILearningSolvedPackages](https://raw.githubusercontent.com/thoth-station/slo-reporter/master/thoth/slo_reporter/sli_learning/SLILearningSolvedPackages.png)
 
 - `new_solvers` considers the changes in the number of solvers respect to the period considered in SLO reporter when run.
 
-![SLILearningNewSolvers](https://raw.githubusercontent.com/thoth-station/slo_reporter/master/thoth/slo_reporter/sli_learning/SLILearningNewSolvers.png)
+![SLILearningNewSolvers](https://raw.githubusercontent.com/thoth-station/slo-reporter/master/thoth/slo_reporter/sli_learning/SLILearningNewSolvers.png)

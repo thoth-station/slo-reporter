@@ -10,43 +10,43 @@ SLI indicators are collected in order to create a final report that is sent out 
 
 Python world description of packages/releases from indexes (e.g PyPI, AICoE) to check the knowledge available.
 
-- [SLIPyPIKnowledgeGraph](https://github.com/thoth-station/slo_reporter/blob/master/thoth/slo_reporter/sli_python_knowledge_graph/README.md).
+- [SLIPyPIKnowledgeGraph](https://github.com/thoth-station/slo-reporter/tree/master/thoth/slo_reporter/sli_python_knowledge_graph/README.md).
 
 ### Thoth Learning
 
 This category contains information about Thoth learning rates for packages information (e.g. solver, security):
 
-- [SLILearning](https://github.com/thoth-station/slo_reporter/blob/master/thoth/slo_reporter/sli_learning/README.md).
+- [SLILearning](https://github.com/thoth-station/slo-reporter/tree/master/thoth/slo_reporter/sli_learning/README.md).
 
 ### Thoth Knoweldge Graph
 
 This category contains information about Thoth knowledge collected:
 
-- [SLIKnowledgeGraph](https://github.com/thoth-station/slo_reporter/blob/master/thoth/slo_reporter/sli_knowledge_graph/README.md).
+- [SLIKnowledgeGraph](https://github.com/thoth-station/slo-reporter/tree/master/thoth/slo_reporter/sli_knowledge_graph/README.md).
 
 ### Thoth adviser integrations (e.g. Qeb-Hwt GitHub App, Kebechet)
 
 This part of the report is focused on [Thoth integrations](https://github.com/thoth-station/adviser/blob/master/docs/source/integration.rst) and their use:
 
-- [SLIThothIntegrations](https://github.com/thoth-station/slo_reporter/blob/master/thoth/slo_reporter/sli_thoth_integrations/README.md).
+- [SLIThothIntegrations](https://github.com/thoth-station/slo-reporter/tree/master/thoth/slo_reporter/sli_thoth_integrations).
 
 ### Thoth services
 
-- [SLIKebechet](https://github.com/thoth-station/slo_reporter/blob/master/thoth/slo_reporter/sli_thoth_services/README.md).
+- [SLIKebechet](https://github.com/thoth-station/slo-reporter/tree/master/thoth/slo_reporter/sli_thoth_services/README.md).
 
 ### Analytics for User requests (e.g. User-API)
 
 This part of the report is focused on analytics for APIs:
 
-- [SLIUserAPI](https://github.com/thoth-station/slo_reporter/blob/master/thoth/slo_reporter/sli_apis/README.md).
+- [SLIUserAPI](https://github.com/thoth-station/slo-reporter/tree/master/thoth/slo_reporter/sli_apis/README.md).
 
 ### Backend processes (e.g. Argo workflows) status
 
 This part of the report is focused on status of backend processes (e.g. duration, success, failures):
 
-- [SLIWorkflowLatency](https://github.com/thoth-station/slo_reporter/blob/master/thoth/slo_reporter/sli_backends/README.md).
+- [SLIWorkflowLatency](https://github.com/thoth-station/slo-reporter/tree/master/thoth/slo_reporter/sli_backends/README.md).
 
-- [SLIWorkflowQuality](https://github.com/thoth-station/slo_reporter/blob/master/thoth/slo_reporter/sli_backends/README.md).
+- [SLIWorkflowQuality](https://github.com/thoth-station/slo-reporter/tree/master/thoth/slo_reporter/sli_backends/README.md).
 
 ## Data collection
 
