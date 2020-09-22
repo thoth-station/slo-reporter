@@ -25,15 +25,15 @@ import numpy as np
 
 from typing import Dict, List, Any
 
-from .sli_base import SLIBase
-from .sli_template import HTMLTemplates
-from .configuration import Configuration
+from thoth.slo_reporter.sli_base import SLIBase
+from thoth.slo_reporter.sli_template import HTMLTemplates
+from thoth.slo_reporter.configuration import Configuration
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class SLIWorkflowLatency(SLIBase):
-    """This class contains functions for Workflow Latency SLI (Thoth services)."""
+    """This class contains functions for Workflow Latency SLI (Thoth components)."""
 
     _SLI_NAME = "component_latency"
 
@@ -53,24 +53,24 @@ class SLIWorkflowLatency(SLIBase):
     def _query_sli(self) -> List[str]:
         """Aggregate queries for component_latency SLI Report."""
         queries = {}
-        for service in self.configuration.registered_services:
-            result = self._aggregate_queries(service=service)
+        for component in self.configuration.registered_components:
+            result = self._aggregate_queries(component=component)
             for query_name, query in result.items():
                 queries[query_name] = query
 
         return queries
 
-    def _aggregate_queries(self, service: str):
+    def _aggregate_queries(self, component: str):
         """Aggregate service queries."""
-        query_labels_reports = f'{{instance="{self.configuration.instance}", result_type="{service}"}}'
+        query_labels_reports = f'{{instance="{self.configuration.instance}", result_type="{component}"}}'
 
-        entrypoint = self.configuration.registered_services[service]["entrypoint"]
-        namespace = self.configuration.registered_services[service]["namespace"]
+        entrypoint = self.configuration.registered_components[component]["entrypoint"]
+        namespace = self.configuration.registered_components[component]["namespace"]
 
         query_labels_workflows = f'{{entrypoint="{entrypoint}", namespace="{namespace}"}}'
 
         return {
-            f"{service}_workflows_latency": {
+            f"{component}_workflows_latency": {
                 "query": f"avg(argo_workflow_completion_time{query_labels_workflows}"
                 f"- argo_workflow_start_time{query_labels_workflows})",
                 "requires_range": True,
@@ -85,20 +85,20 @@ class SLIWorkflowLatency(SLIBase):
         """
         html_inputs = {}
 
-        for service in self.configuration.registered_services:
-            html_inputs[service] = {}
-            number_workflows_latency_seconds = sli[f"{service}_workflows_latency"]
+        for component in self.configuration.registered_components:
+            html_inputs[component] = {}
+            number_workflows_latency_seconds = sli[f"{component}_workflows_latency"]
 
             if number_workflows_latency_seconds != "ErrorMetricRetrieval":
                 minutes = number_workflows_latency_seconds / 60
                 seconds = number_workflows_latency_seconds % 60
-                html_inputs[service]["minutes"] = round(minutes)
-                html_inputs[service]["seconds"] = round(seconds)
-                html_inputs[service]["value"] = round(minutes)
+                html_inputs[component]["minutes"] = round(minutes)
+                html_inputs[component]["seconds"] = round(seconds)
+                html_inputs[component]["value"] = round(minutes)
             else:
-                html_inputs[service]["minutes"] = np.nan
-                html_inputs[service]["seconds"] = np.nan
-                html_inputs[service]["value"] = np.nan
+                html_inputs[component]["minutes"] = np.nan
+                html_inputs[component]["seconds"] = np.nan
+                html_inputs[component]["value"] = np.nan
 
         return html_inputs
 
