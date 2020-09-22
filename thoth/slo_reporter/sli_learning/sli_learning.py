@@ -25,20 +25,20 @@ import numpy as np
 
 from typing import Dict, List, Any
 
-from .sli_base import SLIBase
-from .sli_template import HTMLTemplates
-from .configuration import Configuration
+from thoth.slo_reporter.sli_base import SLIBase
+from thoth.slo_reporter.sli_template import HTMLTemplates
+from thoth.slo_reporter.configuration import Configuration
 
 _LOGGER = logging.getLogger(__name__)
 
 _REGISTERED_LEARNING_MEASUREMENT_UNIT = {
-    "average_learning_rate": {"name": "Learning Rate", "measurement_unit": "packages/hour"},
-    "learned_packages": {"name": "Knowledge increase", "measurement_unit": "packages"},
+    "average_solver_learning_rate": {"name": "Learning Rate", "measurement_unit": "packages/hour"},
+    "solved_packages": {"name": "Knowledge increase for solved packages", "measurement_unit": "packages"},
     "solvers": {"name": "Number of Solvers", "measurement_unit": ""},
     "new_solvers": {"name": "New Solvers", "measurement_unit": ""},
 }
 
-_LEARNING_RATE_INTERVAL = "2h"
+_LEARNING_RATE_INTERVAL = f"{int(os.getenv('LEARNING_RATE_INTERVAL', 1))}h"
 
 
 class SLILearning(SLIBase):
@@ -66,14 +66,14 @@ class SLILearning(SLIBase):
         )
 
         return {
-            "average_learning_rate": {
+            "average_solver_learning_rate": {
                 "query": f"increase(\
                     thoth_graphdb_unsolved_python_package_versions_change_total{query_labels}[{_LEARNING_RATE_INTERVAL}]\
                         )",
                 "requires_range": True,
                 "type": "average",
             },
-            "learned_packages": {
+            "solved_packages": {
                 "query": f"sum(thoth_graphdb_total_number_solved_python_packages{query_labels})",
                 "requires_range": True,
                 "type": "delta",
@@ -107,7 +107,7 @@ class SLILearning(SLIBase):
                 # if quntity uses delta
                 if learning_quantity == "new_solvers":
                     html_inputs[learning_quantity]["value"] = int(sli[learning_quantity])
-                elif learning_quantity == "learned_packages":
+                elif learning_quantity == "solved_packages":
                     html_inputs[learning_quantity]["value"] = int(sli[learning_quantity])
                 else:
                     html_inputs[learning_quantity]["value"] = abs(int(sli[learning_quantity]))
