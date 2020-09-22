@@ -63,6 +63,13 @@ def _add_dashbords(configuration: Configuration):
         "url": sli_slo_dashboard_url,
         "description": "Dashboard for summary reports created by Thoth reporters components.",
     }
+    if configuration.environment == "stage":
+        sli_slo_dashboard_name = f"thoth-superset"
+        sli_slo_dashboard_url = f"https://superset.datahub.redhat.com/superset/dashboard/17/"
+        html_inputs["Thoth Superst"] = {
+            "url": sli_slo_dashboard_url,
+            "description": "Superset Dashboard for SLI/SLO in time.",
+        }
 
     report = HTMLTemplates.thoth_references_template(html_inputs=html_inputs)
     return report

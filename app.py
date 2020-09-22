@@ -126,8 +126,8 @@ def collect_metrics(configuration: Configuration, sli_report: SLIReport):
     return collected_info
 
 
-def store_sli_weekly_metrics_to_ceph(
-    weekly_metrics: Dict[str, Any], configuration: Configuration, sli_report: SLIReport,
+def store_sli_periodic_metrics_to_ceph(
+    periodic_metrics: Dict[str, Any], configuration: Configuration, sli_report: SLIReport,
 ):
     """Store weekly metrics to ceph."""
     datetime = str(configuration.end_time.strftime("%Y-%m-%d"))
@@ -143,18 +143,13 @@ def store_sli_weekly_metrics_to_ceph(
         bucket=configuration.public_ceph_bucket,
     )
 
-    for metric_class in weekly_metrics:
-        metrics = {}
-        metrics["datetime"] = datetime
-        metrics["timestamp"] = configuration.end_time_epoch
+    for metric_class in periodic_metrics:
+        evaluation_method = sli_report.report_sli_context[metric_class]["df_method"]
+        inputs_for_df_sli = evaluation_method(
+            periodic_metrics[metric_class], datetime=datetime, timestamp=configuration.end_time_epoch,
+        )
 
-        evaluation_method = sli_report.report_sli_context[metric_class]["evaluation_method"]
-        total_ceph_sli = evaluation_method(weekly_metrics[metric_class])
-
-        for metric in total_ceph_sli:
-            metrics[metric] = total_ceph_sli[metric]["value"]
-
-        metrics_df = pd.DataFrame(json_normalize(metrics))
+        metrics_df = pd.DataFrame(json_normalize(inputs_for_df_sli))
         _LOGGER.info(f"Storing... \n{metrics_df}")
         ceph_path = f"{metric_class}/{metric_class}-{datetime}.csv"
 
@@ -179,11 +174,11 @@ def store_sli_weekly_metrics_to_ceph(
             pass
 
 
-def push_thoth_sli_weekly_metrics(
-    weekly_metrics: Dict[str, Metric], configuration: Configuration, sli_report: SLIReport,
+def push_thoth_sli_periodic_metrics(
+    periodic_metrics: Dict[str, Metric], configuration: Configuration, sli_report: SLIReport,
 ):
     """Push Thoth SLI weekly metric to PushGateway."""
-    for sli_type, metric_data in weekly_metrics.items():
+    for sli_type, metric_data in periodic_metrics.items():
 
         for metric_name, weekly_value_metric in metric_data.items():
 
@@ -257,22 +252,22 @@ def run_slo_reporter(
     # Collect metrics.
     if _DRY_RUN:
         _LOGGER.info("Dry run...")
-    weekly_sli_values_map = collect_metrics(configuration=configuration, sli_report=sli_report)
+    sli_values_map = collect_metrics(configuration=configuration, sli_report=sli_report)
 
     # Store metrics on Ceph and push them to Pushgateway.
     if not _DRY_RUN:
-        store_sli_weekly_metrics_to_ceph(
-            weekly_metrics=weekly_sli_values_map, configuration=configuration, sli_report=sli_report,
+        store_sli_periodic_metrics_to_ceph(
+            periodic_metrics=sli_values_map, configuration=configuration, sli_report=sli_report,
         )
 
         try:
-            push_thoth_sli_weekly_metrics(weekly_sli_values_map, configuration=configuration, sli_report=sli_report)
+            push_thoth_sli_periodic_metrics(sli_values_map, configuration=configuration, sli_report=sli_report)
         except Exception as e_pushgateway:
             _LOGGER.exception(f"Could not push metrics to Pushgateway...{e_pushgateway}")
             pass
 
     if _DRY_RUN:
-        email_message = generate_email(weekly_sli_values_map, configuration=configuration, sli_report=sli_report)
+        email_message = generate_email(sli_values_map, configuration=configuration, sli_report=sli_report)
         with tempfile.NamedTemporaryFile("w", delete=False, suffix=".html") as f:
             url = "file://" + f.name
             f.write(email_message)
@@ -281,14 +276,14 @@ def run_slo_reporter(
 
     # Generate HTML for email from metrics and send it.
     if not _DRY_RUN and not _ONLY_STORE_ON_CEPH:
-        if day_of_week == configuration.email_day:
-            _LOGGER.info(f"Today is: {day_of_week}, therefore I send email.")
-            email_message = generate_email(weekly_sli_values_map, configuration=configuration, sli_report=sli_report)
-            send_sli_email(email_message, configuration=configuration, sli_report=sli_report)
-        else:
-            _LOGGER.info(
-                f"Today is: {day_of_week}, I do not send emails. I send email only on {configuration.email_day}",
-            )
+        # if day_of_week == configuration.email_day:
+        _LOGGER.info(f"Today is: {day_of_week}, therefore I send email.")
+        email_message = generate_email(sli_values_map, configuration=configuration, sli_report=sli_report)
+        send_sli_email(email_message, configuration=configuration, sli_report=sli_report)
+        # else:
+        #     _LOGGER.info(
+        #         f"Today is: {day_of_week}, I do not send emails. I send email only on {configuration.email_day}",
+        #     )
 
 
 def main():

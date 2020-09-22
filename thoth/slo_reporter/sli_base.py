@@ -17,6 +17,8 @@
 
 """This file contains basic class for all SLI to be included in a report."""
 
+import datetime
+
 from typing import Dict, List, Any
 
 
@@ -27,13 +29,18 @@ class SLIBase:
 
     def _aggregate_info(self):
         """Aggregate info required for specific SLI Report."""
-        return {"query": self._query_sli(), "evaluation_method": self._evaluate_sli, "report_method": self._report_sli}
+        return {
+            "query": self._query_sli(),
+            "evaluation_method": self._evaluate_sli,
+            "report_method": self._report_sli,
+            "df_method": self._create_inputs_for_df_sli,
+        }
 
     def _query_sli(self) -> Dict[str, str]:
         """Aggregate queries for specific SLI Report."""
         raise NotImplementedError
 
-    def _evaluate_sli(self, sli: Dict[str, Any]) -> Dict[str, float]:
+    def _evaluate_sli(self, sli: Dict[str, Any]) -> Dict[str, Any]:
         """Evaluate SLI for report for specific SLI.
 
         @param sli: It's a dict of SLI associated with the SLI type.
@@ -46,3 +53,32 @@ class SLIBase:
         @param sli: It's a dict of SLI associated with the SLI type.
         """
         raise NotImplementedError
+
+    def _create_inputs_for_df_sli(
+        self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime,
+    ) -> Dict[str, Any]:
+        """Create inputs for SLI dataframe to be stored.
+
+        @param sli: It's a dict of SLI associated with the SLI type.
+        """
+        raise NotImplementedError
+
+    def _create_default_inputs_for_df_sli(
+        self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime,
+    ) -> Dict[str, Any]:
+        """Create default inputs for SLI dataframe to be stored.
+
+        @param sli: It's a dict of SLI associated with the SLI type.
+        """
+        df_inputs = {}
+        df_inputs["datetime"] = datetime
+        df_inputs["timestamp"] = timestamp
+
+        sli_results = self._evaluate_sli(sli=sli)
+
+        for metric in sli_results:
+
+            if "value" in sli_results[metric]:
+                df_inputs[metric] = sli_results[metric]["value"]
+
+        return df_inputs

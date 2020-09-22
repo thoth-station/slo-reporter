@@ -58,7 +58,12 @@ class SLIUserAPI(SLIBase):
 
     def _aggregate_info(self):
         """Aggregate info required for User-API SLI Report."""
-        return {"query": self._query_sli(), "evaluation_method": self._evaluate_sli, "report_method": self._report_sli}
+        return {
+            "query": self._query_sli(),
+            "evaluation_method": self._evaluate_sli,
+            "report_method": self._report_sli,
+            "df_method": self._create_inputs_for_df_sli,
+        }
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for User-API SLI Report."""
@@ -131,3 +136,17 @@ class SLIUserAPI(SLIBase):
 
         report = HTMLTemplates.thoth_user_api_template(html_inputs=html_inputs)
         return report
+
+    def _create_inputs_for_df_sli(
+        self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime,
+    ) -> Dict[str, Any]:
+        """Create inputs for SLI dataframe to be stored.
+
+        @param sli: It's a dict of SLI associated with the SLI type.
+        """
+        parameters = locals()
+        parameters.pop("self")
+
+        output = self._create_default_inputs_for_df_sli(**parameters)
+
+        return output
