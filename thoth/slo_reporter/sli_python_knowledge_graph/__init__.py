@@ -20,5 +20,5 @@
 from .sli_pypi_knowledge_graph import SLIPyPIKnowledgeGraph
 
 __all__ = [
-    "SLIPyPIKnowledgeGraph"
+    "SLIPyPIKnowledgeGraph",
 ]

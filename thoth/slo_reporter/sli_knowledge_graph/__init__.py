@@ -20,5 +20,5 @@
 from .sli_knowledge_graph import SLIKnowledgeGraph
 
 __all__ = [
-    "SLIKnowledgeGraph"
+    "SLIKnowledgeGraph",
 ]

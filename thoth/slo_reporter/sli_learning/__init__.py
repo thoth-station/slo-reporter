@@ -20,5 +20,5 @@
 from .sli_learning import SLILearning
 
 __all__ = [
-    "SLILearning"
+    "SLILearning",
 ]

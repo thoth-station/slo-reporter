@@ -20,5 +20,5 @@
 from .sli_user_api import SLIUserAPI
 
 __all__ = [
-    "SLIUserAPI"
+    "SLIUserAPI",
 ]

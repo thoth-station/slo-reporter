@@ -22,5 +22,5 @@ from .sli_workflow_quality import SLIWorkflowQuality
 
 __all__ = [
     "SLIWorkflowLatency",
-    "SLIWorkflowQuality"
+    "SLIWorkflowQuality",
 ]

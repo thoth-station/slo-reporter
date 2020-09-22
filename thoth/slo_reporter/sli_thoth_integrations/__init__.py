@@ -20,5 +20,5 @@
 from .sli_thoth_integration import SLIThothIntegrations
 
 __all__ = [
-    "SLIThothIntegrations"
+    "SLIThothIntegrations",
 ]
