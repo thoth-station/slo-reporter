@@ -32,10 +32,12 @@ from thoth.slo_reporter.configuration import Configuration
 _LOGGER = logging.getLogger(__name__)
 
 _REGISTERED_LEARNING_MEASUREMENT_UNIT = {
-    "average_solver_learning_rate": {"name": "Learning Rate", "measurement_unit": "packages/hour"},
+    "average_learning_rate": {"name": "Solved Learning Rate", "measurement_unit": "packages/hour"},
     "solved_packages": {"name": "Knowledge increase for solved packages", "measurement_unit": "packages"},
     "solvers": {"name": "Number of Solvers", "measurement_unit": ""},
     "new_solvers": {"name": "New Solvers", "measurement_unit": ""},
+    "average_si_learning_rate": {"name": "Security Learning Rate", "measurement_unit": "packages/hour"},
+    "si_analyzed_packages": {"name": "Knowledge increase for SI analyzed packages", "measurement_unit": "packages"},
 }
 
 _LEARNING_RATE_INTERVAL = f"{int(os.getenv('LEARNING_RATE_INTERVAL', 1))}h"
@@ -66,7 +68,7 @@ class SLILearning(SLIBase):
         )
 
         return {
-            "average_solver_learning_rate": {
+            "average_learning_rate": {
                 "query": f"increase(\
                     thoth_graphdb_unsolved_python_package_versions_change_total{query_labels}[{_LEARNING_RATE_INTERVAL}]\
                         )",
@@ -85,6 +87,18 @@ class SLILearning(SLIBase):
             },
             "new_solvers": {
                 "query": f"thoth_graphdb_total_number_solvers{query_labels}",
+                "requires_range": True,
+                "type": "delta",
+            },
+            "average_si_learning_rate": {
+                "query": f"increase(\
+                    thoth_graphdb_si_unanalyzed_python_package_versions_change_total{query_labels}[{_LEARNING_RATE_INTERVAL}]\
+                        )",
+                "requires_range": True,
+                "type": "average",
+            },
+            "si_analyzed_packages": {
+                "query": f"sum(thoth_graphdb_total_number_si_analyzed_python_packages{query_labels})",
                 "requires_range": True,
                 "type": "delta",
             },
@@ -107,7 +121,7 @@ class SLILearning(SLIBase):
                 # if quntity uses delta
                 if learning_quantity == "new_solvers":
                     html_inputs[learning_quantity]["value"] = int(sli[learning_quantity])
-                elif learning_quantity == "solved_packages":
+                elif learning_quantity == "solved_packages" or learning_quantity == "si_analyzed_packages":
                     html_inputs[learning_quantity]["value"] = int(sli[learning_quantity])
                 else:
                     html_inputs[learning_quantity]["value"] = abs(int(sli[learning_quantity]))
