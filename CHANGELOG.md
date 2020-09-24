@@ -163,3 +163,19 @@ all the things that you see...
 * :pushpin: Automatic update of dependency thoth-storages from 0.25.9 to 0.25.10 (#94)
 * :pushpin: Automatic update of dependency thoth-storages from 0.25.7 to 0.25.9 (#90)
 * :pushpin: Automatic update of dependency thoth-storages from 0.25.7 to 0.25.9 (#89)
+
+## Release 0.5.7 (2020-09-24T10:17:17)
+### Features
+* Add SLI for Security-Indicator (#102)
+* Explain metrics and SLI, add Images on SLI (#99)
+* Add thoth integrations and introduce generalization for files stored in Ceph (#97)
+### Improvements
+* Adjust links to READMEs and images (#100)
+### Other
+* remove duplicate .png from link (#101)
+### Automatic Updates
+* :pushpin: Automatic update of dependency hypothesis from 5.35.4 to 5.36.0 (#107)
+* :pushpin: Automatic update of dependency thoth-common from 0.19.0 to 0.20.0 (#106)
+* :pushpin: Automatic update of dependency thoth-common from 0.19.0 to 0.20.0 (#105)
+* :pushpin: Automatic update of dependency thoth-common from 0.19.0 to 0.20.0 (#104)
+* :pushpin: Automatic update of dependency thoth-storages from 0.25.10 to 0.25.11 (#98)
