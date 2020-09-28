@@ -53,7 +53,7 @@ class SLIWorkflowLatency(SLIBase):
     def _query_sli(self) -> List[str]:
         """Aggregate queries for component_latency SLI Report."""
         queries = {}
-        for component in self.configuration.registered_components:
+        for component in self.configuration.registered_workflows:
             result = self._aggregate_queries(component=component)
             for query_name, query in result.items():
                 queries[query_name] = query
@@ -62,21 +62,19 @@ class SLIWorkflowLatency(SLIBase):
 
     def _aggregate_queries(self, component: str):
         """Aggregate service queries."""
-        query_labels_reports = f'{{instance="{self.configuration.instance}", result_type="{component}"}}'
+        instance = self.configuration.registered_workflows[component]['instance']
+        name = self.configuration.registered_workflows[component]['name']
 
-        entrypoint = self.configuration.registered_components[component]["entrypoint"]
-        namespace = self.configuration.registered_components[component]["namespace"]
+        queries = {}
 
-        query_labels_workflows = f'{{entrypoint="{entrypoint}", namespace="{namespace}"}}'
-
-        return {
-            f"{component}_workflows_latency": {
-                "query": f"avg(argo_workflow_completion_time{query_labels_workflows}"
-                f"- argo_workflow_start_time{query_labels_workflows})",
-                "requires_range": True,
-                "type": "average",
-            },
-        }
+        for bucket in self.configuration.buckets:
+            query_labels_workflows = f'{{instance="{instance}", name="{name}", le="{bucket}"}}'
+            queries[f"{component}_workflows_latency_bucket_{bucket}"] = {
+                    "query": f"argo_workflows_duration_seconds_histogram_bucket{query_labels_workflows}",
+                    "requires_range": True,
+                    "type": "average",
+            }
+        return queries
 
     def _evaluate_sli(self, sli: Dict[str, Any]) -> Dict[str, float]:
         """Evaluate SLI for report for component_latency SLI.
@@ -85,20 +83,35 @@ class SLIWorkflowLatency(SLIBase):
         """
         html_inputs = {}
 
-        for component in self.configuration.registered_components:
+        for component in self.configuration.registered_workflows:
             html_inputs[component] = {}
-            number_workflows_latency_seconds = sli[f"{component}_workflows_latency"]
 
-            if number_workflows_latency_seconds != "ErrorMetricRetrieval":
-                minutes = number_workflows_latency_seconds / 60
-                seconds = number_workflows_latency_seconds % 60
-                html_inputs[component]["minutes"] = round(minutes)
-                html_inputs[component]["seconds"] = round(seconds)
-                html_inputs[component]["value"] = round(minutes)
+            buckets_results = {}
+            has_nan = False
+
+            for bucket in self.configuration.buckets:
+                number_workflows_latency_seconds_bucket = sli[f"{component}_workflows_latency_bucket_{bucket}"]
+
+                if number_workflows_latency_seconds_bucket != "ErrorMetricRetrieval":
+                    buckets_results[bucket] = number_workflows_latency_seconds_bucket
+                else:
+                    buckets_results[bucket] = np.nan
+                    has_nan = True
+
+            if not has_nan:
+                for bucket in self.configuration.buckets:
+                    if bucket == "+Inf":
+                        percentage = (buckets_results["+Inf"] - buckets_results["900"])/buckets_results["+Inf"]
+                        html_inputs[component]["+Inf"] = round(percentage * 100, 3)
+                    else:
+                        percentage = buckets_results[bucket]/buckets_results["+Inf"]
+                        html_inputs[component][bucket] = round(percentage * 100, 3)
             else:
-                html_inputs[component]["minutes"] = np.nan
-                html_inputs[component]["seconds"] = np.nan
-                html_inputs[component]["value"] = np.nan
+                for bucket in self.configuration.buckets:
+                    if bucket == "+Inf":
+                        html_inputs[component]["+Inf"] = np.nan
+                    else:
+                        html_inputs[component][bucket] = np.nan
 
         return html_inputs
 
@@ -109,7 +122,10 @@ class SLIWorkflowLatency(SLIBase):
         """
         html_inputs = self._evaluate_sli(sli=sli)
 
-        report = HTMLTemplates.thoth_services_latency_template(html_inputs=html_inputs)
+        report = HTMLTemplates.thoth_services_latency_template(
+            html_inputs=html_inputs,
+            configuration_buckets=self.configuration.buckets,
+        )
 
         return report
 
@@ -120,9 +136,20 @@ class SLIWorkflowLatency(SLIBase):
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
-        parameters = locals()
-        parameters.pop("self")
+        html_inputs = self._evaluate_sli(sli=sli)
+        df_inputs = []
 
-        output = self._create_default_inputs_for_df_sli(**parameters)
+        for component in self.configuration.registered_workflows:
+            for bucket in self.configuration.buckets:
+                if bucket != "+Inf":
+                    df_inputs.append(
+                        {
+                            "datetime": datetime,
+                            "timestamp": timestamp,
+                            "component": component,
+                            "bucket": bucket,
+                            "percentage": html_inputs[component][bucket],
+                        },
+                    )
 
-        return output
+        return df_inputs
