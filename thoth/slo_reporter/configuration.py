@@ -96,8 +96,9 @@ class Configuration:
         # Registered components (Argo workflows)
         self.registered_workflows = {
             "adviser": {"name": "adviser", "instance": self.instance_wc_backend},
-            "kebechet": {"name": "kebechet-job", "instance": self.instance_wc_backend},
+            "kebechet": {"name": "kebechet", "instance": self.instance_wc_backend},
             "inspection": {"name": "main", "instance": self.instance_wc_amun_inspection},
+            "provenance_checker": {"name": "provenance-checker", "instance": self.instance_wc_backend},
             "qeb_hwt": {"name": "qeb-hwt", "instance": self.instance_wc_backend},
             "revsolver": {"name": "revsolver", "instance": self.instance_wc_middletier},
             "security": {"name": "security-indicator", "instance": self.instance_wc_middletier},
@@ -106,6 +107,7 @@ class Configuration:
 
         self.registered_workflow_tasks = {
             "adviser": {"name": "adviser", "instance": self.instance_wc_backend},
+            "provenance_checker": {"name": "provenance-checker", "instance": self.instance_wc_backend},
             "solver": {"name": "solver", "instance": self.instance_wc_middletier},
             "revsolver": {"name": "revsolver", "instance": self.instance_wc_middletier},
             "si_download_package": {"name": "download-package", "instance": self.instance_wc_middletier},
