@@ -72,7 +72,7 @@ class SLIWorkflowLatency(SLIBase):
             queries[f"{component}_workflows_latency_bucket_{bucket}"] = {
                     "query": f"argo_workflows_duration_seconds_histogram_bucket{query_labels_workflows}",
                     "requires_range": True,
-                    "type": "average",
+                    "type": "latest",
             }
         return queries
 
