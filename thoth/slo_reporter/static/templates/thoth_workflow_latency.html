@@ -1,0 +1,30 @@
+{% extends "templates/base.html" %}
+{% block table_name %} <strong> Thoth Workflows </strong> {% endblock %}
+{% block table_info %} <strong> Status of Thoth services (average latency) </strong> {% endblock %}
+{% block classes %}
+        <thead>
+            <tr>
+                <th>Workflow</th>
+                {% for bucket in configuration_buckets %}
+                {% if bucket != "+Inf" %}
+                <th> less than {{ bucket }} s </th>
+                {% endif %}
+                {% endfor %}
+            </tr>
+        </thead>
+        {% endblock %}
+        {% block inputs %}
+        <tbody>
+            {% for service, latency in html_inputs.items() %}
+            <tr>
+                <td>{{ service }}</td>
+                {% for bucket, result in latency.items() %}
+                {% if bucket != "+Inf" %}
+                <th>{{ result }}</th>
+                {% endif %}
+                {% endfor %}
+                <th> % </th>
+            </tr>
+            {% endfor %}
+        </tbody>
+{% endblock %}
