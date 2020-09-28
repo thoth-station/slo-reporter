@@ -98,7 +98,7 @@ class SLILearning(SLIBase):
                 "type": "average",
             },
             "si_analyzed_packages": {
-                "query": f"sum(thoth_graphdb_total_number_si_analyzed_python_packages{query_labels})",
+                "query": f"thoth_graphdb_total_number_si_analyzed_python_packages{query_labels}",
                 "requires_range": True,
                 "type": "delta",
             },
