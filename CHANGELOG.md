@@ -179,3 +179,13 @@ all the things that you see...
 * :pushpin: Automatic update of dependency thoth-common from 0.19.0 to 0.20.0 (#105)
 * :pushpin: Automatic update of dependency thoth-common from 0.19.0 to 0.20.0 (#104)
 * :pushpin: Automatic update of dependency thoth-storages from 0.25.10 to 0.25.11 (#98)
+
+## Release 0.5.8 (2020-09-29T09:25:51)
+### Features
+* Add quality latency sli (#116)
+### Automatic Updates
+* :pushpin: Automatic update of dependency hypothesis from 5.36.0 to 5.36.1 (#114)
+* :pushpin: Automatic update of dependency hypothesis from 5.36.0 to 5.36.1 (#113)
+* :pushpin: Automatic update of dependency pytest from 6.0.2 to 6.1.0 (#112)
+* :pushpin: Automatic update of dependency hypothesis from 5.35.4 to 5.36.0 (#111)
+* :pushpin: Automatic update of dependency hypothesis from 5.35.4 to 5.36.0 (#110)
