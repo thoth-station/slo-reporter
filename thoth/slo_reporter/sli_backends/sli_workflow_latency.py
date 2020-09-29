@@ -101,11 +101,17 @@ class SLIWorkflowLatency(SLIBase):
             if not has_nan:
                 for bucket in self.configuration.buckets:
                     if bucket == "+Inf":
-                        percentage = (buckets_results["+Inf"] - buckets_results["900"])/buckets_results["+Inf"]
-                        html_inputs[component]["+Inf"] = round(percentage * 100, 3)
+                        if buckets_results["+Inf"] > 0:
+                            percentage = (buckets_results["+Inf"] - buckets_results["900"])/buckets_results["+Inf"]
+                            html_inputs[component]["+Inf"] = round(percentage * 100, 3)
+                        else:
+                            html_inputs[component]["+Inf"] = np.nan
                     else:
-                        percentage = buckets_results[bucket]/buckets_results["+Inf"]
-                        html_inputs[component][bucket] = round(percentage * 100, 3)
+                        if buckets_results["+Inf"] > 0:
+                            percentage = buckets_results[bucket]/buckets_results["+Inf"]
+                            html_inputs[component][bucket] = round(percentage * 100, 3)
+                        else:
+                            html_inputs[component][bucket] = np.nan
             else:
                 for bucket in self.configuration.buckets:
                     if bucket == "+Inf":
