@@ -24,5 +24,5 @@ from .sli_workflow_task_quality import SLIWorkflowTaskQuality
 __all__ = [
     "SLIWorkflowLatency",
     "SLIWorkflowQuality",
-    "SLIWorkflowTaskQuality"
+    "SLIWorkflowTaskQuality",
 ]

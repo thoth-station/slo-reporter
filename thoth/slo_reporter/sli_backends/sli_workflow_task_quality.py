@@ -130,7 +130,7 @@ class SLIWorkflowTaskQuality(SLIBase):
                 )
 
                 if int(number_workflow_tasks_succeeded) > 0:
-                    
+
                     if total_workflow_tasks > 0:
                         successfull_percentage = (int(number_workflow_tasks_succeeded) / total_workflow_tasks) * 100
                     else:
