@@ -69,16 +69,22 @@ class HTMLTemplates:
         template = ENV.get_template("templates/thoth_user_api.html")
         return template.render(**parameters)
 
-    def thoth_services_quality_template(html_inputs: Dict[str, Any]):
+    def thoth_workflows_quality_template(html_inputs: Dict[str, Any]):
         """Create HTML template to be used for Thoth services."""
         parameters = locals()
-        template = ENV.get_template("templates/thoth_service_quality.html")
+        template = ENV.get_template("templates/thoth_workflow_quality.html")
         return template.render(**parameters)
 
-    def thoth_services_latency_template(html_inputs: Dict[str, Any]):
+    def thoth_workflows_task_quality_template(html_inputs: Dict[str, Any]):
         """Create HTML template to be used for Thoth services."""
         parameters = locals()
-        template = ENV.get_template("templates/thoth_service_latency.html")
+        template = ENV.get_template("templates/thoth_workflow_task_quality.html")
+        return template.render(**parameters)
+
+    def thoth_services_latency_template(html_inputs: Dict[str, Any], configuration_buckets: List[str]):
+        """Create HTML template to be used for Thoth services."""
+        parameters = locals()
+        template = ENV.get_template("templates/thoth_workflow_latency.html")
         return template.render(**parameters)
 
     def thoth_kebechet_template(html_inputs: Dict[str, Any]):

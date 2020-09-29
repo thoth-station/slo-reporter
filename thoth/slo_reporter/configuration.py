@@ -52,11 +52,18 @@ class Configuration:
             self.middletier_namespace = "thoth-dry-run"
             self.amun_inspection_namespace = "thoth-dry-run"
             self.instance = "dry_run"
+            self.instance_wc_backend = "dry_run"
+            self.instance_wc_middletier = "dry_run"
+            self.instance_wc_amun_inspection = "dry_run"
+
 
         if not dry_run:
 
             # Thoth
             self.instance = os.environ["PROMETHEUS_INSTANCE_METRICS_EXPORTER_INFRA"]
+            self.instance_wc_backend = os.environ["PROMETHEUS_INSTANCE_WORKFLOW_CONTROLLER_BACKEND"]
+            self.instance_wc_middletier = os.environ["PROMETHEUS_INSTANCE_WORKFLOW_CONTROLLER_MIDDLETIER"]
+            self.instance_wc_amun_inspection = os.environ["PROMETHEUS_INSTANCE_WORKFLOW_CONTROLLER_AMUN_INSPECTION"]
 
             self.environment = os.environ["THOTH_DEPLOYMENT_NAME"].split("-")[1]  # e.g. ocp-stage, take only stage
             self.backend_namespace = os.environ["THOTH_BACKEND_NAMESPACE"]
@@ -87,13 +94,25 @@ class Configuration:
             self.ceph_bucket_prefix = os.environ["THOTH_CEPH_BUCKET_PREFIX"]
 
         # Registered components (Argo workflows)
-        self.registered_components = {
-            "adviser": {"entrypoint": "adviser", "namespace": self.backend_namespace},
-            "kebechet": {"entrypoint": "kebechet-job", "namespace": self.backend_namespace},
-            "inspection": {"entrypoint": "main", "namespace": self.amun_inspection_namespace},
-            "qeb_hwt": {"entrypoint": "qeb-hwt", "namespace": self.backend_namespace},
-            "security": {"entrypoint": "security-indicators", "namespace": self.middletier_namespace},
-            "solver": {"entrypoint": "solve-and-sync", "namespace": self.middletier_namespace},
+        self.registered_workflows = {
+            "adviser": {"name": "adviser", "instance": self.instance_wc_backend},
+            "kebechet": {"name": "kebechet", "instance": self.instance_wc_backend},
+            "inspection": {"name": "main", "instance": self.instance_wc_amun_inspection},
+            "provenance_checker": {"name": "provenance-checker", "instance": self.instance_wc_backend},
+            "qeb_hwt": {"name": "qeb-hwt", "instance": self.instance_wc_backend},
+            "revsolver": {"name": "revsolver", "instance": self.instance_wc_middletier},
+            "security": {"name": "security-indicator", "instance": self.instance_wc_middletier},
+            "solver": {"name": "solver", "instance": self.instance_wc_middletier},
+        }
+
+        self.registered_workflow_tasks = {
+            "adviser": {"name": "adviser", "instance": self.instance_wc_backend},
+            "provenance_checker": {"name": "provenance-checker", "instance": self.instance_wc_backend},
+            "solver": {"name": "solver", "instance": self.instance_wc_middletier},
+            "revsolver": {"name": "revsolver", "instance": self.instance_wc_middletier},
+            "si_download_package": {"name": "download-package", "instance": self.instance_wc_middletier},
+            "si_bandit": {"name": "si-bandit", "instance": self.instance_wc_middletier},
+            "si_cloc": {"name": "si-cloc", "instance": self.instance_wc_middletier},
         }
 
         integrations = []
@@ -102,6 +121,8 @@ class Configuration:
             integrations.append(thoth_integration)
 
         self.thoth_integrations = integrations
+
+        self.buckets = ["5", "10", "30", "60", "120", "180", "300", "600", "900", "+Inf"]
 
         # Step for query range
         self.step = "2h"

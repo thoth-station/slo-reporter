@@ -79,7 +79,7 @@ class SLIKnowledgeGraph(SLIBase):
             "new_packages": {
                 "query": f"thoth_graphdb_sum_python_packages_per_indexes{query_labels}",
                 "requires_range": True,
-                "type": "min_max",
+                "type": "delta",
             },
             "total_releases": {
                 "query": f"thoth_graphdb_number_python_package_versions{query_labels}",
@@ -89,7 +89,7 @@ class SLIKnowledgeGraph(SLIBase):
             "new_packages_releases": {
                 "query": f"thoth_graphdb_number_python_package_versions{query_labels}",
                 "requires_range": True,
-                "type": "min_max_only_ascending",
+                "type": "delta",
             },
         }
 
@@ -107,7 +107,6 @@ class SLIKnowledgeGraph(SLIBase):
 
             if sli[knowledge_quantity] != "ErrorMetricRetrieval":
                 html_inputs[knowledge_quantity]["value"] = int(sli[knowledge_quantity])
-
             else:
                 html_inputs[knowledge_quantity]["value"] = np.nan
 

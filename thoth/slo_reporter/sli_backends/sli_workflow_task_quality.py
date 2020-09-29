@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-"""This file contains class for Workflow Quality SLI."""
+"""This file contains class for Workflow Task Quality SLI."""
 
 import logging
 import os
@@ -33,17 +33,17 @@ from thoth.slo_reporter.configuration import Configuration
 _LOGGER = logging.getLogger(__name__)
 
 
-class SLIWorkflowQuality(SLIBase):
-    """This class contains functions for Workflow Quality SLI (Thoth components)."""
+class SLIWorkflowTaskQuality(SLIBase):
+    """This class contains functions for Workflow TaskQuality SLI (Thoth components)."""
 
-    _SLI_NAME = "component_quality"
+    _SLI_NAME = "workflow_task_quality"
 
     def __init__(self, configuration: Configuration):
         """Initialize SLI class."""
         self.configuration = configuration
 
     def _aggregate_info(self):
-        """Aggregate info required for component_quality SLI Report."""
+        """Aggregate info required for workflow_task_quality SLI Report."""
         return {
             "query": self._query_sli(),
             "evaluation_method": self._evaluate_sli,
@@ -52,9 +52,9 @@ class SLIWorkflowQuality(SLIBase):
         }
 
     def _query_sli(self) -> List[str]:
-        """Aggregate queries for component_quality SLI Report."""
+        """Aggregate queries for workflow_task_quality SLI Report."""
         queries = {}
-        for component in self.configuration.registered_workflows:
+        for component in self.configuration.registered_workflow_tasks:
             result = self._aggregate_queries(component=component)
             for query_name, query in result.items():
                 queries[query_name] = query
@@ -63,26 +63,26 @@ class SLIWorkflowQuality(SLIBase):
 
     def _aggregate_queries(self, component: str):
         """Aggregate component queries."""
-        instance = self.configuration.registered_workflows[component]['instance']
-        name = self.configuration.registered_workflows[component]['name']
+        instance = self.configuration.registered_workflow_tasks[component]['instance']
+        name = self.configuration.registered_workflow_tasks[component]['name']
 
         query_labels_workflows_s = f'{{instance="{instance}", name="{name}", status="Succeeded"}}'
         query_labels_workflows_f = f'{{instance="{instance}", name="{name}", status="Failed"}}'
         query_labels_workflows_e = f'{{instance="{instance}", name="{name}", status="Error"}}'
 
         return {
-            f"{component}_workflows_succeeded": {
-                "query": f"argo_workflows_status_counter{query_labels_workflows_s}",
+            f"{component}_workflow_tasks_succeeded": {
+                "query": f"argo_workflows_task_status_counter{query_labels_workflows_s}",
                 "requires_range": True,
                 "type": "average",
             },
-            f"{component}_workflows_failed": {
-                "query": f"argo_workflows_status_counter{query_labels_workflows_f}",
+            f"{component}_workflow_tasks_failed": {
+                "query": f"argo_workflows_task_status_counter{query_labels_workflows_f}",
                 "requires_range": True,
                 "type": "average",
             },
-            f"{component}_workflows_error": {
-                "query": f"argo_workflows_status_counter{query_labels_workflows_e}",
+            f"{component}_workflow_tasks_error": {
+                "query": f"argo_workflows_task_status_counter{query_labels_workflows_e}",
                 "requires_range": True,
                 "type": "average",
             },
@@ -95,7 +95,7 @@ class SLIWorkflowQuality(SLIBase):
         """
         html_inputs = {}
 
-        for component in self.configuration.registered_workflows:
+        for component in self.configuration.registered_workflow_tasks:
             service_metrics = {}
             html_inputs[component] = {}
 
@@ -104,35 +104,35 @@ class SLIWorkflowQuality(SLIBase):
                 if component in metric:
                     service_metrics[metric] = value
 
-            number_workflows_succeeded = sli[f"{component}_workflows_succeeded"]
-            number_workflows_failed = sli[f"{component}_workflows_failed"]
-            number_workflows_error = sli[f"{component}_workflows_error"]
+            number_workflow_tasks_succeeded = sli[f"{component}_workflow_tasks_succeeded"]
+            number_workflow_tasks_failed = sli[f"{component}_workflow_tasks_failed"]
+            number_workflow_tasks_error = sli[f"{component}_workflow_tasks_error"]
 
             obtained_value = 3
-            if service_metrics[f"{component}_workflows_succeeded"] == "ErrorMetricRetrieval":
-                number_workflows_succeeded = 0
+            if service_metrics[f"{component}_workflow_tasks_succeeded"] == "ErrorMetricRetrieval":
+                number_workflow_tasks_succeeded = 0
                 obtained_value -= 1
 
-            if service_metrics[f"{component}_workflows_failed"] == "ErrorMetricRetrieval":
-                number_workflows_failed = 0
+            if service_metrics[f"{component}_workflow_tasks_failed"] == "ErrorMetricRetrieval":
+                number_workflow_tasks_failed = 0
                 obtained_value -= 1
 
-            if service_metrics[f"{component}_workflows_error"] == "ErrorMetricRetrieval":
-                number_workflows_error = 0
+            if service_metrics[f"{component}_workflow_tasks_error"] == "ErrorMetricRetrieval":
+                number_workflow_tasks_error = 0
                 obtained_value -= 1
 
             if not obtained_value:
                 html_inputs[component]["value"] = np.nan
 
             else:
-                total_workflows = (
-                    int(number_workflows_succeeded) + int(number_workflows_failed) + int(number_workflows_error)
+                total_workflow_tasks = (
+                    int(number_workflow_tasks_succeeded) + int(number_workflow_tasks_failed) + int(number_workflow_tasks_error)
                 )
 
-                if int(number_workflows_succeeded) > 0:
+                if int(number_workflow_tasks_succeeded) > 0:
 
-                    if total_workflows > 0:
-                        successfull_percentage = (int(number_workflows_succeeded) / total_workflows) * 100
+                    if total_workflow_tasks > 0:
+                        successfull_percentage = (int(number_workflow_tasks_succeeded) / total_workflow_tasks) * 100
                     else:
                         successfull_percentage = 100
 
@@ -151,7 +151,7 @@ class SLIWorkflowQuality(SLIBase):
         """
         html_inputs = self._evaluate_sli(sli=sli)
 
-        report = HTMLTemplates.thoth_workflows_quality_template(html_inputs=html_inputs)
+        report = HTMLTemplates.thoth_workflows_task_quality_template(html_inputs=html_inputs)
 
         return report
 

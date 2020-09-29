@@ -31,6 +31,7 @@ from thoth.slo_reporter.sli_python_knowledge_graph import SLIPyPIKnowledgeGraph
 from thoth.slo_reporter.sli_thoth_integrations import SLIThothIntegrations
 from thoth.slo_reporter.sli_apis import SLIUserAPI
 from thoth.slo_reporter.sli_backends import SLIWorkflowQuality
+from thoth.slo_reporter.sli_backends import SLIWorkflowTaskQuality
 from thoth.slo_reporter.sli_backends import SLIWorkflowLatency
 
 from .sli_template import HTMLTemplates
@@ -71,6 +72,7 @@ class SLIReport:
             SLIKebechet._SLI_NAME: SLIKebechet(configuration=self.configuration)._aggregate_info(),
             SLIUserAPI._SLI_NAME: SLIUserAPI(configuration=self.configuration)._aggregate_info(),
             SLIWorkflowQuality._SLI_NAME: SLIWorkflowQuality(configuration=self.configuration)._aggregate_info(),
+            SLIWorkflowTaskQuality._SLI_NAME: SLIWorkflowTaskQuality(configuration=self.configuration)._aggregate_info(),
             SLIWorkflowLatency._SLI_NAME: SLIWorkflowLatency(configuration=self.configuration)._aggregate_info(),
         }
 
