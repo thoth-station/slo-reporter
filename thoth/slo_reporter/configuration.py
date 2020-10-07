@@ -39,6 +39,7 @@ class Configuration:
 
         self.start_time = start_time
         self.end_time = end_time
+        self.last_week_time = str((self.end_time - datetime.timedelta(days=7)).strftime("%Y-%m-%d"))
         self.number_days = number_days
         self.dry_run = dry_run
 

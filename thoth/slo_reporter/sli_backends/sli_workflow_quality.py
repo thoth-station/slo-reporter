@@ -146,7 +146,7 @@ class SLIWorkflowQuality(SLIBase):
 
         return html_inputs
 
-    def _report_sli(self, sli: Dict[str, Any]) -> str:
+    def _report_sli(self, sli: Dict[str, Any], ceph_sli=None) -> str:
         """Create report for solver_quality SLI.
 
         @param sli: It's a dict of SLI associated with the SLI type.

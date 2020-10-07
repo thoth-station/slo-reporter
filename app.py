@@ -207,12 +207,16 @@ def generate_email(sli_metrics: Dict[str, Any], configuration: Configuration, sl
     message += sli_report.report_style
     message += sli_report.report_intro
 
+    ceph_sli = connect_to_ceph(
+        ceph_bucket_prefix=configuration.ceph_bucket_prefix, environment=configuration.environment,
+    )
+
     for sli_name, metric_data in sli_metrics.items():
 
         _LOGGER.debug(f"Generating report for: {sli_name}")
 
         report_method = sli_report.report_sli_context[sli_name]["report_method"]
-        message += "\n" + report_method(metric_data)
+        message += "\n" + report_method(metric_data, ceph_sli)
 
     message += sli_report.report_references
 

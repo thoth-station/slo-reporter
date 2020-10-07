@@ -111,3 +111,9 @@ def store_thoth_sli_on_ceph(
         _LOGGER.info(f"Storing on private bucket... {ceph_path}")
     ceph_sli.store_blob(blob=metrics_csv, object_key=ceph_path)
     _LOGGER.info(f"Succesfully stored Thoth weekly SLI metrics for {metric_class} at {ceph_path}")
+
+
+def retrieve_thoth_sli_from_ceph(ceph_sli: CephStore, ceph_path: str) -> str:
+    """Retrieve Thoth SLI from Ceph."""
+    _LOGGER.info(f"Retrieving... \n{ceph_path}")
+    return ceph_sli.retrieve_blob(object_key=ceph_path).decode('utf-8')
