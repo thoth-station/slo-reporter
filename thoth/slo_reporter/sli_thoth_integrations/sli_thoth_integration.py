@@ -40,7 +40,7 @@ class SLIThothIntegrations(SLIBase):
     sli_columns = [
         "integration",
         "periodic",
-        "total"
+        "total",
     ]
 
     def __init__(self, configuration: Configuration):

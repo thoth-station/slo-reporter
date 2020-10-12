@@ -40,7 +40,7 @@ class SLIWorkflowLatency(SLIBase):
     sli_columns = [
         "component",
         "bucket",
-        "percentage"
+        "percentage",
     ]
 
     def __init__(self, configuration: Configuration):

@@ -48,7 +48,7 @@ SLI_CLASSES = [
     SLIUserAPI,
     SLIWorkflowQuality,
     SLIWorkflowTaskQuality,
-    SLIWorkflowLatency
+    SLIWorkflowLatency,
 ]
 
 class SLIReport:
@@ -82,10 +82,12 @@ class SLIReport:
         for sli_context in SLI_CLASSES:
 
             self.report_sli_context[sli_context._SLI_NAME] = sli_context(
-                configuration=self.configuration)._aggregate_info()
+                configuration=self.configuration,
+            )._aggregate_info()
 
             self.report_sli_context_columns[sli_context._SLI_NAME] = sli_context(
-                configuration=self.configuration).total_columns
+                configuration=self.configuration,
+            ).total_columns
 
         self.report_references = _add_dashbords(configuration=configuration)
 
