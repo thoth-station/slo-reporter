@@ -48,9 +48,12 @@ class SLILearning(SLIBase):
 
     _SLI_NAME = "learning"
 
+    sli_columns = [c for c in _REGISTERED_LEARNING_MEASUREMENT_UNIT]
+
     def __init__(self, configuration: Configuration):
         """Initialize SLI class."""
         self.configuration = configuration
+        self.total_columns = self.default_columns + self.sli_columns
 
     def _aggregate_info(self):
         """Aggregate info required for learning quantities SLI Report."""

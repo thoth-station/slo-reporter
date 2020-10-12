@@ -27,6 +27,9 @@ class SLIBase:
 
     _SLI_NAME = None
 
+    default_columns = ["datetime", "timestamp"]
+    sli_columns = []
+
     def _aggregate_info(self):
         """Aggregate info required for specific SLI Report."""
         return {

@@ -42,9 +42,12 @@ class SLIKebechet(SLIBase):
 
     _SLI_NAME = "kebechet"
 
+    sli_columns = [c for c in _REGISTERED_KEBECHET_QUANTITY]
+
     def __init__(self, configuration: Configuration):
         """Initialize SLI class."""
         self.configuration = configuration
+        self.total_columns = self.default_columns + self.sli_columns
 
     def _aggregate_info(self):
         """Aggregate info required for Kebechet SLI Report."""

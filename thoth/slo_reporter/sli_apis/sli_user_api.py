@@ -47,6 +47,8 @@ class SLIUserAPI(SLIBase):
 
     _SLI_NAME = "user_api"
 
+    sli_columns = [c for c in _USER_API_MEASUREMENT_UNIT]
+
     def __init__(self, configuration: Configuration):
         """Initialize SLI class."""
         self.configuration = configuration
@@ -55,6 +57,8 @@ class SLIUserAPI(SLIBase):
             self.instance = "dry_run"
         else:
             self.instance = os.environ["PROMETHEUS_INSTANCE_USER_API"]
+
+        self.total_columns = self.default_columns + self.sli_columns
 
     def _aggregate_info(self):
         """Aggregate info required for User-API SLI Report."""

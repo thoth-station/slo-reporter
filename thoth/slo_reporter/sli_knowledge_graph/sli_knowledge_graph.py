@@ -46,9 +46,12 @@ class SLIKnowledgeGraph(SLIBase):
 
     _SLI_NAME = "knowledge_graph"
 
+    sli_columns = [c for c in _REGISTERED_KNOWLEDGE_QUANTITY]
+
     def __init__(self, configuration: Configuration):
         """Initialize SLI class."""
         self.configuration = configuration
+        self.total_columns = self.default_columns + self.sli_columns
 
     def _aggregate_info(self):
         """Aggregate info required for knowledge graph SLI Report."""

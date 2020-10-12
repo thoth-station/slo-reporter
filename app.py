@@ -150,6 +150,12 @@ def store_sli_periodic_metrics_to_ceph(
         )
 
         metrics_df = pd.DataFrame(json_normalize(inputs_for_df_sli))
+
+        csv_columns = sli_report.report_sli_context_columns[metric_class]
+
+        if [c for c in metrics_df.columns.values] != csv_columns:
+            raise Exception (f"Data stored on Ceph {metrics_df.columns} should be stored with correct columns: {csv_columns}")
+
         _LOGGER.info(f"Storing... \n{metrics_df}")
         ceph_path = f"{metric_class}/{metric_class}-{datetime}.csv"
 
@@ -304,7 +310,7 @@ def main():
         )
 
     for i in range(0, EVALUATION_METRICS_DAYS):
-        _END_TIME = datetime.datetime.utcnow() - datetime.timedelta(days=i)
+        _END_TIME = datetime.datetime.now() - datetime.timedelta(days=i)
         _START_TIME = _END_TIME - datetime.timedelta(days=INTERVAL_REPORT_DAYS)
         _LOGGER.info(f"Interval: {_START_TIME.strftime('%Y-%m-%d')} - {_END_TIME.strftime('%Y-%m-%d')}")
 
