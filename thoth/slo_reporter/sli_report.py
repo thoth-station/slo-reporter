@@ -39,6 +39,17 @@ from .sli_template import HTMLTemplates
 
 _LOGGER = logging.getLogger(__name__)
 
+SLI_CLASSES = [
+    SLIPyPIKnowledgeGraph,
+    SLIKnowledgeGraph,
+    SLILearning,
+    SLIThothIntegrations,
+    SLIKebechet,
+    SLIUserAPI,
+    SLIWorkflowQuality,
+    SLIWorkflowTaskQuality,
+    SLIWorkflowLatency
+]
 
 class SLIReport:
     """This class contains all sections included in a report."""
@@ -64,17 +75,17 @@ class SLIReport:
 
         self.report_style = HTMLTemplates.thoth_report_style_template()
 
-        self.report_sli_context = {
-            SLIPyPIKnowledgeGraph._SLI_NAME: SLIPyPIKnowledgeGraph(configuration=self.configuration)._aggregate_info(),
-            SLIKnowledgeGraph._SLI_NAME: SLIKnowledgeGraph(configuration=self.configuration)._aggregate_info(),
-            SLILearning._SLI_NAME: SLILearning(configuration=self.configuration)._aggregate_info(),
-            SLIThothIntegrations._SLI_NAME: SLIThothIntegrations(configuration=self.configuration)._aggregate_info(),
-            SLIKebechet._SLI_NAME: SLIKebechet(configuration=self.configuration)._aggregate_info(),
-            SLIUserAPI._SLI_NAME: SLIUserAPI(configuration=self.configuration)._aggregate_info(),
-            SLIWorkflowQuality._SLI_NAME: SLIWorkflowQuality(configuration=self.configuration)._aggregate_info(),
-            SLIWorkflowTaskQuality._SLI_NAME: SLIWorkflowTaskQuality(configuration=self.configuration)._aggregate_info(),
-            SLIWorkflowLatency._SLI_NAME: SLIWorkflowLatency(configuration=self.configuration)._aggregate_info(),
-        }
+        self.report_sli_context = {}
+
+        self.report_sli_context_columns = {}
+
+        for sli_context in SLI_CLASSES:
+
+            self.report_sli_context[sli_context._SLI_NAME] = sli_context(
+                configuration=self.configuration)._aggregate_info()
+
+            self.report_sli_context_columns[sli_context._SLI_NAME] = sli_context(
+                configuration=self.configuration).total_columns
 
         self.report_references = _add_dashbords(configuration=configuration)
 

@@ -38,11 +38,11 @@ class SLIWorkflowTaskQuality(SLIBase):
 
     _SLI_NAME = "workflow_task_quality"
 
-    sli_columns = self.configuration.registered_workflow_tasks
-
     def __init__(self, configuration: Configuration):
         """Initialize SLI class."""
         self.configuration = configuration
+        self.sli_columns = [c for c in self.configuration.registered_workflow_tasks]
+        self.total_columns = self.default_columns + self.sli_columns
 
     def _aggregate_info(self):
         """Aggregate info required for workflow_task_quality SLI Report."""

@@ -27,7 +27,7 @@ class SLIBase:
 
     _SLI_NAME = None
 
-    default_columns = ["dateime", "timestamp"]
+    default_columns = ["datetime", "timestamp"]
     sli_columns = []
 
     def _aggregate_info(self):

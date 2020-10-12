@@ -46,6 +46,7 @@ class SLIWorkflowLatency(SLIBase):
     def __init__(self, configuration: Configuration):
         """Initialize SLI class."""
         self.configuration = configuration
+        self.total_columns = self.default_columns + self.sli_columns
 
     def _aggregate_info(self):
         """Aggregate info required for component_latency SLI Report."""
