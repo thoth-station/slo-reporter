@@ -44,7 +44,6 @@ from thoth.slo_reporter import __service_version__
 from thoth.slo_reporter.configuration import Configuration
 from thoth.slo_reporter.utils import manipulate_retrieved_metrics_vector
 from thoth.slo_reporter.utils import store_thoth_sli_on_ceph, connect_to_ceph
-from thoth.slo_reporter.sli_report import SLI_CLASSES
 
 
 _LOGGER = logging.getLogger("thoth.slo_reporter")
