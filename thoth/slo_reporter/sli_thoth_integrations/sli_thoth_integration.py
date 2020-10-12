@@ -37,6 +37,12 @@ class SLIThothIntegrations(SLIBase):
 
     _SLI_NAME = "thoth_integrations"
 
+    sli_columns = [
+        "integration",
+        "periodic",
+        "total"
+    ]
+
     def __init__(self, configuration: Configuration):
         """Initialize SLI class."""
         self.configuration = configuration

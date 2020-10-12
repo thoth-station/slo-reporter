@@ -47,6 +47,8 @@ class SLIUserAPI(SLIBase):
 
     _SLI_NAME = "user_api"
 
+    sli_columns = _USER_API_MEASUREMENT_UNIT.keys()
+
     def __init__(self, configuration: Configuration):
         """Initialize SLI class."""
         self.configuration = configuration

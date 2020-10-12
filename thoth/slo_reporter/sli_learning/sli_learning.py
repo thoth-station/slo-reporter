@@ -48,6 +48,8 @@ class SLILearning(SLIBase):
 
     _SLI_NAME = "learning"
 
+    sli_columns = _REGISTERED_LEARNING_MEASUREMENT_UNIT.keys()
+
     def __init__(self, configuration: Configuration):
         """Initialize SLI class."""
         self.configuration = configuration

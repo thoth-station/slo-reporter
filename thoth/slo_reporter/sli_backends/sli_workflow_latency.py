@@ -37,6 +37,12 @@ class SLIWorkflowLatency(SLIBase):
 
     _SLI_NAME = "component_latency"
 
+    sli_columns = [
+        "component",
+        "bucket",
+        "percentage"
+    ]
+
     def __init__(self, configuration: Configuration):
         """Initialize SLI class."""
         self.configuration = configuration

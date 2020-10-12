@@ -38,6 +38,8 @@ class SLIWorkflowQuality(SLIBase):
 
     _SLI_NAME = "component_quality"
 
+    sli_columns = self.configuration.registered_workflows
+
     def __init__(self, configuration: Configuration):
         """Initialize SLI class."""
         self.configuration = configuration

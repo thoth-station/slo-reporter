@@ -45,6 +45,8 @@ class SLIPyPIKnowledgeGraph(SLIBase):
 
     _SLI_NAME = "pypi_knowledge_graph"
 
+    sli_columns = _REGISTERED_KNOWLEDGE_QUANTITY.keys()
+
     def __init__(self, configuration: Configuration):
         """Initialize SLI class."""
         self.configuration = configuration

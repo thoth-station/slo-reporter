@@ -42,6 +42,8 @@ class SLIKebechet(SLIBase):
 
     _SLI_NAME = "kebechet"
 
+    sli_columns = _REGISTERED_KEBECHET_QUANTITY.keys()
+
     def __init__(self, configuration: Configuration):
         """Initialize SLI class."""
         self.configuration = configuration
