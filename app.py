@@ -310,7 +310,7 @@ def main():
         )
 
     for i in range(0, EVALUATION_METRICS_DAYS):
-        _END_TIME = datetime.datetime.now() - datetime.timedelta(days=i)
+        _END_TIME = datetime.datetime.utcnow() - datetime.timedelta(days=i)
         _START_TIME = _END_TIME - datetime.timedelta(days=INTERVAL_REPORT_DAYS)
         _LOGGER.info(f"Interval: {_START_TIME.strftime('%Y-%m-%d')} - {_END_TIME.strftime('%Y-%m-%d')}")
 
