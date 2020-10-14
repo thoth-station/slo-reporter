@@ -24,7 +24,7 @@ import datetime
 from prometheus_client import CollectorRegistry, Gauge
 from thoth.storages.graph.enums import ThothAdviserIntegrationEnum
 
-from thoth.slo_reporter.utils import connect_to_ceph
+from thoth.storages import CephStore
 
 from typing import Optional
 
@@ -95,7 +95,7 @@ class Configuration:
             # Ceph
             self.public_ceph_bucket = os.environ["THOTH_PUBLIC_CEPH_BUCKET"]
             self.ceph_bucket_prefix = os.environ["THOTH_CEPH_BUCKET_PREFIX"]
-            self.ceph_sli = connect_to_ceph(self.ceph_bucket_prefix, self.environment)
+            self.ceph_sli = _connect_to_ceph(self.ceph_bucket_prefix, self.environment)
 
         # Registered components (Argo workflows)
         self.registered_workflows = {
@@ -135,6 +135,14 @@ class Configuration:
         self.interval = f"{self.number_days}d"
 
         self.email_day = "Friday"
+
+
+def _connect_to_ceph(ceph_bucket_prefix: str, environment: str, bucket: Optional[str] = None) -> CephStore:
+    """Connect to Ceph to store SLI metrics for Thoth."""
+    prefix = _get_sli_metrics_prefix(ceph_bucket_prefix=ceph_bucket_prefix, environment=environment)
+    ceph = CephStore(prefix=prefix, bucket=bucket)
+    ceph.connect()
+    return ceph
 
 
 def _get_sli_metrics_prefix(ceph_bucket_prefix: str, environment: str) -> str:
