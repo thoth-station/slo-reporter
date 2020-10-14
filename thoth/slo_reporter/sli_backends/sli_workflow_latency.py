@@ -128,7 +128,7 @@ class SLIWorkflowLatency(SLIBase):
 
         return html_inputs
 
-    def _report_sli(self, sli: Dict[str, Any], ceph_sli=None) -> str:
+    def _report_sli(self, sli: Dict[str, Any]) -> str:
         """Create report for component_latency SLI.
 
         @param sli: It's a dict of SLI associated with the SLI type.

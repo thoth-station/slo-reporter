@@ -134,9 +134,6 @@ def store_sli_periodic_metrics_to_ceph(
     sli_metrics_id = f"sli-thoth-{datetime}"
     _LOGGER.info(f"Start storing Thoth weekly SLI metrics for {sli_metrics_id}.")
 
-    ceph_sli = connect_to_ceph(
-        ceph_bucket_prefix=configuration.ceph_bucket_prefix, environment=configuration.environment,
-    )
     public_ceph_sli = connect_to_ceph(
         ceph_bucket_prefix=configuration.ceph_bucket_prefix,
         environment=configuration.environment,
@@ -161,7 +158,7 @@ def store_sli_periodic_metrics_to_ceph(
 
         try:
             store_thoth_sli_on_ceph(
-                ceph_sli=ceph_sli, metric_class=metric_class, metrics_df=metrics_df, ceph_path=ceph_path,
+                ceph_sli=configuration.ceph_sli, metric_class=metric_class, metrics_df=metrics_df, ceph_path=ceph_path,
             )
         except Exception as e_ceph:
             _LOGGER.exception(f"Could not store metrics on Thoth bucket on Ceph...{e_ceph}")
@@ -207,16 +204,12 @@ def generate_email(sli_metrics: Dict[str, Any], configuration: Configuration, sl
     message += sli_report.report_style
     message += sli_report.report_intro
 
-    ceph_sli = connect_to_ceph(
-        ceph_bucket_prefix=configuration.ceph_bucket_prefix, environment=configuration.environment,
-    )
-
     for sli_name, metric_data in sli_metrics.items():
 
         _LOGGER.debug(f"Generating report for: {sli_name}")
 
         report_method = sli_report.report_sli_context[sli_name]["report_method"]
-        message += "\n" + report_method(metric_data, ceph_sli)
+        message += "\n" + report_method(metric_data)
 
     message += sli_report.report_references
 

@@ -32,8 +32,6 @@ from thoth.slo_reporter.sli_template import HTMLTemplates
 from thoth.slo_reporter.configuration import Configuration
 from thoth.slo_reporter.utils import retrieve_thoth_sli_from_ceph
 
-from thoth.storages import CephStore
-
 from io import StringIO
 
 
@@ -122,14 +120,14 @@ class SLIKnowledgeGraph(SLIBase):
 
         return html_inputs
 
-    def _report_sli(self, sli: Dict[str, Any], ceph_sli: CephStore) -> str:
+    def _report_sli(self, sli: Dict[str, Any]) -> str:
         """Create report for knowledge graph SLI.
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
         html_inputs = self._evaluate_sli(sli=sli)
         sli_path = f"{self._SLI_NAME}/{self._SLI_NAME}-{self.configuration.last_week_time}.csv"
-        retrieved_data = retrieve_thoth_sli_from_ceph(ceph_sli, sli_path)
+        retrieved_data = retrieve_thoth_sli_from_ceph(self.configuration.ceph_sli, sli_path)
         data = StringIO(retrieved_data)
         last_week_data = pd.read_csv(data, names=self.total_columns)
 

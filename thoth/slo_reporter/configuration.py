@@ -24,6 +24,8 @@ import datetime
 from prometheus_client import CollectorRegistry, Gauge
 from thoth.storages.graph.enums import ThothAdviserIntegrationEnum
 
+from thoth.slo_reporter.utils import connect_to_ceph
+
 from typing import Optional
 
 _LOGGER = logging.getLogger(__name__)
@@ -93,6 +95,7 @@ class Configuration:
             # Ceph
             self.public_ceph_bucket = os.environ["THOTH_PUBLIC_CEPH_BUCKET"]
             self.ceph_bucket_prefix = os.environ["THOTH_CEPH_BUCKET_PREFIX"]
+            self.ceph_sli = connect_to_ceph(self.ceph_bucket_prefix, self.environment)
 
         # Registered components (Argo workflows)
         self.registered_workflows = {
