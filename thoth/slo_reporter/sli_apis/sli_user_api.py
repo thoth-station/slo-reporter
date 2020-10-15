@@ -145,7 +145,7 @@ class SLIUserAPI(SLIBase):
             if diff > 0:
                 html_inputs[c]["change"] = "+{:.3f}".format(diff)
             elif diff < 0:
-                html_inputs[c]["change"] = "-{:.3f}".format(diff)
+                html_inputs[c]["change"] = "{:.3f}".format(diff)
             else:
                 html_inputs[c]["change"] = diff
 

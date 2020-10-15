@@ -112,7 +112,7 @@ class SLIKebechet(SLIBase):
             if diff > 0:
                 html_inputs[c]["change"] = "+{:.0f}".format(diff)
             elif diff < 0:
-                html_inputs[c]["change"] = "-{:.0f}".format(diff)
+                html_inputs[c]["change"] = "{:.0f}".format(diff)
             else:
                 html_inputs[c]["change"] = diff
 
