@@ -32,8 +32,6 @@ from thoth.slo_reporter.sli_template import HTMLTemplates
 from thoth.slo_reporter.configuration import Configuration
 from thoth.slo_reporter.utils import retrieve_thoth_sli_from_ceph
 
-from io import StringIO
-
 _LOGGER = logging.getLogger(__name__)
 
 _REGISTERED_LEARNING_MEASUREMENT_UNIT = {
@@ -148,9 +146,7 @@ class SLILearning(SLIBase):
         """
         html_inputs = self._evaluate_sli(sli=sli)
         sli_path = f"{self._SLI_NAME}/{self._SLI_NAME}-{self.configuration.last_week_time}.csv"
-        retrieved_data = retrieve_thoth_sli_from_ceph(self.configuration.ceph_sli, sli_path)
-        data = StringIO(retrieved_data)
-        last_week_data = pd.read_csv(data, names=self.total_columns)
+        last_week_data = retrieve_thoth_sli_from_ceph(self.configuration.ceph_sli, sli_path, self.total_columns)
 
         for c in ["new_solvers", "solved_packages", "si_analyzed_packages"]:
             html_inputs[c]["change"] = "N/A"

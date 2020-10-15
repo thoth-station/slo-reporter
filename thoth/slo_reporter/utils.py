@@ -28,6 +28,7 @@ from thoth.storages import CephStore
 
 from thoth.slo_reporter.configuration import _get_sli_metrics_prefix, Configuration
 
+from io import StringIO
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -113,7 +114,10 @@ def store_thoth_sli_on_ceph(
     _LOGGER.info(f"Succesfully stored Thoth weekly SLI metrics for {metric_class} at {ceph_path}")
 
 
-def retrieve_thoth_sli_from_ceph(ceph_sli: CephStore, ceph_path: str) -> str:
+def retrieve_thoth_sli_from_ceph(ceph_sli: CephStore, ceph_path: str, total_columns: List[str]) -> pd.DataFrame:
     """Retrieve Thoth SLI from Ceph."""
     _LOGGER.info(f"Retrieving... \n{ceph_path}")
-    return ceph_sli.retrieve_blob(object_key=ceph_path).decode('utf-8')
+    retrieved_data = ceph_sli.retrieve_blob(object_key=ceph_path).decode('utf-8')
+    data = StringIO(retrieved_data)
+    last_week_data = pd.read_csv(data, names=total_columns)
+    return last_week_data

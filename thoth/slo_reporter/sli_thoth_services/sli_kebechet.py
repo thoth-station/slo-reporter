@@ -32,8 +32,6 @@ from thoth.slo_reporter.sli_template import HTMLTemplates
 from thoth.slo_reporter.configuration import Configuration
 from thoth.slo_reporter.utils import retrieve_thoth_sli_from_ceph
 
-from io import StringIO
-
 _LOGGER = logging.getLogger(__name__)
 
 _REGISTERED_KEBECHET_QUANTITY = {
@@ -106,9 +104,7 @@ class SLIKebechet(SLIBase):
         """
         html_inputs = self._evaluate_sli(sli=sli)
         sli_path = f"{self._SLI_NAME}/{self._SLI_NAME}-{self.configuration.last_week_time}.csv"
-        retrieved_data = retrieve_thoth_sli_from_ceph(self.configuration.ceph_sli, sli_path)
-        data = StringIO(retrieved_data)
-        last_week_data = pd.read_csv(data, names=self.total_columns)
+        last_week_data = retrieve_thoth_sli_from_ceph(self.configuration.ceph_sli, sli_path, self.total_columns)
 
         for c in ["delta_total_active_repositories"]:
             html_inputs[c]["change"] = "N/A"
