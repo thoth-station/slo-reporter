@@ -23,8 +23,6 @@ import datetime
 
 import numpy as np
 
-import pandas as pd
-
 from typing import Dict, List, Any
 
 from thoth.slo_reporter.sli_base import SLIBase
