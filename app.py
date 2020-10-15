@@ -134,9 +134,6 @@ def store_sli_periodic_metrics_to_ceph(
     sli_metrics_id = f"sli-thoth-{datetime}"
     _LOGGER.info(f"Start storing Thoth weekly SLI metrics for {sli_metrics_id}.")
 
-    ceph_sli = connect_to_ceph(
-        ceph_bucket_prefix=configuration.ceph_bucket_prefix, environment=configuration.environment,
-    )
     public_ceph_sli = connect_to_ceph(
         ceph_bucket_prefix=configuration.ceph_bucket_prefix,
         environment=configuration.environment,
@@ -161,7 +158,7 @@ def store_sli_periodic_metrics_to_ceph(
 
         try:
             store_thoth_sli_on_ceph(
-                ceph_sli=ceph_sli, metric_class=metric_class, metrics_df=metrics_df, ceph_path=ceph_path,
+                ceph_sli=configuration.ceph_sli, metric_class=metric_class, metrics_df=metrics_df, ceph_path=ceph_path,
             )
         except Exception as e_ceph:
             _LOGGER.exception(f"Could not store metrics on Thoth bucket on Ceph...{e_ceph}")

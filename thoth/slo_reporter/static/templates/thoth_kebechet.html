@@ -6,6 +6,7 @@
             <tr>
                 <th>Parameter</th>
                 <th>Value</th>
+                <th>Change since last week</th>
             </tr>
         </thead>
         {% endblock %}
@@ -15,6 +16,7 @@
             <tr>
                 <td>{{ value['name'] }}</td>
                 <td>{{ value['value'] }}</td>
+                <td>{{ value['change'] }}</td>
             </tr>
             {% endfor %}
         </tbody>
