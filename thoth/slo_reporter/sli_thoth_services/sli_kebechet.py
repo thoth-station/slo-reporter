@@ -34,7 +34,7 @@ _LOGGER = logging.getLogger(__name__)
 
 _REGISTERED_KEBECHET_QUANTITY = {
     "total_active_repositories": "Total active repositories",
-    "delta_total_active_repositories": "Change in active repositories since last week",
+    "delta_total_active_repositories": "Change in active repositories",
 }
 
 
