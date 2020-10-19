@@ -143,20 +143,22 @@ class SLILearning(SLIBase):
         @param sli: It's a dict of SLI associated with the SLI type.
         """
         html_inputs = self._evaluate_sli(sli=sli)
-        sli_path = f"{self._SLI_NAME}/{self._SLI_NAME}-{self.configuration.last_week_time}.csv"
-        last_week_data = retrieve_thoth_sli_from_ceph(self.configuration.ceph_sli, sli_path, self.total_columns)
 
-        for c in ["new_solvers", "solved_packages", "si_analyzed_packages"]:
-            html_inputs[c]["change"] = "N/A"
+        if not self.configuration.dry_run:
+            sli_path = f"{self._SLI_NAME}/{self._SLI_NAME}-{self.configuration.last_week_time}.csv"
+            last_week_data = retrieve_thoth_sli_from_ceph(self.configuration.ceph_sli, sli_path, self.total_columns)
 
-        for c in ["average_learning_rate", "solvers", "average_si_learning_rate"]:
-            diff = (html_inputs[c]["value"] - last_week_data[c])[0].item()
-            if diff > 0:
-                html_inputs[c]["change"] = "+{:.0f}".format(diff)
-            elif diff < 0:
-                html_inputs[c]["change"] = "{:.0f}".format(diff)
-            else:
-                html_inputs[c]["change"] = diff
+            for c in ["new_solvers", "solved_packages", "si_analyzed_packages"]:
+                html_inputs[c]["change"] = "N/A"
+
+            for c in ["average_learning_rate", "solvers", "average_si_learning_rate"]:
+                diff = (html_inputs[c]["value"] - last_week_data[c])[0].item()
+                if diff > 0:
+                    html_inputs[c]["change"] = "+{:.0f}".format(diff)
+                elif diff < 0:
+                    html_inputs[c]["change"] = "{:.0f}".format(diff)
+                else:
+                    html_inputs[c]["change"] = diff
 
         report = HTMLTemplates.thoth_learning_template(html_inputs=html_inputs)
         return report
