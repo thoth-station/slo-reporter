@@ -211,3 +211,12 @@ all the things that you see...
 * :pushpin: Automatic update of dependency thoth-storages from 0.25.13 to 0.25.14 (#123)
 * :pushpin: Automatic update of dependency thoth-storages from 0.25.12 to 0.25.13 (#121)
 * :pushpin: Automatic update of dependency thoth-storages from 0.25.12 to 0.25.13 (#120)
+
+## Release 0.6.0 (2020-10-22T16:21:22)
+### Features
+* check for DRY_RUN (#145)
+* Adjust description (#144)
+### Automatic Updates
+* :pushpin: Automatic update of dependency thoth-common from 0.20.1 to 0.20.2 (#148)
+* :pushpin: Automatic update of dependency thoth-common from 0.20.1 to 0.20.2 (#147)
+* :pushpin: Automatic update of dependency hypothesis from 5.37.1 to 5.37.3 (#143)
