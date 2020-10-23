@@ -220,3 +220,10 @@ all the things that you see...
 * :pushpin: Automatic update of dependency thoth-common from 0.20.1 to 0.20.2 (#148)
 * :pushpin: Automatic update of dependency thoth-common from 0.20.1 to 0.20.2 (#147)
 * :pushpin: Automatic update of dependency hypothesis from 5.37.1 to 5.37.3 (#143)
+
+## Release 0.6.1 (2020-10-23T07:23:45)
+### Features
+* Add environment to email title to avoid confusion (#154)
+### Automatic Updates
+* :pushpin: Automatic update of dependency hypothesis from 5.37.3 to 5.37.4 (#153)
+* :pushpin: Automatic update of dependency hypothesis from 5.37.3 to 5.37.4 (#151)
