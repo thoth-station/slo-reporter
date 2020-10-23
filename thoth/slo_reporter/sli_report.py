@@ -59,7 +59,7 @@ class SLIReport:
         self.configuration = configuration
 
         self.report_subject = (
-            f"Thoth Service Level Indicators Update Day" + f" ({self.configuration.end_time.strftime('%Y-%m-%d')})"
+            f"Thoth Service Level Indicators Update Day" + f" ({self.configuration.end_time.strftime('%Y-%m-%d')}) ({self.configuration.environment} environment)"
         )
         _LOGGER.info(self.report_subject)
 
