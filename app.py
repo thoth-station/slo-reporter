@@ -59,22 +59,21 @@ else:
 
 def check_database_metrics_availability(configuration: Configuration) -> bool:
     """Check database metrics (Prometheus/Thanos) availability."""
-    if not _DRY_RUN:
-        pc = PrometheusConnect(
-            url=configuration.thanos_url,
-            headers={"Authorization": f"bearer {configuration.thanos_token}"},
-            disable_ssl=True,
-        )
-        response = pc._session.get(
-            "{0}/".format(pc.url),
-            verify=pc.ssl_verification,
-            headers=pc.headers,
-            params={},
-        )
-        if not response.ok:
-            return False
+    pc = PrometheusConnect(
+        url=configuration.thanos_url,
+        headers={"Authorization": f"bearer {configuration.thanos_token}"},
+        disable_ssl=True,
+    )
+    response = pc._session.get(
+        "{0}/".format(pc.url),
+        verify=pc.ssl_verification,
+        headers=pc.headers,
+        params={},
+    )
+    if not response.ok:
+        return False
 
-        return True
+    return True
 
 
 def collect_metrics(configuration: Configuration, sli_report: SLIReport):
@@ -269,11 +268,12 @@ def run_slo_reporter(
     """Run SLO reporter."""
     configuration = Configuration(start_time=start_time, end_time=end_time, number_days=number_days, dry_run=dry_run)
 
-    ## Check Database availability
-    is_database_available = check_database_metrics_availability(configuration=configuration)
+    if not _DRY_RUN:
+        ## Check Database availability
+        is_database_available = check_database_metrics_availability(configuration=configuration)
 
-    if not is_database_available:
-        raise Exception(f"Thanos endpoint {configuration.thanos_url} is not available! SLO-reporter cannot run.")
+        if not is_database_available:
+            raise Exception(f"Thanos endpoint {configuration.thanos_url} is not available! SLO-reporter cannot run.")
 
     sli_report = SLIReport(configuration=configuration)
 
