@@ -65,7 +65,7 @@ class SLIKnowledgeGraph(SLIBase):
     def _query_sli(self) -> List[str]:
         """Aggregate queries for knowledge graph SLI Report."""
         query_labels = (
-            f'{{instance="{self.configuration.instance}", job="Thoth Metrics ({self.configuration.environment})"}}'
+            f'{{instance="{self.configuration.instance}", job="Thoth Metrics"}}'
         )
 
         return {
