@@ -74,7 +74,7 @@ class SLIUserAPI(SLIBase):
         query_labels = f'{{instance="{self.instance}"}}'
         query_labels_success = f'{{instance="{self.instance}", status=~"2.*"}}'
         query_labels_up = (
-            f'{{instance="{self.instance}", job="Thoth User API Metrics ({self.configuration.environment})"}}'
+            f'{{instance="{self.instance}", job="Thoth User API Metrics"}}'
         )
 
         return {

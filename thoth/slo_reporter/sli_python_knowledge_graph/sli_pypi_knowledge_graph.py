@@ -63,8 +63,8 @@ class SLIPyPIKnowledgeGraph(SLIBase):
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for knowledge graph SLI Report."""
-        query_labels_packages = f'{{instance="{self.configuration.instance}", job="Thoth Metrics ({self.configuration.environment})", stats_type="packages"}}'
-        query_labels_releases = f'{{instance="{self.configuration.instance}", job="Thoth Metrics ({self.configuration.environment})", stats_type="releases"}}'
+        query_labels_packages = f'{{instance="{self.configuration.instance}", job="Thoth Metrics", stats_type="packages"}}'
+        query_labels_releases = f'{{instance="{self.configuration.instance}", job="Thoth Metrics", stats_type="releases"}}'
 
         return {
             "total_packages": {
