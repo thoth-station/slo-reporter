@@ -227,3 +227,9 @@ all the things that you see...
 ### Automatic Updates
 * :pushpin: Automatic update of dependency hypothesis from 5.37.3 to 5.37.4 (#153)
 * :pushpin: Automatic update of dependency hypothesis from 5.37.3 to 5.37.4 (#151)
+
+## Release 0.7.0 (2020-11-26T11:49:13)
+### Features
+* Adjust metrics due to changes on Prometheus side (#164)
+* Add check for Thanos availability before starting to acquire metrics. (#163)
+* port to python 38 (#162)
