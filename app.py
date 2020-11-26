@@ -21,10 +21,8 @@ import os
 import logging
 import smtplib
 import datetime
-import base64
 import webbrowser
 import tempfile
-import copy
 
 import pandas as pd
 from pandas.io.json import json_normalize
@@ -32,7 +30,7 @@ from pandas.io.json import json_normalize
 from typing import Dict, Any
 from pathlib import Path
 
-from prometheus_api_client import Metric, MetricsList, PrometheusConnect
+from prometheus_api_client import Metric, PrometheusConnect
 from prometheus_api_client.utils import parse_datetime, parse_timedelta
 from prometheus_client import push_to_gateway
 
@@ -57,6 +55,25 @@ if _DEBUG_LEVEL:
     logging.basicConfig(level=logging.DEBUG)
 else:
     logging.basicConfig(level=logging.INFO)
+
+
+def check_database_metrics_availability(configuration: Configuration) -> bool:
+    """Check database metrics (Prometheus/Thanos) availability."""
+    pc = PrometheusConnect(
+        url=configuration.thanos_url,
+        headers={"Authorization": f"bearer {configuration.thanos_token}"},
+        disable_ssl=True,
+    )
+    response = pc._session.get(
+        "{0}/".format(pc.url),
+        verify=pc.ssl_verification,
+        headers=pc.headers,
+        params={},
+    )
+    if not response.ok:
+        return False
+
+    return True
 
 
 def collect_metrics(configuration: Configuration, sli_report: SLIReport):
@@ -250,6 +267,14 @@ def run_slo_reporter(
 ) -> None:
     """Run SLO reporter."""
     configuration = Configuration(start_time=start_time, end_time=end_time, number_days=number_days, dry_run=dry_run)
+
+    if not _DRY_RUN:
+        ## Check Database availability
+        is_database_available = check_database_metrics_availability(configuration=configuration)
+
+        if not is_database_available:
+            raise Exception(f"Thanos endpoint {configuration.thanos_url} is not available! SLO-reporter cannot run.")
+
     sli_report = SLIReport(configuration=configuration)
 
     # Collect metrics.
