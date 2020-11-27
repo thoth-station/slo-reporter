@@ -6,7 +6,7 @@ assignees: 'sesheta'
 labels: bot
 ---
 
-Hey, Kebechet!
+Hey, AICoE-CI!
 
 Please build and deliver the following git tag:
 
