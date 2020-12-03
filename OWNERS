@@ -9,3 +9,5 @@ reviewers:
   - harshad16
   - bissenbay
 
+labels:
+ - sig/slo
