@@ -2,12 +2,10 @@
 
 approvers:
   - pacospace
-  - goern
   - sesheta
 reviewers:
   - fridex
   - harshad16
-  - bissenbay
 
 labels:
  - sig/slo
