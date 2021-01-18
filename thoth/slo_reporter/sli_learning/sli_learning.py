@@ -64,32 +64,30 @@ class SLILearning(SLIBase):
 
         return {
             "average_learning_rate": {
-                "query": f"increase(\
-                    thoth_graphdb_unsolved_python_package_versions_change_total{query_labels}[{_LEARNING_RATE_INTERVAL}]\
-                        )",
+                "query": "increase("
+                    f"thoth_graphdb_unsolved_python_package_versions_change_total{query_labels}[{_LEARNING_RATE_INTERVAL}])",
                 "requires_range": True,
                 "type": "average",
             },
             "solved_packages": {
                 "query": f"sum(thoth_graphdb_total_number_solved_python_packages{query_labels})",
-                "requires_range": True,
+                "requires_range": False,
                 "type": "latest",
             },
             "solvers": {
                 "query": f"thoth_graphdb_total_number_solvers{query_labels}",
-                "requires_range": True,
+                "requires_range": False,
                 "type": "latest",
             },
             "average_si_learning_rate": {
-                "query": f"increase(\
-                    thoth_graphdb_si_unanalyzed_python_package_versions_change_total{query_labels}[{_LEARNING_RATE_INTERVAL}]\
-                        )",
+                "query": "increase("
+                    f"thoth_graphdb_si_unanalyzed_python_package_versions_change_total{query_labels}[{_LEARNING_RATE_INTERVAL}])",
                 "requires_range": True,
                 "type": "average",
             },
             "si_analyzed_packages": {
                 "query": f"thoth_graphdb_total_number_si_analyzed_python_packages{query_labels}",
-                "requires_range": True,
+                "requires_range": False,
                 "type": "latest",
             },
         }
@@ -105,7 +103,6 @@ class SLILearning(SLIBase):
 
             learning_quantity_data = _REGISTERED_LEARNING_MEASUREMENT_UNIT[learning_quantity]
             html_inputs[learning_quantity] = {}
-
             if sli[learning_quantity] != "ErrorMetricRetrieval":
 
                 # if quantity uses delta
@@ -145,7 +142,7 @@ class SLILearning(SLIBase):
         report = HTMLTemplates.thoth_learning_template(html_inputs=html_inputs)
         return report
 
-    def _create_inputs_for_df_sli(
+    def _process_results_to_be_stored(
         self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime,
     ) -> Dict[str, Any]:
         """Create inputs for SLI dataframe to be stored.
