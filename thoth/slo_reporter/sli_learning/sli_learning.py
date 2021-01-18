@@ -35,10 +35,10 @@ _LOGGER = logging.getLogger(__name__)
 
 _REGISTERED_LEARNING_MEASUREMENT_UNIT = {
     "average_learning_rate": {"name": "Solved Learning Rate", "measurement_unit": "packages/hour"},
-    "solved_packages": {"name": "Total number of solved packages", "measurement_unit": "packages"},
+    "solved_packages": {"name": "Solved packages", "measurement_unit": "packages"},
     "solvers": {"name": "Number of Solvers", "measurement_unit": ""},
     "average_si_learning_rate": {"name": "Security Learning Rate", "measurement_unit": "packages/hour"},
-    "si_analyzed_packages": {"name": "Total number of SI analyzed packages", "measurement_unit": "packages"},
+    "si_analyzed_packages": {"name": "SI analyzed packages", "measurement_unit": "packages"},
 }
 
 _LEARNING_RATE_INTERVAL = f"{int(os.getenv('LEARNING_RATE_INTERVAL', 1))}h"
