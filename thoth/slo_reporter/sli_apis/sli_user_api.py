@@ -28,7 +28,7 @@ from typing import Dict, List, Any
 from thoth.slo_reporter.sli_base import SLIBase
 from thoth.slo_reporter.sli_template import HTMLTemplates
 from thoth.slo_reporter.configuration import Configuration
-from thoth.slo_reporter.utils import retrieve_thoth_sli_from_ceph
+from thoth.slo_reporter.utils import process_html_inputs
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -59,15 +59,6 @@ class SLIUserAPI(SLIBase):
             self.instance = os.environ["PROMETHEUS_INSTANCE_USER_API"]
 
         self.total_columns = self.default_columns + self.sli_columns
-
-    def _aggregate_info(self):
-        """Aggregate info required for User-API SLI Report."""
-        return {
-            "query": self._query_sli(),
-            "evaluation_method": self._evaluate_sli,
-            "report_method": self._report_sli,
-            "df_method": self._process_results_to_be_stored,
-        }
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for User-API SLI Report."""
@@ -138,20 +129,18 @@ class SLIUserAPI(SLIBase):
         """
         html_inputs = self._evaluate_sli(sli=sli)
 
-        if not self.configuration.dry_run:
-            sli_path = f"{self._SLI_NAME}/{self._SLI_NAME}-{self.configuration.last_week_time}.csv"
-            last_week_data = retrieve_thoth_sli_from_ceph(self.configuration.ceph_sli, sli_path, self.total_columns)
+        report = HTMLTemplates.thoth_user_api_template(
+            html_inputs=process_html_inputs(
+                html_inputs=html_inputs,
+                dry_run=self.configuration.dry_run,
+                sli_name=self._SLI_NAME,
+                last_period_time=self.configuration.last_week_time,
+                ceph_sli=self.configuration.ceph_sli,
+                sli_columns=self.sli_columns,
+                total_columns=self.total_columns
+            )
+        )
 
-            for c in self.sli_columns:
-                diff = (html_inputs[c]["value"] - last_week_data[c])[0].item()
-                if diff > 0:
-                    html_inputs[c]["change"] = "+{:.3f}".format(diff)
-                elif diff < 0:
-                    html_inputs[c]["change"] = "{:.3f}".format(diff)
-                else:
-                    html_inputs[c]["change"] = diff
-
-        report = HTMLTemplates.thoth_user_api_template(html_inputs=html_inputs)
         return report
 
     def _process_results_to_be_stored(
