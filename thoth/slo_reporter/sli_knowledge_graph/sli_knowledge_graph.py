@@ -131,4 +131,7 @@ class SLIKnowledgeGraph(SLIBase):
 
         output = self._create_default_inputs_for_df_sli(**parameters)
 
+        output["new_packages"] = np.nan
+        output["new_packages_releases"] = np.nan
+
         return output
