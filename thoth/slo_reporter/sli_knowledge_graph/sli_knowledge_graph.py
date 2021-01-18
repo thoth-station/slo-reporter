@@ -22,22 +22,21 @@ import os
 import datetime
 
 import numpy as np
+import pandas as pd
 
 from typing import Dict, List, Any
 
 from thoth.slo_reporter.sli_base import SLIBase
 from thoth.slo_reporter.sli_template import HTMLTemplates
 from thoth.slo_reporter.configuration import Configuration
-from thoth.slo_reporter.utils import retrieve_thoth_sli_from_ceph
+from thoth.slo_reporter.utils import retrieve_thoth_sli_from_ceph, evaluate_change
 
 _LOGGER = logging.getLogger(__name__)
 
 _REGISTERED_KNOWLEDGE_QUANTITY = {
     "python_indices_registered": "Python Indices",
     "total_packages": "Python Packages",
-    "new_packages": "New Python Packages",
     "total_releases": "Python Packages Releases",
-    "new_packages_releases": "New Python Packages Releases",
 }
 
 
@@ -70,20 +69,10 @@ class SLIKnowledgeGraph(SLIBase):
                 "requires_range": True,
                 "type": "latest",
             },
-            "new_packages": {
-                "query": f"thoth_graphdb_sum_python_packages_per_indexes{query_labels}",
-                "requires_range": True,
-                "type": "delta",
-            },
             "total_releases": {
                 "query": f"thoth_graphdb_number_python_package_versions{query_labels}",
                 "requires_range": True,
                 "type": "latest",
-            },
-            "new_packages_releases": {
-                "query": f"thoth_graphdb_number_python_package_versions{query_labels}",
-                "requires_range": True,
-                "type": "delta",
             },
         }
 
@@ -113,21 +102,19 @@ class SLIKnowledgeGraph(SLIBase):
         """
         html_inputs = self._evaluate_sli(sli=sli)
 
+        last_week_data = pd.DataFrame()
+
         if not self.configuration.dry_run:
             sli_path = f"{self._SLI_NAME}/{self._SLI_NAME}-{self.configuration.last_week_time}.csv"
             last_week_data = retrieve_thoth_sli_from_ceph(self.configuration.ceph_sli, sli_path, self.total_columns)
 
-            for c in ["new_packages", "new_packages_releases"]:
+        for c in self.sli_columns:
+            if not last_week_data.empty:
+                old_value = last_week_data[c].values[0]
+                change = evaluate_change(old_value=old_value, new_value=html_inputs[c]["value"])
+                html_inputs[c]["change"] = change
+            else:
                 html_inputs[c]["change"] = "N/A"
-
-            for c in ["python_indices_registered", "total_packages", "total_releases"]:
-                diff = (html_inputs[c]["value"] - last_week_data[c])[0].item()
-                if diff > 0:
-                    html_inputs[c]["change"] = "+{:.0f}".format(diff)
-                elif diff < 0:
-                    html_inputs[c]["change"] = "{:.0f}".format(diff)
-                else:
-                    html_inputs[c]["change"] = diff
 
         report = HTMLTemplates.thoth_knowledge_template(html_inputs=html_inputs)
         return report
