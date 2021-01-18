@@ -103,7 +103,7 @@ class SLIThothIntegrations(SLIBase):
             else:
                 html_inputs[name]["total"] = "N/A"
 
-            if not last_week_data.empty:
+            if not last_week_data.empty and thoth_integration_counts_total != "ErrorMetricRetrieval":
                 old_value = last_week_data[last_week_data['integration'] == name]['total'].values[0]
                 change = evaluate_change(old_value=old_value, new_value=thoth_integration_counts_total)
 
@@ -123,7 +123,7 @@ class SLIThothIntegrations(SLIBase):
 
         return report
 
-    def _create_inputs_for_df_sli(
+    def _process_results_to_be_stored(
         self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime,
     ) -> Dict[str, Any]:
         """Create inputs for SLI dataframe to be stored.

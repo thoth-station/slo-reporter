@@ -44,15 +44,6 @@ class SLIWorkflowQuality(SLIBase):
         self.sli_columns = [c for c in self.configuration.registered_workflows]
         self.total_columns = self.default_columns + self.sli_columns
 
-    def _aggregate_info(self):
-        """Aggregate info required for component_quality SLI Report."""
-        return {
-            "query": self._query_sli(),
-            "evaluation_method": self._evaluate_sli,
-            "report_method": self._report_sli,
-            "df_method": self._create_inputs_for_df_sli,
-        }
-
     def _query_sli(self) -> List[str]:
         """Aggregate queries for component_quality SLI Report."""
         queries = {}
@@ -157,7 +148,7 @@ class SLIWorkflowQuality(SLIBase):
 
         return report
 
-    def _create_inputs_for_df_sli(
+    def _process_results_to_be_stored(
         self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime,
     ) -> Dict[str, Any]:
         """Create inputs for SLI dataframe to be stored.

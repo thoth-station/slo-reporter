@@ -36,7 +36,7 @@ class SLIBase:
             "query": self._query_sli(),
             "evaluation_method": self._evaluate_sli,
             "report_method": self._report_sli,
-            "df_method": self._create_inputs_for_df_sli,
+            "df_method": self._process_results_to_be_stored,
         }
 
     def _query_sli(self) -> Dict[str, str]:
@@ -57,7 +57,7 @@ class SLIBase:
         """
         raise NotImplementedError
 
-    def _create_inputs_for_df_sli(
+    def _process_results_to_be_stored(
         self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime,
     ) -> Dict[str, Any]:
         """Create inputs for SLI dataframe to be stored.

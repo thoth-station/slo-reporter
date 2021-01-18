@@ -75,7 +75,7 @@ The new class would inherit the base class `SLIBase` from [sli_base.py](https://
             "query": self._query_sli(),
             "evaluation_method": self._evaluate_sli,
             "report_method": self._report_sli,
-            "df_method": self._create_inputs_for_df_sli,
+            "df_method": self._process_results_to_be_stored,
         }
 ```
 

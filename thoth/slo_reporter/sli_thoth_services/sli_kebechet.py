@@ -50,14 +50,6 @@ class SLIKebechet(SLIBase):
         self.configuration = configuration
         self.total_columns = self.default_columns + self.sli_columns
 
-    def _aggregate_info(self):
-        """Aggregate info required for Kebechet SLI Report."""
-        return {
-            "query": self._query_sli(),
-            "evaluation_method": self._evaluate_sli,
-            "report_method": self._report_sli,
-            "df_method": self._create_inputs_for_df_sli,
-        }
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for Kebechet SLI Report."""
@@ -122,7 +114,7 @@ class SLIKebechet(SLIBase):
 
         return report
 
-    def _create_inputs_for_df_sli(
+    def _process_results_to_be_stored(
         self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime,
     ) -> Dict[str, Any]:
         """Create inputs for SLI dataframe to be stored.
