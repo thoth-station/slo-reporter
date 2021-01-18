@@ -71,12 +71,12 @@ class SLILearning(SLIBase):
             },
             "solved_packages": {
                 "query": f"sum(thoth_graphdb_total_number_solved_python_packages{query_labels})",
-                "requires_range": False,
+                "requires_range": True,
                 "type": "latest",
             },
             "solvers": {
                 "query": f"thoth_graphdb_total_number_solvers{query_labels}",
-                "requires_range": False,
+                "requires_range": True,
                 "type": "latest",
             },
             "average_si_learning_rate": {
@@ -87,7 +87,7 @@ class SLILearning(SLIBase):
             },
             "si_analyzed_packages": {
                 "query": f"thoth_graphdb_total_number_si_analyzed_python_packages{query_labels}",
-                "requires_range": False,
+                "requires_range": True,
                 "type": "latest",
             },
         }

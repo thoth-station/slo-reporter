@@ -22,6 +22,7 @@ import statistics
 import datetime
 
 import pandas as pd
+import numpy as np
 
 from typing import List, Dict, Optional, Any
 
@@ -97,10 +98,21 @@ def _evaluate_ascending_results(metrics_vector: List[float]) -> List[float]:
 def evaluate_change(old_value: float, new_value: float) -> str:
     """Evaluate difference for report."""
     diff = new_value - old_value
+    sign = ""
+
+    if np.isnan(diff):
+        diff = new_value
+
     if diff > 0:
-        change = "+{:.0f}".format(diff)
+        sign = "+"
+
+    if isinstance(diff, float):
+        if diff.is_integer():
+            change = sign + "{:.0f}".format(diff)
+        else:
+            change = sign + "{:.2f}".format(diff)
     else:
-        change = "{:.0f}".format(diff)
+        change = sign + "{:.0f}".format(diff)
 
     return change
 
