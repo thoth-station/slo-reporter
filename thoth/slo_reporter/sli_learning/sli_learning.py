@@ -22,23 +22,23 @@ import os
 import datetime
 
 import numpy as np
+import pandas as pd
 
 from typing import Dict, List, Any
 
 from thoth.slo_reporter.sli_base import SLIBase
 from thoth.slo_reporter.sli_template import HTMLTemplates
 from thoth.slo_reporter.configuration import Configuration
-from thoth.slo_reporter.utils import retrieve_thoth_sli_from_ceph
+from thoth.slo_reporter.utils import retrieve_thoth_sli_from_ceph, evaluate_change
 
 _LOGGER = logging.getLogger(__name__)
 
 _REGISTERED_LEARNING_MEASUREMENT_UNIT = {
     "average_learning_rate": {"name": "Solved Learning Rate", "measurement_unit": "packages/hour"},
-    "solved_packages": {"name": "Knowledge increase for solved packages", "measurement_unit": "packages"},
+    "solved_packages": {"name": "Total number of solved packages", "measurement_unit": "packages"},
     "solvers": {"name": "Number of Solvers", "measurement_unit": ""},
-    "new_solvers": {"name": "New Solvers", "measurement_unit": ""},
     "average_si_learning_rate": {"name": "Security Learning Rate", "measurement_unit": "packages/hour"},
-    "si_analyzed_packages": {"name": "Knowledge increase for SI analyzed packages", "measurement_unit": "packages"},
+    "si_analyzed_packages": {"name": "Total number of SI analyzed packages", "measurement_unit": "packages"},
 }
 
 _LEARNING_RATE_INTERVAL = f"{int(os.getenv('LEARNING_RATE_INTERVAL', 1))}h"
@@ -55,15 +55,6 @@ class SLILearning(SLIBase):
         """Initialize SLI class."""
         self.configuration = configuration
         self.total_columns = self.default_columns + self.sli_columns
-
-    def _aggregate_info(self):
-        """Aggregate info required for learning quantities SLI Report."""
-        return {
-            "query": self._query_sli(),
-            "evaluation_method": self._evaluate_sli,
-            "report_method": self._report_sli,
-            "df_method": self._create_inputs_for_df_sli,
-        }
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for learning quantities SLI Report."""
@@ -82,17 +73,12 @@ class SLILearning(SLIBase):
             "solved_packages": {
                 "query": f"sum(thoth_graphdb_total_number_solved_python_packages{query_labels})",
                 "requires_range": True,
-                "type": "delta",
+                "type": "latest",
             },
             "solvers": {
                 "query": f"thoth_graphdb_total_number_solvers{query_labels}",
                 "requires_range": True,
                 "type": "latest",
-            },
-            "new_solvers": {
-                "query": f"thoth_graphdb_total_number_solvers{query_labels}",
-                "requires_range": True,
-                "type": "delta",
             },
             "average_si_learning_rate": {
                 "query": f"increase(\
@@ -104,7 +90,7 @@ class SLILearning(SLIBase):
             "si_analyzed_packages": {
                 "query": f"thoth_graphdb_total_number_si_analyzed_python_packages{query_labels}",
                 "requires_range": True,
-                "type": "delta",
+                "type": "latest",
             },
         }
 
@@ -123,9 +109,7 @@ class SLILearning(SLIBase):
             if sli[learning_quantity] != "ErrorMetricRetrieval":
 
                 # if quantity uses delta
-                if learning_quantity == "new_solvers":
-                    html_inputs[learning_quantity]["value"] = int(sli[learning_quantity])
-                elif learning_quantity == "solved_packages" or learning_quantity == "si_analyzed_packages":
+                if learning_quantity == "solved_packages" or learning_quantity == "si_analyzed_packages":
                     html_inputs[learning_quantity]["value"] = int(sli[learning_quantity])
                 else:
                     html_inputs[learning_quantity]["value"] = abs(int(sli[learning_quantity]))
@@ -144,21 +128,19 @@ class SLILearning(SLIBase):
         """
         html_inputs = self._evaluate_sli(sli=sli)
 
+        last_week_data = pd.DataFrame()
+
         if not self.configuration.dry_run:
             sli_path = f"{self._SLI_NAME}/{self._SLI_NAME}-{self.configuration.last_week_time}.csv"
             last_week_data = retrieve_thoth_sli_from_ceph(self.configuration.ceph_sli, sli_path, self.total_columns)
 
-            for c in ["new_solvers", "solved_packages", "si_analyzed_packages"]:
+        for c in self.sli_columns:
+            if not last_week_data.empty:
+                old_value = last_week_data[c].values[0]
+                change = evaluate_change(old_value=old_value, new_value=html_inputs[c]["value"])
+                html_inputs[c]["change"] = change
+            else:
                 html_inputs[c]["change"] = "N/A"
-
-            for c in ["average_learning_rate", "solvers", "average_si_learning_rate"]:
-                diff = (html_inputs[c]["value"] - last_week_data[c])[0].item()
-                if diff > 0:
-                    html_inputs[c]["change"] = "+{:.0f}".format(diff)
-                elif diff < 0:
-                    html_inputs[c]["change"] = "{:.0f}".format(diff)
-                else:
-                    html_inputs[c]["change"] = diff
 
         report = HTMLTemplates.thoth_learning_template(html_inputs=html_inputs)
         return report
