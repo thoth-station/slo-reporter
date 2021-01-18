@@ -19,7 +19,10 @@
 
 import datetime
 
-from typing import Dict, List, Any
+import pandas as pd
+
+from typing import Dict, Any
+from thoth.slo_reporter.utils import retrieve_thoth_sli_from_ceph, evaluate_change
 
 
 class SLIBase:

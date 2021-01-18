@@ -29,7 +29,7 @@ from typing import Dict, List, Any
 from thoth.slo_reporter.sli_base import SLIBase
 from thoth.slo_reporter.sli_template import HTMLTemplates
 from thoth.slo_reporter.configuration import Configuration
-from thoth.slo_reporter.utils import retrieve_thoth_sli_from_ceph, evaluate_change
+from thoth.slo_reporter.utils import process_html_inputs
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -102,21 +102,18 @@ class SLIKnowledgeGraph(SLIBase):
         """
         html_inputs = self._evaluate_sli(sli=sli)
 
-        last_week_data = pd.DataFrame()
+        report = HTMLTemplates.thoth_knowledge_template(
+            html_inputs=process_html_inputs(
+                html_inputs=html_inputs,
+                dry_run=self.configuration.dry_run,
+                sli_name=self._SLI_NAME,
+                last_period_time=self.configuration.last_week_time,
+                ceph_sli=self.configuration.ceph_sli,
+                sli_columns=self.sli_columns,
+                total_columns=self.total_columns
+            )
+        )
 
-        if not self.configuration.dry_run:
-            sli_path = f"{self._SLI_NAME}/{self._SLI_NAME}-{self.configuration.last_week_time}.csv"
-            last_week_data = retrieve_thoth_sli_from_ceph(self.configuration.ceph_sli, sli_path, self.total_columns)
-
-        for c in self.sli_columns:
-            if not last_week_data.empty:
-                old_value = last_week_data[c].values[0]
-                change = evaluate_change(old_value=old_value, new_value=html_inputs[c]["value"])
-                html_inputs[c]["change"] = change
-            else:
-                html_inputs[c]["change"] = "N/A"
-
-        report = HTMLTemplates.thoth_knowledge_template(html_inputs=html_inputs)
         return report
 
     def _process_results_to_be_stored(
