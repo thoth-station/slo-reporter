@@ -5,8 +5,8 @@
         <thead>
             <tr>
                 <th>Integration</th>
-                <th>New use</th>
                 <th>Total use</th>
+                <th>Change since last week </th>
             </tr>
         </thead>
         {% endblock %}
@@ -15,8 +15,8 @@
             {% for metric_type, metric in html_inputs.items() %}
                 <tr>
                     <td>{{ metric_type }}</td>
-                    <td>{{ metric['periodic'] }}</td>
                     <td>{{ metric['total'] }}</td>
+                    <td>{{ metric['new'] }}</td>
                 </tr>
             {% endfor %}
         </tbody>
