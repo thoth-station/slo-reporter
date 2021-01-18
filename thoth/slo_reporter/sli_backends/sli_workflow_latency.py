@@ -22,12 +22,14 @@ import os
 import datetime
 
 import numpy as np
+import pandas as pd
 
 from typing import Dict, List, Any
 
 from thoth.slo_reporter.sli_base import SLIBase
 from thoth.slo_reporter.sli_template import HTMLTemplates
 from thoth.slo_reporter.configuration import Configuration
+from thoth.slo_reporter.utils import retrieve_thoth_sli_from_ceph, evaluate_change
 
 _LOGGER = logging.getLogger(__name__)
 
