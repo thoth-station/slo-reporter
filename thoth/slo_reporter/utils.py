@@ -47,8 +47,8 @@ def manipulate_retrieved_metrics_vector(metrics_vector: List[float], action: str
     :output: metric/SLI
     """
     # Make sure 0 results are not considered
+    metric = 0
     if not metrics_vector:
-        metric = 0
         return metric
 
     if action == "min_max":
@@ -91,6 +91,17 @@ def _evaluate_ascending_results(metrics_vector: List[float]) -> List[float]:
         counter += 1
 
     return modified_vector
+
+
+def evaluate_change(old_value: float, new_value: float) -> str:
+    """Evaluate difference for report."""
+    diff = new_value - old_value
+    if diff > 0:
+        change = "+{:.0f}".format(diff)
+    else:
+        change = "{:.0f}".format(diff)
+
+    return change
 
 
 def connect_to_ceph(ceph_bucket_prefix: str, environment: str, bucket: Optional[str] = None) -> CephStore:
