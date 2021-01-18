@@ -19,14 +19,15 @@
 
 import logging
 import statistics
+import datetime
 
 import pandas as pd
 
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 
 from thoth.storages import CephStore
 
-from thoth.slo_reporter.configuration import _get_sli_metrics_prefix, Configuration
+from thoth.slo_reporter.configuration import _get_sli_metrics_prefix
 
 from io import StringIO
 
@@ -102,6 +103,32 @@ def evaluate_change(old_value: float, new_value: float) -> str:
         change = "{:.0f}".format(diff)
 
     return change
+
+def process_html_inputs(
+    html_inputs: Dict[str, Any],
+    dry_run: bool,
+    sli_name: str,
+    last_period_time: datetime.datetime,
+    ceph_sli: CephStore,
+    sli_columns: List[str],
+    total_columns: List[str]
+) -> str:
+    """Process HTML inputs."""
+    last_week_data = pd.DataFrame()
+
+    if not dry_run:
+        sli_path = f"{sli_name}/{sli_name}-{last_period_time}.csv"
+        last_week_data = retrieve_thoth_sli_from_ceph(ceph_sli, sli_path, total_columns)
+
+    for c in sli_columns:
+        if not last_week_data.empty:
+            old_value = last_week_data[c].values[0]
+            change = evaluate_change(old_value=old_value, new_value=html_inputs[c]["value"])
+            html_inputs[c]["change"] = change
+        else:
+            html_inputs[c]["change"] = "N/A"
+
+    return html_inputs
 
 
 def connect_to_ceph(ceph_bucket_prefix: str, environment: str, bucket: Optional[str] = None) -> CephStore:

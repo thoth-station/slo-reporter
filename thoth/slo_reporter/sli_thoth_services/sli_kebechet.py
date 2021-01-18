@@ -22,13 +22,14 @@ import os
 import datetime
 
 import numpy as np
+import pandas as pd
 
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Union
 
 from thoth.slo_reporter.sli_base import SLIBase
 from thoth.slo_reporter.sli_template import HTMLTemplates
 from thoth.slo_reporter.configuration import Configuration
-from thoth.slo_reporter.utils import retrieve_thoth_sli_from_ceph
+from thoth.slo_reporter.utils import process_html_inputs
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -49,7 +50,6 @@ class SLIKebechet(SLIBase):
         """Initialize SLI class."""
         self.configuration = configuration
         self.total_columns = self.default_columns + self.sli_columns
-
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for Kebechet SLI Report."""
@@ -94,23 +94,17 @@ class SLIKebechet(SLIBase):
         """
         html_inputs = self._evaluate_sli(sli=sli)
 
-        if not self.configuration.dry_run:
-            sli_path = f"{self._SLI_NAME}/{self._SLI_NAME}-{self.configuration.last_week_time}.csv"
-            last_week_data = retrieve_thoth_sli_from_ceph(self.configuration.ceph_sli, sli_path, self.total_columns)
-
-            for c in ["delta_total_active_repositories"]:
-                html_inputs[c]["change"] = "N/A"
-
-            for c in ["total_active_repositories"]:
-                diff = (html_inputs[c]["value"] - last_week_data[c])[0].item()
-                if diff > 0:
-                    html_inputs[c]["change"] = "+{:.0f}".format(diff)
-                elif diff < 0:
-                    html_inputs[c]["change"] = "{:.0f}".format(diff)
-                else:
-                    html_inputs[c]["change"] = diff
-
-        report = HTMLTemplates.thoth_kebechet_template(html_inputs=html_inputs)
+        report = HTMLTemplates.thoth_kebechet_template(
+            html_inputs=process_html_inputs(
+                html_inputs=html_inputs,
+                dry_run=self.configuration.dry_run,
+                sli_name=self._SLI_NAME,
+                last_period_time=self.configuration.last_week_time,
+                ceph_sli=self.configuration.ceph_sli,
+                sli_columns=self.sli_columns,
+                total_columns=self.total_columns
+            )
+        )
 
         return report
 
@@ -125,5 +119,7 @@ class SLIKebechet(SLIBase):
         parameters.pop("self")
 
         output = self._create_default_inputs_for_df_sli(**parameters)
+
+        output["delta_total_active_repositories"] = np.nan
 
         return output
