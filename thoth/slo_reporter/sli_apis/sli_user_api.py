@@ -129,17 +129,19 @@ class SLIUserAPI(SLIBase):
         """
         html_inputs = self._evaluate_sli(sli=sli)
 
-        report = HTMLTemplates.thoth_user_api_template(
-            html_inputs=process_html_inputs(
-                html_inputs=html_inputs,
-                dry_run=self.configuration.dry_run,
-                sli_name=self._SLI_NAME,
-                last_period_time=self.configuration.last_week_time,
-                ceph_sli=self.configuration.ceph_sli,
-                sli_columns=self.sli_columns,
-                total_columns=self.total_columns
+        if not self.configuration.dry_run:
+            report = HTMLTemplates.thoth_user_api_template(
+                html_inputs=process_html_inputs(
+                    html_inputs=html_inputs,
+                    sli_name=self._SLI_NAME,
+                    last_period_time=self.configuration.last_week_time,
+                    ceph_sli=self.configuration.ceph_sli,
+                    sli_columns=self.sli_columns,
+                    total_columns=self.total_columns,
+                ),
             )
-        )
+        else:
+            report = HTMLTemplates.thoth_user_api_template(html_inputs=html_inputs)
 
         return report
 

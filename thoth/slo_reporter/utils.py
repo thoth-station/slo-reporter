@@ -118,19 +118,15 @@ def evaluate_change(old_value: float, new_value: float) -> str:
 
 def process_html_inputs(
     html_inputs: Dict[str, Any],
-    dry_run: bool,
     sli_name: str,
     last_period_time: datetime.datetime,
     ceph_sli: CephStore,
     sli_columns: List[str],
-    total_columns: List[str]
+    total_columns: List[str],
 ) -> str:
     """Process HTML inputs."""
-    last_week_data = pd.DataFrame()
-
-    if not dry_run:
-        sli_path = f"{sli_name}/{sli_name}-{last_period_time}.csv"
-        last_week_data = retrieve_thoth_sli_from_ceph(ceph_sli, sli_path, total_columns)
+    sli_path = f"{sli_name}/{sli_name}-{last_period_time}.csv"
+    last_week_data = retrieve_thoth_sli_from_ceph(ceph_sli, sli_path, total_columns)
 
     for c in sli_columns:
         if not last_week_data.empty:
