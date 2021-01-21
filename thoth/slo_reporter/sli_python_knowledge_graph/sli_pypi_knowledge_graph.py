@@ -50,6 +50,7 @@ class SLIPyPIKnowledgeGraph(SLIBase):
         """Initialize SLI class."""
         self.configuration = configuration
         self.total_columns = self.default_columns + self.sli_columns
+        self.store_columns = self.total_columns + ["new_packages", "new_packages_releases"]
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for knowledge graph SLI Report."""
@@ -123,7 +124,22 @@ class SLIPyPIKnowledgeGraph(SLIBase):
 
         output = self._create_default_inputs_for_df_sli(**parameters)
 
+        html_inputs = self._evaluate_sli(sli=sli)
+
         output["new_packages"] = np.nan
         output["new_packages_releases"] = np.nan
+
+        if not self.configuration.dry_run:
+            html_inputs=process_html_inputs(
+                    html_inputs=html_inputs,
+                    sli_name=self._SLI_NAME,
+                    last_period_time=self.configuration.last_week_time,
+                    ceph_sli=self.configuration.ceph_sli,
+                    sli_columns=self.sli_columns,
+                    total_columns=self.total_columns,
+                    is_storing=True
+            )
+            output["new_packages"] = html_inputs["total_packages"]["change"]
+            output["new_packages_releases"] = html_inputs["total_releases"]["change"]
 
         return output

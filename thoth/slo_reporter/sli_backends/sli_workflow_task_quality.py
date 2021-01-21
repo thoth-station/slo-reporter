@@ -45,6 +45,7 @@ class SLIWorkflowTaskQuality(SLIBase):
         self.configuration = configuration
         self.sli_columns = [c for c in self.configuration.registered_workflow_tasks]
         self.total_columns = self.default_columns + self.sli_columns
+        self.store_columns = self.total_columns
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for workflow_task_quality SLI Report."""

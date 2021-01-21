@@ -59,6 +59,7 @@ class SLIUserAPI(SLIBase):
             self.instance = os.environ["PROMETHEUS_INSTANCE_USER_API"]
 
         self.total_columns = self.default_columns + self.sli_columns
+        self.store_columns = self.total_columns
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for User-API SLI Report."""

@@ -35,7 +35,6 @@ _LOGGER = logging.getLogger(__name__)
 
 _REGISTERED_KEBECHET_QUANTITY = {
     "total_active_repositories": "Total active repositories",
-    "delta_total_active_repositories": "Change in active repositories",
 }
 
 
@@ -50,6 +49,7 @@ class SLIKebechet(SLIBase):
         """Initialize SLI class."""
         self.configuration = configuration
         self.total_columns = self.default_columns + self.sli_columns
+        self.store_columns = self.total_columns + ["delta_total_active_repositories"]
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for Kebechet SLI Report."""
@@ -61,12 +61,7 @@ class SLIKebechet(SLIBase):
                 "query": f"thoth_kebechet_total_active_repo_count{query_labels}",
                 "requires_range": True,
                 "type": "latest",
-            },
-            "delta_total_active_repositories": {
-                "query": f"thoth_kebechet_total_active_repo_count{query_labels}",
-                "requires_range": True,
-                "type": "delta",
-            },
+            }
         }
 
     def _evaluate_sli(self, sli: Dict[str, Any]) -> Dict[str, float]:
@@ -122,6 +117,20 @@ class SLIKebechet(SLIBase):
 
         output = self._create_default_inputs_for_df_sli(**parameters)
 
+        html_inputs = self._evaluate_sli(sli=sli)
+
         output["delta_total_active_repositories"] = np.nan
+
+        if not self.configuration.dry_run:
+            html_inputs=process_html_inputs(
+                    html_inputs=html_inputs,
+                    sli_name=self._SLI_NAME,
+                    last_period_time=self.configuration.last_week_time,
+                    ceph_sli=self.configuration.ceph_sli,
+                    sli_columns=self.sli_columns,
+                    total_columns=self.total_columns,
+                    is_storing=True
+            )
+            output["delta_total_active_repositories"] = html_inputs["total_active_repositories"]["change"]
 
         return output

@@ -48,6 +48,7 @@ class SLIThothIntegrations(SLIBase):
         """Initialize SLI class."""
         self.configuration = configuration
         self.total_columns = self.default_columns + self.sli_columns
+        self.store_columns = self.total_columns
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for Thoth Integrations SLI Report."""
