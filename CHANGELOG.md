@@ -233,3 +233,16 @@ all the things that you see...
 * Adjust metrics due to changes on Prometheus side (#164)
 * Add check for Thanos availability before starting to acquire metrics. (#163)
 * port to python 38 (#162)
+
+## Release 0.8.0 (2021-01-21T09:57:37)
+### Features
+* :arrow_up: Automatic update of dependencies by kebechet. (#175)
+* Adjust report provided in the email (#171)
+* :arrow_up: Automatic update of dependencies by kebechet. (#173)
+* added a sig label to be added to each PR
+* reformatted by pre-commit
+* :arrow_up: Automatic update of dependencies by kebechet. (#169)
+* update .aicoe.yaml (#168)
+### Improvements
+* removed bissenbay, thanks for your contributions!
+* :sparkles: more simplistic style
