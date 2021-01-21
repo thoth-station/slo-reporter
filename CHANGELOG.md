@@ -246,3 +246,7 @@ all the things that you see...
 ### Improvements
 * removed bissenbay, thanks for your contributions!
 * :sparkles: more simplistic style
+
+## Release 0.8.1 (2021-01-21T13:14:06)
+### Features
+* Change column name (#177)
