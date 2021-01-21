@@ -19,14 +19,16 @@
 
 import logging
 import statistics
+import datetime
 
 import pandas as pd
+import numpy as np
 
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 
 from thoth.storages import CephStore
 
-from thoth.slo_reporter.configuration import _get_sli_metrics_prefix, Configuration
+from thoth.slo_reporter.configuration import _get_sli_metrics_prefix
 
 from io import StringIO
 
@@ -47,8 +49,8 @@ def manipulate_retrieved_metrics_vector(metrics_vector: List[float], action: str
     :output: metric/SLI
     """
     # Make sure 0 results are not considered
+    metric = 0
     if not metrics_vector:
-        metric = 0
         return metric
 
     if action == "min_max":
@@ -91,6 +93,57 @@ def _evaluate_ascending_results(metrics_vector: List[float]) -> List[float]:
         counter += 1
 
     return modified_vector
+
+
+def evaluate_change(old_value: float, new_value: float, is_storing: bool = False) -> str:
+    """Evaluate difference for report."""
+    diff = new_value - old_value
+
+    sign = ""
+
+    if np.isnan(diff):
+        diff = new_value
+
+    if is_storing:
+        return diff
+
+    if diff > 0:
+        sign = "+"
+    if isinstance(diff, float):
+        if diff.is_integer():
+            change = sign + "{:.0f}".format(diff)
+        else:
+            change = sign + "{:.2f}".format(diff)
+    else:
+        change = sign + "{:.0f}".format(diff)
+
+    return change
+
+def process_html_inputs(
+    html_inputs: Dict[str, Any],
+    sli_name: str,
+    last_period_time: datetime.datetime,
+    ceph_sli: CephStore,
+    sli_columns: List[str],
+    store_columns: List[str],
+    is_storing: bool = False,
+) -> str:
+    """Process HTML inputs."""
+    sli_path = f"{sli_name}/{sli_name}-{last_period_time}.csv"
+    last_week_data = retrieve_thoth_sli_from_ceph(ceph_sli, sli_path, store_columns)
+
+    for c in sli_columns:
+        if not last_week_data.empty:
+            old_value = last_week_data[c].values[0]
+            change = evaluate_change(old_value=old_value, new_value=html_inputs[c]["value"], is_storing=is_storing)
+            html_inputs[c]["change"] = change
+        else:
+            if is_storing:
+                html_inputs[c]["change"] = np.nan
+            else:
+                html_inputs[c]["change"] = "N/A"
+
+    return html_inputs
 
 
 def connect_to_ceph(ceph_bucket_prefix: str, environment: str, bucket: Optional[str] = None) -> CephStore:

@@ -87,7 +87,7 @@ class SLIReport:
 
             self.report_sli_context_columns[sli_context._SLI_NAME] = sli_context(
                 configuration=self.configuration,
-            ).total_columns
+            ).store_columns
 
         self.report_references = _add_dashbords(configuration=configuration)
 

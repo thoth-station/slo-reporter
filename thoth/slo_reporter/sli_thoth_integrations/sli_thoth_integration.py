@@ -18,16 +18,17 @@
 """This file contains class for Thoth Integrations SLI."""
 
 import logging
-import os
 import datetime
 
 import numpy as np
+import pandas as pd
 
 from typing import Dict, List, Any
 
 from thoth.slo_reporter.sli_base import SLIBase
 from thoth.slo_reporter.sli_template import HTMLTemplates
 from thoth.slo_reporter.configuration import Configuration
+from thoth.slo_reporter.utils import retrieve_thoth_sli_from_ceph, evaluate_change
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -47,15 +48,7 @@ class SLIThothIntegrations(SLIBase):
         """Initialize SLI class."""
         self.configuration = configuration
         self.total_columns = self.default_columns + self.sli_columns
-
-    def _aggregate_info(self):
-        """Aggregate info required for Thoth Integrations SLI Report."""
-        return {
-            "query": self._query_sli(),
-            "evaluation_method": self._evaluate_sli,
-            "report_method": self._report_sli,
-            "df_method": self._create_inputs_for_df_sli,
-        }
+        self.store_columns = self.total_columns
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for Thoth Integrations SLI Report."""
@@ -94,22 +87,30 @@ class SLIThothIntegrations(SLIBase):
         """
         html_inputs = {}
 
+        last_week_data = pd.DataFrame()
+
+        if not self.configuration.dry_run:
+            sli_path = f"{self._SLI_NAME}/{self._SLI_NAME}-{self.configuration.last_week_time}.csv"
+            last_week_data = retrieve_thoth_sli_from_ceph(self.configuration.ceph_sli, sli_path, self.total_columns)
+
         for thoth_integration in self.configuration.thoth_integrations:
             name = thoth_integration.lower()
             html_inputs[name] = {}
 
-            thoth_integration_counts_use = sli[f"{thoth_integration}_counts_use"]
             thoth_integration_counts_total = sli[f"{thoth_integration}_counts_total"]
-
-            if thoth_integration_counts_use != "ErrorMetricRetrieval":
-                html_inputs[name]["periodic"] = thoth_integration_counts_use
-            else:
-                html_inputs[name]["periodic"] = np.nan
 
             if thoth_integration_counts_total != "ErrorMetricRetrieval":
                 html_inputs[name]["total"] = thoth_integration_counts_total
             else:
-                html_inputs[name]["total"] = np.nan
+                html_inputs[name]["total"] = "N/A"
+
+            if not last_week_data.empty and thoth_integration_counts_total != "ErrorMetricRetrieval":
+                old_value = last_week_data[last_week_data['integration'] == name]['total'].values[0]
+                change = evaluate_change(old_value=old_value, new_value=thoth_integration_counts_total)
+
+                html_inputs[name]["new"] = change
+            else:
+                html_inputs[name]["new"] = "N/A"
 
         return html_inputs
 
@@ -123,7 +124,7 @@ class SLIThothIntegrations(SLIBase):
 
         return report
 
-    def _create_inputs_for_df_sli(
+    def _process_results_to_be_stored(
         self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime,
     ) -> Dict[str, Any]:
         """Create inputs for SLI dataframe to be stored.
@@ -134,7 +135,6 @@ class SLIThothIntegrations(SLIBase):
 
         for thoth_integration in self.configuration.thoth_integrations:
             name = thoth_integration.lower()
-            df_input = {}
 
             thoth_integration_counts_use = sli[f"{thoth_integration}_counts_use"]
             thoth_integration_counts_total = sli[f"{thoth_integration}_counts_total"]

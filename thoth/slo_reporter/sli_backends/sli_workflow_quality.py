@@ -18,16 +18,17 @@
 """This file contains class for Workflow Quality SLI."""
 
 import logging
-import os
 import datetime
 
 import numpy as np
+import pandas as pd
 
 from typing import Dict, List, Any
 
 from thoth.slo_reporter.sli_base import SLIBase
 from thoth.slo_reporter.sli_template import HTMLTemplates
 from thoth.slo_reporter.configuration import Configuration
+from thoth.slo_reporter.utils import retrieve_thoth_sli_from_ceph, evaluate_change
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -43,15 +44,7 @@ class SLIWorkflowQuality(SLIBase):
         self.configuration = configuration
         self.sli_columns = [c for c in self.configuration.registered_workflows]
         self.total_columns = self.default_columns + self.sli_columns
-
-    def _aggregate_info(self):
-        """Aggregate info required for component_quality SLI Report."""
-        return {
-            "query": self._query_sli(),
-            "evaluation_method": self._evaluate_sli,
-            "report_method": self._report_sli,
-            "df_method": self._create_inputs_for_df_sli,
-        }
+        self.store_columns = self.total_columns
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for component_quality SLI Report."""
@@ -147,17 +140,30 @@ class SLIWorkflowQuality(SLIBase):
         return html_inputs
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:
-        """Create report for solver_quality SLI.
+        """Create report for workflow quality SLI.
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
         html_inputs = self._evaluate_sli(sli=sli)
 
+        last_week_data = pd.DataFrame()
+
+        if not self.configuration.dry_run:
+            sli_path = f"{self._SLI_NAME}/{self._SLI_NAME}-{self.configuration.last_week_time}.csv"
+            last_week_data = retrieve_thoth_sli_from_ceph(self.configuration.ceph_sli, sli_path, self.total_columns)
+
+        for component in self.configuration.registered_workflows:
+            if not last_week_data.empty:
+                old_value = last_week_data[component].values[0]
+                change = evaluate_change(old_value=old_value, new_value=html_inputs[component]["value"])
+
+                html_inputs[component]["change"] = change
+
         report = HTMLTemplates.thoth_workflows_quality_template(html_inputs=html_inputs)
 
         return report
 
-    def _create_inputs_for_df_sli(
+    def _process_results_to_be_stored(
         self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime,
     ) -> Dict[str, Any]:
         """Create inputs for SLI dataframe to be stored.

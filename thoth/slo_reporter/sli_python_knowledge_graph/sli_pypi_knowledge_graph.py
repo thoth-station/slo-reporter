@@ -22,21 +22,20 @@ import os
 import datetime
 
 import numpy as np
+import pandas as pd
 
 from typing import Dict, List, Any
 
 from thoth.slo_reporter.sli_base import SLIBase
 from thoth.slo_reporter.sli_template import HTMLTemplates
 from thoth.slo_reporter.configuration import Configuration
-from thoth.slo_reporter.utils import retrieve_thoth_sli_from_ceph
+from thoth.slo_reporter.utils import process_html_inputs
 
 _LOGGER = logging.getLogger(__name__)
 
 _REGISTERED_KNOWLEDGE_QUANTITY = {
     "total_packages": "Python Packages",
-    "new_packages": "New Python Packages",
     "total_releases": "Python Packages Releases",
-    "new_packages_releases": "New Python Packages Releases",
 }
 
 
@@ -51,15 +50,7 @@ class SLIPyPIKnowledgeGraph(SLIBase):
         """Initialize SLI class."""
         self.configuration = configuration
         self.total_columns = self.default_columns + self.sli_columns
-
-    def _aggregate_info(self):
-        """Aggregate info required for knowledge graph SLI Report."""
-        return {
-            "query": self._query_sli(),
-            "evaluation_method": self._evaluate_sli,
-            "report_method": self._report_sli,
-            "df_method": self._create_inputs_for_df_sli,
-        }
+        self.store_columns = self.total_columns + ["new_packages", "new_packages_releases"]
 
     def _query_sli(self) -> List[str]:
         """Aggregate queries for knowledge graph SLI Report."""
@@ -72,20 +63,10 @@ class SLIPyPIKnowledgeGraph(SLIBase):
                 "requires_range": True,
                 "type": "latest",
             },
-            "new_packages": {
-                "query": f"thoth_pypi_stats{query_labels_packages}",
-                "requires_range": True,
-                "type": "min_max",
-            },
             "total_releases": {
                 "query": f"thoth_pypi_stats{query_labels_releases}",
                 "requires_range": True,
                 "type": "latest",
-            },
-            "new_packages_releases": {
-                "query": f"thoth_pypi_stats{query_labels_releases}",
-                "requires_range": True,
-                "type": "min_max",
             },
         }
 
@@ -116,25 +97,22 @@ class SLIPyPIKnowledgeGraph(SLIBase):
         html_inputs = self._evaluate_sli(sli=sli)
 
         if not self.configuration.dry_run:
-            sli_path = f"{self._SLI_NAME}/{self._SLI_NAME}-{self.configuration.last_week_time}.csv"
-            last_week_data = retrieve_thoth_sli_from_ceph(self.configuration.ceph_sli, sli_path, self.total_columns)
+            report = HTMLTemplates.thoth_pypi_knowledge_template(
+                html_inputs=process_html_inputs(
+                    html_inputs=html_inputs,
+                    sli_name=self._SLI_NAME,
+                    last_period_time=self.configuration.last_week_time,
+                    ceph_sli=self.configuration.ceph_sli,
+                    sli_columns=self.sli_columns,
+                    store_columns=self.store_columns,
+                ),
+            )
+        else:
+            report = HTMLTemplates.thoth_pypi_knowledge_template(html_inputs=html_inputs)
 
-            for c in ["new_packages", "new_packages_releases"]:
-                html_inputs[c]["change"] = "N/A"
-
-            for c in ["total_packages", "total_releases"]:
-                diff = (html_inputs[c]["value"] - last_week_data[c])[0].item()
-                if diff > 0:
-                    html_inputs[c]["change"] = "+{:.0f}".format(diff)
-                elif diff < 0:
-                    html_inputs[c]["change"] = "{:.0f}".format(diff)
-                else:
-                    html_inputs[c]["change"] = diff
-
-        report = HTMLTemplates.thoth_pypi_knowledge_template(html_inputs=html_inputs)
         return report
 
-    def _create_inputs_for_df_sli(
+    def _process_results_to_be_stored(
         self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime,
     ) -> Dict[str, Any]:
         """Create inputs for SLI dataframe to be stored.
@@ -145,5 +123,23 @@ class SLIPyPIKnowledgeGraph(SLIBase):
         parameters.pop("self")
 
         output = self._create_default_inputs_for_df_sli(**parameters)
+
+        html_inputs = self._evaluate_sli(sli=sli)
+
+        output["new_packages"] = np.nan
+        output["new_packages_releases"] = np.nan
+
+        if not self.configuration.dry_run:
+            html_inputs=process_html_inputs(
+                    html_inputs=html_inputs,
+                    sli_name=self._SLI_NAME,
+                    last_period_time=self.configuration.last_week_time,
+                    ceph_sli=self.configuration.ceph_sli,
+                    sli_columns=self.sli_columns,
+                    store_columns=self.store_columns,
+                    is_storing=True,
+            )
+            output["new_packages"] = html_inputs["total_packages"]["change"]
+            output["new_packages_releases"] = html_inputs["total_releases"]["change"]
 
         return output

@@ -6,6 +6,7 @@
             <tr>
                 <th>Workflow Task</th>
                 <th>Succeeded</th>
+                <th>change since last week</th>
             </tr>
         </thead>
         {% endblock %}
@@ -15,6 +16,7 @@
             <tr>
                 <td>{{ service }}</td>
                 <td>{{ successfull_percentage['value'] }}</td>
+                <td>{{ successfull_percentage['change'] }}</td>
                 <td> % </td>
             </tr>
             {% endfor %}

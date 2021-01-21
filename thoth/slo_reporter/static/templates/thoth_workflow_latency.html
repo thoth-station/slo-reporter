@@ -20,10 +20,10 @@
                 <td>{{ service }}</td>
                 {% for bucket, result in latency.items() %}
                 {% if bucket != "+Inf" %}
-                <th>{{ result }}</th>
+                <td>{{ result }}</td>
                 {% endif %}
                 {% endfor %}
-                <th> % </th>
+                <td> % </td>
             </tr>
             {% endfor %}
         </tbody>
