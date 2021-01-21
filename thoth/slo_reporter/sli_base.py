@@ -47,14 +47,14 @@ class SLIBase:
         raise NotImplementedError
 
     def _evaluate_sli(self, sli: Dict[str, Any]) -> Dict[str, Any]:
-        """Evaluate SLI for report for specific SLI.
+        """Evaluate SLI for specific category to be stored.
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
         raise NotImplementedError
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:
-        """Create report for specific SLI.
+        """Create report for specific SLI for email.
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
