@@ -22,7 +22,7 @@ from thoth.storages import __version__ as __storages__version__
 from thoth.common import __version__ as __common__version__
 
 
-__version__ = "0.8.0"
+__version__ = "0.8.1"
 __service_version__ = f"{__version__}+\
     storages.{__storages__version__}+\
     common.{__common__version__}"
