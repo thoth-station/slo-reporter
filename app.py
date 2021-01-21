@@ -48,6 +48,7 @@ _LOGGER = logging.getLogger("thoth.slo_reporter")
 _LOGGER.info(f"Thoth SLO Reporter v%s", __service_version__)
 
 _DRY_RUN = bool(int(os.getenv("DRY_RUN", 0)))
+_STORE_HTML = bool(int(os.getenv("STORE_HTML", 0)))
 _ONLY_STORE_ON_CEPH = bool(int(os.getenv("THOTH_ONLY_STORE_ON_CEPH", 0)))
 _DEBUG_LEVEL = bool(int(os.getenv("DEBUG_LEVEL", 0)))
 
@@ -235,9 +236,10 @@ def generate_email(sli_metrics: Dict[str, Any], configuration: Configuration, sl
     html_message = MIMEText(message, "html")
     _LOGGER.debug(f"Email message: {html_message}")
 
-    html_file = open(Path.cwd().joinpath("thoth", "slo_reporter", "SLO-reporter.html"), "w")
-    html_file.write(message)
-    html_file.close()
+    if _STORE_HTML:
+        html_file = open(Path.cwd().joinpath("thoth", "slo_reporter", "SLO-reporter.html"), "w")
+        html_file.write(message)
+        html_file.close()
 
     if _DRY_RUN:
         return message
