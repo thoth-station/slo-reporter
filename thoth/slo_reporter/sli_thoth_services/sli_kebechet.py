@@ -97,7 +97,7 @@ class SLIKebechet(SLIBase):
                     last_period_time=self.configuration.last_week_time,
                     ceph_sli=self.configuration.ceph_sli,
                     sli_columns=self.sli_columns,
-                    total_columns=self.total_columns,
+                    store_columns=self.store_columns,
                 ),
             )
         else:
@@ -128,7 +128,7 @@ class SLIKebechet(SLIBase):
                     last_period_time=self.configuration.last_week_time,
                     ceph_sli=self.configuration.ceph_sli,
                     sli_columns=self.sli_columns,
-                    total_columns=self.total_columns,
+                    store_columns=self.store_columns,
                     is_storing=True
             )
             output["delta_total_active_repositories"] = html_inputs["total_active_repositories"]["change"]

@@ -125,12 +125,12 @@ def process_html_inputs(
     last_period_time: datetime.datetime,
     ceph_sli: CephStore,
     sli_columns: List[str],
-    total_columns: List[str],
+    store_columns: List[str],
     is_storing: bool = False
 ) -> str:
     """Process HTML inputs."""
     sli_path = f"{sli_name}/{sli_name}-{last_period_time}.csv"
-    last_week_data = retrieve_thoth_sli_from_ceph(ceph_sli, sli_path, total_columns)
+    last_week_data = retrieve_thoth_sli_from_ceph(ceph_sli, sli_path, store_columns)
 
     for c in sli_columns:
         if not last_week_data.empty:
