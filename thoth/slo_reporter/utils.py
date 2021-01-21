@@ -95,17 +95,20 @@ def _evaluate_ascending_results(metrics_vector: List[float]) -> List[float]:
     return modified_vector
 
 
-def evaluate_change(old_value: float, new_value: float) -> str:
+def evaluate_change(old_value: float, new_value: float, is_storing: bool = False) -> str:
     """Evaluate difference for report."""
     diff = new_value - old_value
+
     sign = ""
 
     if np.isnan(diff):
         diff = new_value
 
+    if is_storing:
+        return diff
+
     if diff > 0:
         sign = "+"
-
     if isinstance(diff, float):
         if diff.is_integer():
             change = sign + "{:.0f}".format(diff)
@@ -123,6 +126,7 @@ def process_html_inputs(
     ceph_sli: CephStore,
     sli_columns: List[str],
     total_columns: List[str],
+    is_storing: bool = False
 ) -> str:
     """Process HTML inputs."""
     sli_path = f"{sli_name}/{sli_name}-{last_period_time}.csv"
@@ -131,10 +135,13 @@ def process_html_inputs(
     for c in sli_columns:
         if not last_week_data.empty:
             old_value = last_week_data[c].values[0]
-            change = evaluate_change(old_value=old_value, new_value=html_inputs[c]["value"])
+            change = evaluate_change(old_value=old_value, new_value=html_inputs[c]["value"], is_storing=is_storing)
             html_inputs[c]["change"] = change
         else:
-            html_inputs[c]["change"] = "N/A"
+            if is_storing:
+                html_inputs[c]["change"] = np.nan
+            else:
+                html_inputs[c]["change"] = "N/A"
 
     return html_inputs
 
