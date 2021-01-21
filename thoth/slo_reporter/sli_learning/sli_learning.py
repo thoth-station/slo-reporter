@@ -166,7 +166,7 @@ class SLILearning(SLIBase):
                     ceph_sli=self.configuration.ceph_sli,
                     sli_columns=self.sli_columns,
                     store_columns=self.store_columns,
-                    is_storing=True
+                    is_storing=True,
             )
             output["new_solvers"] = html_inputs["solvers"]["change"]
 

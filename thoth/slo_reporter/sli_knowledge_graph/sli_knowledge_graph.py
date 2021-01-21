@@ -144,7 +144,7 @@ class SLIKnowledgeGraph(SLIBase):
                     ceph_sli=self.configuration.ceph_sli,
                     sli_columns=self.sli_columns,
                     store_columns=self.store_columns,
-                    is_storing=True
+                    is_storing=True,
             )
             output["new_packages"] = html_inputs["total_packages"]["change"]
             output["new_packages_releases"] = html_inputs["total_releases"]["change"]

@@ -61,7 +61,7 @@ class SLIKebechet(SLIBase):
                 "query": f"thoth_kebechet_total_active_repo_count{query_labels}",
                 "requires_range": True,
                 "type": "latest",
-            }
+            },
         }
 
     def _evaluate_sli(self, sli: Dict[str, Any]) -> Dict[str, float]:
@@ -129,7 +129,7 @@ class SLIKebechet(SLIBase):
                     ceph_sli=self.configuration.ceph_sli,
                     sli_columns=self.sli_columns,
                     store_columns=self.store_columns,
-                    is_storing=True
+                    is_storing=True,
             )
             output["delta_total_active_repositories"] = html_inputs["total_active_repositories"]["change"]
 

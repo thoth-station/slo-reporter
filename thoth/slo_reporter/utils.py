@@ -126,7 +126,7 @@ def process_html_inputs(
     ceph_sli: CephStore,
     sli_columns: List[str],
     store_columns: List[str],
-    is_storing: bool = False
+    is_storing: bool = False,
 ) -> str:
     """Process HTML inputs."""
     sli_path = f"{sli_name}/{sli_name}-{last_period_time}.csv"
