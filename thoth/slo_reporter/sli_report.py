@@ -68,7 +68,6 @@ class SLIReport:
         self.report_intro = HTMLTemplates.thoth_report_intro_template(
             html_inputs={
                 "environment": self.configuration.environment,
-                "start_time": str(self.configuration.start_time.strftime("%Y-%m-%d")),
                 "end_time": str(self.configuration.end_time.strftime("%Y-%m-%d")),
             },
         )
