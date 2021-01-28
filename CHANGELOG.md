@@ -250,3 +250,7 @@ all the things that you see...
 ## Release 0.8.1 (2021-01-21T13:14:06)
 ### Features
 * Change column name (#177)
+
+## Release 0.8.2 (2021-01-28T07:30:25)
+### Features
+* Correct title email (#182)
