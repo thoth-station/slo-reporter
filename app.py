@@ -80,6 +80,8 @@ def check_database_metrics_availability(configuration: Configuration) -> bool:
 
 def collect_metrics(configuration: Configuration, sli_report: SLIReport):
     """Collect metrics from Prometheus/Thanos."""
+    pc = None
+
     if not _DRY_RUN:
         pc = PrometheusConnect(
             url=configuration.thanos_url,
