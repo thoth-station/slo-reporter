@@ -49,6 +49,7 @@ _LOGGER.info(f"Thoth SLO Reporter v%s", __service_version__)
 
 _DRY_RUN = bool(int(os.getenv("DRY_RUN", 0)))
 _STORE_HTML = bool(int(os.getenv("STORE_HTML", 0)))
+_STORE_ON_CEPH = bool(int(os.getenv("STORE_ON_CEPH", 1)))
 _ONLY_STORE_ON_CEPH = bool(int(os.getenv("THOTH_ONLY_STORE_ON_CEPH", 0)))
 _DEBUG_LEVEL = bool(int(os.getenv("DEBUG_LEVEL", 0)))
 
@@ -79,6 +80,8 @@ def check_database_metrics_availability(configuration: Configuration) -> bool:
 
 def collect_metrics(configuration: Configuration, sli_report: SLIReport):
     """Collect metrics from Prometheus/Thanos."""
+    pc = None
+
     if not _DRY_RUN:
         pc = PrometheusConnect(
             url=configuration.thanos_url,
@@ -174,25 +177,26 @@ def store_sli_periodic_metrics_to_ceph(
         _LOGGER.info(f"Storing... \n{metrics_df}")
         ceph_path = f"{metric_class}/{metric_class}-{datetime}.csv"
 
-        try:
-            store_thoth_sli_on_ceph(
-                ceph_sli=configuration.ceph_sli, metric_class=metric_class, metrics_df=metrics_df, ceph_path=ceph_path,
-            )
-        except Exception as e_ceph:
-            _LOGGER.exception(f"Could not store metrics on Thoth bucket on Ceph...{e_ceph}")
-            pass
+        if _STORE_ON_CEPH:
+            try:
+                store_thoth_sli_on_ceph(
+                    ceph_sli=configuration.ceph_sli, metric_class=metric_class, metrics_df=metrics_df, ceph_path=ceph_path,
+                )
+            except Exception as e_ceph:
+                _LOGGER.exception(f"Could not store metrics on Thoth bucket on Ceph...{e_ceph}")
+                pass
 
-        try:
-            store_thoth_sli_on_ceph(
-                ceph_sli=public_ceph_sli,
-                metric_class=metric_class,
-                metrics_df=metrics_df,
-                ceph_path=ceph_path,
-                is_public=True,
-            )
-        except Exception as e_ceph:
-            _LOGGER.exception(f"Could not store metrics on Public bucket on Ceph...{e_ceph}")
-            pass
+            try:
+                store_thoth_sli_on_ceph(
+                    ceph_sli=public_ceph_sli,
+                    metric_class=metric_class,
+                    metrics_df=metrics_df,
+                    ceph_path=ceph_path,
+                    is_public=True,
+                )
+            except Exception as e_ceph:
+                _LOGGER.exception(f"Could not store metrics on Public bucket on Ceph...{e_ceph}")
+                pass
 
 
 def push_thoth_sli_periodic_metrics(

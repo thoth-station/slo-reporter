@@ -109,11 +109,13 @@ def evaluate_change(old_value: float, new_value: float, is_storing: bool = False
 
     if diff > 0:
         sign = "+"
+
     if isinstance(diff, float):
         if diff.is_integer():
             change = sign + "{:.0f}".format(diff)
         else:
             change = sign + "{:.2f}".format(diff)
+
     else:
         change = sign + "{:.0f}".format(diff)
 
@@ -133,10 +135,12 @@ def process_html_inputs(
     last_week_data = retrieve_thoth_sli_from_ceph(ceph_sli, sli_path, store_columns)
 
     for c in sli_columns:
+
         if not last_week_data.empty:
             old_value = last_week_data[c].values[0]
             change = evaluate_change(old_value=old_value, new_value=html_inputs[c]["value"], is_storing=is_storing)
             html_inputs[c]["change"] = change
+
         else:
             if is_storing:
                 html_inputs[c]["change"] = np.nan
@@ -151,6 +155,7 @@ def connect_to_ceph(ceph_bucket_prefix: str, environment: str, bucket: Optional[
     prefix = _get_sli_metrics_prefix(ceph_bucket_prefix=ceph_bucket_prefix, environment=environment)
     ceph = CephStore(prefix=prefix, bucket=bucket)
     ceph.connect()
+
     return ceph
 
 
@@ -159,10 +164,13 @@ def store_thoth_sli_on_ceph(
 ) -> None:
     """Store Thoth SLI on Ceph."""
     metrics_csv = metrics_df.to_csv(index=False, header=False)
+
     if is_public:
         _LOGGER.info(f"Storing on public bucket... {ceph_path}")
+
     else:
         _LOGGER.info(f"Storing on private bucket... {ceph_path}")
+
     ceph_sli.store_blob(blob=metrics_csv, object_key=ceph_path)
     _LOGGER.info(f"Succesfully stored Thoth weekly SLI metrics for {metric_class} at {ceph_path}")
 
@@ -170,7 +178,13 @@ def store_thoth_sli_on_ceph(
 def retrieve_thoth_sli_from_ceph(ceph_sli: CephStore, ceph_path: str, total_columns: List[str]) -> pd.DataFrame:
     """Retrieve Thoth SLI from Ceph."""
     _LOGGER.info(f"Retrieving... \n{ceph_path}")
-    retrieved_data = ceph_sli.retrieve_blob(object_key=ceph_path).decode('utf-8')
-    data = StringIO(retrieved_data)
-    last_week_data = pd.read_csv(data, names=total_columns)
+    try:
+        retrieved_data = ceph_sli.retrieve_blob(object_key=ceph_path).decode('utf-8')
+        data = StringIO(retrieved_data)
+        last_week_data = pd.read_csv(data, names=total_columns)
+
+    except Exception as e:
+        _LOGGER.warning(f"No file could be retrieved from Ceph: {e}")
+        last_week_data = pd.DataFrame(columns=total_columns)
+
     return last_week_data
