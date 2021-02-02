@@ -184,7 +184,7 @@ def retrieve_thoth_sli_from_ceph(ceph_sli: CephStore, ceph_path: str, total_colu
         last_week_data = pd.read_csv(data, names=total_columns)
 
     except Exception as e:
-        _LOGGER.warning(f"No file could be retrieve from Ceph: {e}")
+        _LOGGER.warning(f"No file could be retrieved from Ceph: {e}")
         last_week_data = pd.DataFrame(columns=total_columns)
 
     return last_week_data
