@@ -254,3 +254,10 @@ all the things that you see...
 ## Release 0.8.2 (2021-01-28T07:30:25)
 ### Features
 * Correct title email (#182)
+
+## Release 0.8.3 (2021-02-02T08:42:58)
+### Features
+* :arrow_up: Automatic update of dependencies by kebechet. (#192)
+* Introduce check on data retrieval from ceph (#190)
+* :arrow_up: Automatic update of dependencies by kebechet. (#189)
+* :arrow_up: Automatic update of dependencies by kebechet. (#187)
