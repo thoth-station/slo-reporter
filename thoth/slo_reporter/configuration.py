@@ -73,10 +73,15 @@ class Configuration:
             self.middletier_namespace = os.environ["THOTH_MIDDLETIER_NAMESPACE"]
             self.amun_inspection_namespace = os.environ["THOTH_AMUN_INSPECTION_NAMESPACE"]
 
-            # Email variables
-            self.server = os.environ["SMTP_SERVER"]
+            # Email server variables
+            self.server_host = os.environ["SMTP_SERVER"]
+            # self.server_port = os.getenv("SMTP_SERVER_PORT")
             self.sender_address = os.environ["SENDER_ADDRESS"]
             self.address_recipients = os.environ["EMAIL_RECIPIENTS"]
+
+            ## Encryption variables
+            self.using_tls_encryption = bool(int(os.getenv("SMTP_TLS_ENCRYPTION", 0)))
+            self.sendgrid_api_key = os.getenv("SENDGRID_API_KEY")
 
             # Prometheus and Thanos
             self.pushgateway_endpoint = os.environ["PROMETHEUS_PUSHGATEWAY_URL"]

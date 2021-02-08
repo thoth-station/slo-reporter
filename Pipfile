@@ -10,7 +10,7 @@ jinja2 = "*"
 thoth-storages = "*"
 pandas = "*"
 thoth-common = "*"
-sendgrid= "*"
+sendgrid = "*"
 
 [dev-packages]
 pytest = "*"
