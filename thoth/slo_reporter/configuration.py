@@ -73,10 +73,14 @@ class Configuration:
             self.middletier_namespace = os.environ["THOTH_MIDDLETIER_NAMESPACE"]
             self.amun_inspection_namespace = os.environ["THOTH_AMUN_INSPECTION_NAMESPACE"]
 
-            # Email variables
-            self.server = os.environ["SMTP_SERVER"]
+            # Email server variables
+            self.server_host = os.environ["SMTP_SERVER"]
             self.sender_address = os.environ["SENDER_ADDRESS"]
             self.address_recipients = os.environ["EMAIL_RECIPIENTS"]
+
+            ## sendgrid specific variables
+            self.using_sandgrid = bool(int(os.getenv("SLO_REPORTER_USING_SENDGRID", 0)))
+            self.sendgrid_api_key = os.getenv("SENDGRID_API_KEY")
 
             # Prometheus and Thanos
             self.pushgateway_endpoint = os.environ["PROMETHEUS_PUSHGATEWAY_URL"]
@@ -134,7 +138,7 @@ class Configuration:
         # Interval for report
         self.interval = f"{self.number_days}d"
 
-        self.email_day = "Friday"
+        self.email_day = os.getenv("SLO_REPORTER_DAY_SEND_EMAIL", "Friday")
 
 
 def _connect_to_ceph(ceph_bucket_prefix: str, environment: str, bucket: Optional[str] = None) -> CephStore:

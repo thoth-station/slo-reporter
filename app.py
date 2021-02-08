@@ -24,6 +24,9 @@ import datetime
 import webbrowser
 import tempfile
 
+import sendgrid
+from sendgrid.helpers.mail import Email, To, Content, Mail
+
 import pandas as pd
 from pandas.io.json import json_normalize
 
@@ -31,11 +34,11 @@ from typing import Dict, Any
 from pathlib import Path
 
 from prometheus_api_client import Metric, PrometheusConnect
-from prometheus_api_client.utils import parse_datetime, parse_timedelta
 from prometheus_client import push_to_gateway
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from thoth import slo_reporter
 
 from thoth.slo_reporter.sli_report import SLIReport
 from thoth.slo_reporter import __service_version__
@@ -220,7 +223,7 @@ def push_thoth_sli_periodic_metrics(
     _LOGGER.info(f"Pushed Thoth weekly SLI to Prometheus Pushgateway.")
 
 
-def generate_email(sli_metrics: Dict[str, Any], configuration: Configuration, sli_report: SLIReport):
+def generate_email(sli_metrics: Dict[str, Any], sli_report: SLIReport) -> str:
     """Generate email to be sent."""
     message = sli_report.report_start
     message += sli_report.report_style
@@ -237,8 +240,7 @@ def generate_email(sli_metrics: Dict[str, Any], configuration: Configuration, sl
 
     message += sli_report.report_end
 
-    html_message = MIMEText(message, "html")
-    _LOGGER.debug(f"Email message: {html_message}")
+    _LOGGER.debug(f"Email message: {message}")
 
     if _STORE_HTML:
         html_file = open(Path.cwd().joinpath("thoth", "slo_reporter", "SLO-reporter.html"), "w")
@@ -248,24 +250,62 @@ def generate_email(sli_metrics: Dict[str, Any], configuration: Configuration, sl
     if _DRY_RUN:
         return message
 
-    return html_message
+    return message
 
 
-def send_sli_email(email_message: MIMEText, configuration: Configuration, sli_report: SLIReport):
+def send_sli_email(email_message: str, configuration: Configuration, sli_report: SLIReport, using_sendgrid: False):
     """Send email about Thoth Service Level Objectives."""
-    server = configuration.server
-    sender_address = configuration.sender_address
-    recipients = configuration.address_recipients
+    if using_sendgrid:
+       return _send_email_through_sendgrid(email_message=email_message, configuration=configuration, sli_report=sli_report)
+
+    return _send_email_throush_smtlib(email_message=email_message, configuration=configuration, sli_report=sli_report)
+
+
+def _send_email_through_sendgrid(email_message: str, configuration: Configuration, sli_report: SLIReport):
+    """Send email using sendgrid library."""
+    _LOGGER.info("Using sendgrid to send email.")
+
+    sendgrid_api_key = configuration.sendgrid_api_key
+    if not sendgrid_api_key:
+        raise Exception("SENDGRID_API_KEY env variable is not set.")
+
+    from_email = Email(configuration.sender_address)
+    to_email = To(configuration.address_recipients)
+
+    subject = sli_report.report_subject
+    content = Content("text/html",email_message)
+
+    mail = Mail(from_email, to_email, subject, content)
+
+    # Get a JSON-ready representation of the Mail object
+    json_mail = mail.get()
+    try:
+        sg = sendgrid.SendGridAPIClient(api_key=sendgrid_api_key)
+        response = sg.client.mail.send.post(
+            request_body=json_mail,
+        )
+        _LOGGER.info(f"Response status code: {response.status_code}")
+        _LOGGER.info(f"Response body: {response.body}")
+        _LOGGER.info(f"Response headers: {response.headers}")
+    except Exception as e:
+        _LOGGER.exception(f"Exception while sending email: {e.message}")
+
+
+def _send_email_throush_smtlib(email_message: str, configuration: Configuration, sli_report: SLIReport):
+    """Send email using smtlib library."""
+    server = configuration.server_host
 
     msg = MIMEMultipart()
     msg["Subject"] = sli_report.report_subject
-    msg["From"] = sender_address
-    msg["To"] = recipients
+    msg["From"] = configuration.sender_address
+    msg["To"] = configuration.address_recipients
 
-    msg.attach(email_message)
+    html_message = MIMEText(email_message, "html")
+    msg.attach(html_message)
+
     _MAIL_SERVER = smtplib.SMTP(server)
-    _MAIL_SERVER.sendmail(sender_address, recipients, msg.as_string())
-    _LOGGER.info(f"Thoth weekly SLI correctly sent.")
+    _MAIL_SERVER.sendmail(configuration.sender_address, configuration.address_recipients, msg.as_string())
+    _MAIL_SERVER.close()
 
 
 def run_slo_reporter(
@@ -312,8 +352,8 @@ def run_slo_reporter(
     if not _DRY_RUN and not _ONLY_STORE_ON_CEPH:
         if day_of_week == configuration.email_day:
             _LOGGER.info(f"Today is: {day_of_week}, therefore I send email.")
-            email_message = generate_email(sli_values_map, configuration=configuration, sli_report=sli_report)
-            send_sli_email(email_message, configuration=configuration, sli_report=sli_report)
+            email_message = generate_email(sli_values_map, sli_report=sli_report)
+            send_sli_email(email_message, configuration=configuration, sli_report=sli_report, using_sendgrid=configuration.using_sandgrid)
         else:
             _LOGGER.info(
                 f"Today is: {day_of_week}, I do not send emails. I send email only on {configuration.email_day}",
