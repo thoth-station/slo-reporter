@@ -253,9 +253,9 @@ def generate_email(sli_metrics: Dict[str, Any], sli_report: SLIReport) -> str:
     return message
 
 
-def send_sli_email(email_message: str, configuration: Configuration, sli_report: SLIReport, using_sandgrid: False):
+def send_sli_email(email_message: str, configuration: Configuration, sli_report: SLIReport, using_sendgrid: False):
     """Send email about Thoth Service Level Objectives."""
-    if using_sandgrid:
+    if using_sendgrid:
        return _send_email_through_sendgrid(email_message=email_message, configuration=configuration, sli_report=sli_report)
 
     return _send_email_throush_smtlib(email_message=email_message, configuration=configuration, sli_report=sli_report)
@@ -353,7 +353,7 @@ def run_slo_reporter(
         if day_of_week == configuration.email_day:
             _LOGGER.info(f"Today is: {day_of_week}, therefore I send email.")
             email_message = generate_email(sli_values_map, sli_report=sli_report)
-            send_sli_email(email_message, configuration=configuration, sli_report=sli_report,is_encrypted=configuration.using_sandgrid)
+            send_sli_email(email_message, configuration=configuration, sli_report=sli_report, using_sendgrid=configuration.using_sandgrid)
         else:
             _LOGGER.info(
                 f"Today is: {day_of_week}, I do not send emails. I send email only on {configuration.email_day}",
