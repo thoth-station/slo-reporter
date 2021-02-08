@@ -79,7 +79,7 @@ class Configuration:
             self.address_recipients = os.environ["EMAIL_RECIPIENTS"]
 
             ## sendgrid specific variables
-            self.using_sandgrid = bool(int(os.getenv("USING_SENDGRID", 0)))
+            self.using_sandgrid = bool(int(os.getenv("SLO_REPORTER_USING_SENDGRID", 0)))
             self.sendgrid_api_key = os.getenv("SENDGRID_API_KEY")
 
             # Prometheus and Thanos
@@ -138,7 +138,7 @@ class Configuration:
         # Interval for report
         self.interval = f"{self.number_days}d"
 
-        self.email_day = "Friday"
+        self.email_day = os.getenv("SLO_REPORTER_DAY_SEND_EMAIL", "Friday")
 
 
 def _connect_to_ceph(ceph_bucket_prefix: str, environment: str, bucket: Optional[str] = None) -> CephStore:
