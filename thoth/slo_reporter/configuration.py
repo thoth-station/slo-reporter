@@ -75,12 +75,11 @@ class Configuration:
 
             # Email server variables
             self.server_host = os.environ["SMTP_SERVER"]
-            # self.server_port = os.getenv("SMTP_SERVER_PORT")
             self.sender_address = os.environ["SENDER_ADDRESS"]
             self.address_recipients = os.environ["EMAIL_RECIPIENTS"]
 
-            ## Encryption variables
-            self.using_tls_encryption = bool(int(os.getenv("SMTP_TLS_ENCRYPTION", 0)))
+            ## sendgrid specific variables
+            self.using_sandgrid = bool(int(os.getenv("USING_SANDGRID", 0)))
             self.sendgrid_api_key = os.getenv("SENDGRID_API_KEY")
 
             # Prometheus and Thanos

@@ -253,9 +253,9 @@ def generate_email(sli_metrics: Dict[str, Any], sli_report: SLIReport) -> str:
     return message
 
 
-def send_sli_email(email_message: str, configuration: Configuration, sli_report: SLIReport, is_encrypted: False):
+def send_sli_email(email_message: str, configuration: Configuration, sli_report: SLIReport, using_sandgrid: False):
     """Send email about Thoth Service Level Objectives."""
-    if is_encrypted:
+    if using_sandgrid:
        return _send_email_through_sendgrid(email_message=email_message, configuration=configuration, sli_report=sli_report)
 
     return _send_email_throush_smtlib(email_message=email_message, configuration=configuration, sli_report=sli_report)
@@ -263,15 +263,11 @@ def send_sli_email(email_message: str, configuration: Configuration, sli_report:
 
 def _send_email_through_sendgrid(email_message: str, configuration: Configuration, sli_report: SLIReport):
     """Send email using sendgrid library."""
-    _LOGGER.info(f"Using sendgrid to send email.")
+    _LOGGER.info("Using sendgrid to send email.")
 
     sendgrid_api_key = configuration.sendgrid_api_key
     if not sendgrid_api_key:
         raise Exception("SENDGRID_API_KEY env variable is not set.")
-
-    host_url = f"https://{configuration.server_host}"
-    _LOGGER.info(f"Using sendgrid server host URL {host_url}")
-    sg = sendgrid.SendGridAPIClient(host=host_url, api_key=sendgrid_api_key)
 
     from_email = Email(configuration.sender_address)
     to_email = To(configuration.address_recipients)
@@ -283,11 +279,16 @@ def _send_email_through_sendgrid(email_message: str, configuration: Configuratio
 
     # Get a JSON-ready representation of the Mail object
     json_mail = mail.get()
-
-    response = sg.client.mail.send.post(
-        request_body=json_mail,
-    )
-    print(response)
+    try:
+        sg = sendgrid.SendGridAPIClient(api_key=sendgrid_api_key)
+        response = sg.client.mail.send.post(
+            request_body=json_mail,
+        )
+        _LOGGER.info(f"Response status code: {response.status_code}")
+        _LOGGER.info(f"Response body: {response.body}")
+        _LOGGER.info(f"Response headers: {response.headers}")
+    except Exception as e:
+        _LOGGER.exception(f"Exception while sending email: {e.message}")
 
 
 def _send_email_throush_smtlib(email_message: str, configuration: Configuration, sli_report: SLIReport):
@@ -351,8 +352,8 @@ def run_slo_reporter(
     if not _DRY_RUN and not _ONLY_STORE_ON_CEPH:
         if day_of_week == configuration.email_day:
             _LOGGER.info(f"Today is: {day_of_week}, therefore I send email.")
-            email_message = generate_email(sli_values_map, configuration=configuration, sli_report=sli_report)
-            send_sli_email(email_message, configuration=configuration, sli_report=sli_report)
+            email_message = generate_email(sli_values_map, sli_report=sli_report)
+            send_sli_email(email_message, configuration=configuration, sli_report=sli_report,is_encrypted=configuration.using_sandgrid)
         else:
             _LOGGER.info(
                 f"Today is: {day_of_week}, I do not send emails. I send email only on {configuration.email_day}",
