@@ -262,7 +262,7 @@ def send_sli_email(email_message: str, configuration: Configuration, sli_report:
 
 
 def _send_email_through_sendgrid(email_message: str, configuration: Configuration, sli_report: SLIReport):
-    """Send email using sendgrid library"""
+    """Send email using sendgrid library."""
     _LOGGER.info(f"Using sendgrid to send email.")
 
     sendgrid_api_key = configuration.sendgrid_api_key
@@ -285,7 +285,7 @@ def _send_email_through_sendgrid(email_message: str, configuration: Configuratio
     json_mail = mail.get()
 
     response = sg.client.mail.send.post(
-        request_body=json_mail
+        request_body=json_mail,
     )
     print(response)
 
