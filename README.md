@@ -128,10 +128,12 @@ The following command will open a web browser showing how the report will look l
 DEBUG_LEVEL=1 DRY_RUN=1 pipenv run python3 app.py
 ```
 
-### Send email with sandgrid
+### Send email with sendgrid
 
 Set the following environment variables:
 
 ```python
 USING_SENDGRID=1 SENDGRID_API_KEY=<sendgridapi-key> pipenv run python3 app.py
 ```
+
+Reference: [sendgrid](https://github.com/sendgrid/)
