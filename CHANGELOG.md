@@ -261,3 +261,8 @@ all the things that you see...
 * Introduce check on data retrieval from ceph (#190)
 * :arrow_up: Automatic update of dependencies by kebechet. (#189)
 * :arrow_up: Automatic update of dependencies by kebechet. (#187)
+
+## Release 0.9.0 (2021-02-09T08:10:48)
+### Features
+* Feature/introduce sendgrid to send emails (#201)
+* :arrow_up: Automatic update of dependencies by Kebechet (#199)
