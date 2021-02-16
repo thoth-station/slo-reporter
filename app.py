@@ -249,9 +249,9 @@ def generate_email(sli_metrics: Dict[str, Any], sli_report: SLIReport) -> str:
 
     return message
 
+
 def send_sli_email(email_message: str, configuration: Configuration, sli_report: SLIReport, using_tls: False):
     """Send email about Thoth Service Level Objectives."""
-
     msg = MIMEMultipart()
     msg["Subject"] = sli_report.report_subject
     msg["From"] = configuration.sender_address
@@ -266,13 +266,13 @@ def send_sli_email(email_message: str, configuration: Configuration, sli_report:
        return send_sli_email_through_smtplib_tls(
            email_message=msg,
            configuration=configuration,
-           sli_report=sli_report
-        )
+           sli_report=sli_report,
+       )
 
     return _send_email_through_smtplib(
         email_message=email_message,
         configuration=configuration,
-        sli_report=sli_report
+        sli_report=sli_report,
     )
 
 
@@ -299,11 +299,11 @@ def send_sli_email_through_smtplib_tls(email_message: MIMEMultipart, configurati
             server.sendmail(configuration.sender_address, configuration.address_recipients, email_message.as_string())
             server.close()
             _LOGGER.info(
-                f"Email sent successfully through {configuration.server_host}:{configuration.server_host_port} server."
+                f"Email sent successfully through {configuration.server_host}:{configuration.server_host_port} server.",
             )
     except Exception as e:
         _LOGGER.info(
-            f"Exception when sending email using {configuration.server_host}:{configuration.server_host_port} server: %s\n" % e
+            f"Exception when sending email using {configuration.server_host}:{configuration.server_host_port} server: %s\n" % e,
         )
 
 
@@ -311,8 +311,16 @@ def _send_email_through_smtplib(email_message: MIMEMultipart, configuration: Con
     """Send email using smtplib library."""
     server = configuration.server_host
     _MAIL_SERVER = smtplib.SMTP(server)
-    _MAIL_SERVER.sendmail(configuration.sender_address, configuration.address_recipients, email_message.as_string())
-    _MAIL_SERVER.close()
+    try:
+        _MAIL_SERVER.sendmail(configuration.sender_address, configuration.address_recipients, email_message.as_string())
+        _LOGGER.info(
+            f"Email sent successfully through {configuration.server_host} server.",
+        )
+        _MAIL_SERVER.close()
+    except Exception as e:
+        _LOGGER.info(
+            f"Exception when sending email using {configuration.server_host} server: %s\n" % e,
+        )
 
 
 def run_slo_reporter(
