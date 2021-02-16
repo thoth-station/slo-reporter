@@ -259,9 +259,13 @@ def send_sli_email(email_message: str, configuration: Configuration, sli_report:
 
 def send_sli_email_through_smtlib_tls(email_message: str, configuration: Configuration, sli_report: SLIReport):
     """Send email using sendinblue library."""
-    _LOGGER.info("Using sendinblue to send email.")
+    _LOGGER.info(f"Using {configuration.server_host}:{configuration.server_host_port} server to send email.")
 
-    smtp_password= configuration.smtp_password
+    smtp_username = configuration.smtp_username
+    if not smtp_username:
+        raise Exception("SMTP_SERVER_USERNAME env variable is not set.")
+
+    smtp_password = configuration.smtp_password
     if not smtp_password:
         raise Exception("SMTP_SERVER_PASSWORD env variable is not set.")
 
@@ -269,6 +273,8 @@ def send_sli_email_through_smtlib_tls(email_message: str, configuration: Configu
     msg["Subject"] = sli_report.report_subject
     msg["From"] = configuration.sender_address
     msg["To"] = configuration.address_recipients
+
+    _LOGGER.info(f"Adress recipient: {configuration.address_recipients}.")
 
     html_message = MIMEText(email_message, "html")
     msg.attach(html_message)
@@ -280,7 +286,7 @@ def send_sli_email_through_smtlib_tls(email_message: str, configuration: Configu
             server.ehlo()
             server.starttls(context=context)
             server.ehlo()
-            server.login(configuration.sender_address, smtp_password)
+            server.login(smtp_username, smtp_password)
             server.sendmail(configuration.sender_address, configuration.address_recipients, msg.as_string())
             server.close()
             _LOGGER.info(f"Email sent successfully through {configuration.server_host}:{configuration.server_host_port} server.")
