@@ -21,6 +21,8 @@ import logging
 import statistics
 import datetime
 
+from io import StringIO
+
 import pandas as pd
 import numpy as np
 
@@ -29,8 +31,6 @@ from typing import List, Dict, Optional, Any
 from thoth.storages import CephStore
 
 from thoth.slo_reporter.configuration import _get_sli_metrics_prefix
-
-from io import StringIO
 
 _LOGGER = logging.getLogger(__name__)
 

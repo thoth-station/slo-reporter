@@ -18,14 +18,12 @@
 """This is the main script of Thoth SLO reporter."""
 
 import os
-import logging
+import ssl
 import smtplib
+import logging
 import datetime
 import webbrowser
 import tempfile
-
-import sendgrid
-from sendgrid.helpers.mail import Email, To, Content, Mail
 
 import pandas as pd
 from pandas.io.json import json_normalize
@@ -38,7 +36,6 @@ from prometheus_client import push_to_gateway
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from thoth import slo_reporter
 
 from thoth.slo_reporter.sli_report import SLIReport
 from thoth.slo_reporter import __service_version__
@@ -51,9 +48,9 @@ _LOGGER = logging.getLogger("thoth.slo_reporter")
 _LOGGER.info(f"Thoth SLO Reporter v%s", __service_version__)
 
 _DRY_RUN = bool(int(os.getenv("DRY_RUN", 0)))
-_STORE_HTML = bool(int(os.getenv("STORE_HTML", 0)))
-_STORE_ON_CEPH = bool(int(os.getenv("STORE_ON_CEPH", 1)))
-_ONLY_STORE_ON_CEPH = bool(int(os.getenv("THOTH_ONLY_STORE_ON_CEPH", 0)))
+_STORE_HTML = bool(int(os.getenv("THOTH_SLO_REPORTER_STORE_HTML", 0)))
+_STORE_ON_CEPH = bool(int(os.getenv("THOTH_SLO_REPORTER_STORE_ON_CEPH", 1)))
+_ONLY_STORE_ON_CEPH = bool(int(os.getenv("THOTH_SLO_REPORTER_ONLY_STORE_ON_CEPH", 0)))
 _DEBUG_LEVEL = bool(int(os.getenv("DEBUG_LEVEL", 0)))
 
 if _DEBUG_LEVEL:
@@ -253,59 +250,77 @@ def generate_email(sli_metrics: Dict[str, Any], sli_report: SLIReport) -> str:
     return message
 
 
-def send_sli_email(email_message: str, configuration: Configuration, sli_report: SLIReport, using_sendgrid: False):
+def send_sli_email(email_message: str, configuration: Configuration, sli_report: SLIReport, using_tls: False):
     """Send email about Thoth Service Level Objectives."""
-    if using_sendgrid:
-       return _send_email_through_sendgrid(email_message=email_message, configuration=configuration, sli_report=sli_report)
-
-    return _send_email_throush_smtlib(email_message=email_message, configuration=configuration, sli_report=sli_report)
-
-
-def _send_email_through_sendgrid(email_message: str, configuration: Configuration, sli_report: SLIReport):
-    """Send email using sendgrid library."""
-    _LOGGER.info("Using sendgrid to send email.")
-
-    sendgrid_api_key = configuration.sendgrid_api_key
-    if not sendgrid_api_key:
-        raise Exception("SENDGRID_API_KEY env variable is not set.")
-
-    from_email = Email(configuration.sender_address)
-    to_email = To(configuration.address_recipients)
-
-    subject = sli_report.report_subject
-    content = Content("text/html",email_message)
-
-    mail = Mail(from_email, to_email, subject, content)
-
-    # Get a JSON-ready representation of the Mail object
-    json_mail = mail.get()
-    try:
-        sg = sendgrid.SendGridAPIClient(api_key=sendgrid_api_key)
-        response = sg.client.mail.send.post(
-            request_body=json_mail,
-        )
-        _LOGGER.info(f"Response status code: {response.status_code}")
-        _LOGGER.info(f"Response body: {response.body}")
-        _LOGGER.info(f"Response headers: {response.headers}")
-    except Exception as e:
-        _LOGGER.exception(f"Exception while sending email: {e.message}")
-
-
-def _send_email_throush_smtlib(email_message: str, configuration: Configuration, sli_report: SLIReport):
-    """Send email using smtlib library."""
-    server = configuration.server_host
-
     msg = MIMEMultipart()
     msg["Subject"] = sli_report.report_subject
     msg["From"] = configuration.sender_address
     msg["To"] = configuration.address_recipients
 
+    _LOGGER.info(f"Address recipient: {configuration.address_recipients}.")
+
     html_message = MIMEText(email_message, "html")
     msg.attach(html_message)
 
+    if using_tls:
+       return send_sli_email_through_smtplib_tls(
+           email_message=msg,
+           configuration=configuration,
+       )
+
+    return _send_email_through_smtplib(
+        email_message=msg,
+        configuration=configuration,
+    )
+
+
+def send_sli_email_through_smtplib_tls(email_message: MIMEMultipart, configuration: Configuration):
+    """Send email using smtplib with TLS."""
+    _LOGGER.info(f"Using {configuration.server_host} with port {configuration.server_host_port} server to send email.")
+
+    smtp_username = configuration.smtp_username
+    if not smtp_username:
+        raise Exception("SMTP_SERVER_USERNAME env variable is not set.")
+
+    smtp_password = configuration.smtp_password
+    if not smtp_password:
+        raise Exception("SMTP_SERVER_PASSWORD env variable is not set.")
+
+    context = ssl.create_default_context()
+
+    try:
+        with smtplib.SMTP(host=configuration.server_host, port=configuration.server_host_port) as server:
+            server.ehlo()
+            server.starttls(context=context)
+            server.ehlo()
+            server.login(smtp_username, smtp_password)
+            server.sendmail(configuration.sender_address, configuration.address_recipients, email_message.as_string())
+            server.close()
+            _LOGGER.info(
+                f"Email sent successfully through {configuration.server_host}"
+                f" with port {configuration.server_host_port} server.",
+            )
+    except Exception as e:
+        _LOGGER.info(
+            f"Exception when sending email using {configuration.server_host}"
+            f" with port{configuration.server_host_port} server: %s\n" % e,
+        )
+
+
+def _send_email_through_smtplib(email_message: MIMEMultipart, configuration: Configuration):
+    """Send email using smtplib library."""
+    server = configuration.server_host
     _MAIL_SERVER = smtplib.SMTP(server)
-    _MAIL_SERVER.sendmail(configuration.sender_address, configuration.address_recipients, msg.as_string())
-    _MAIL_SERVER.close()
+    try:
+        _MAIL_SERVER.sendmail(configuration.sender_address, configuration.address_recipients, email_message.as_string())
+        _LOGGER.info(
+            f"Email sent successfully through {configuration.server_host} server.",
+        )
+        _MAIL_SERVER.close()
+    except Exception as e:
+        _LOGGER.info(
+            f"Exception when sending email using {configuration.server_host} server: %s\n" % e,
+        )
 
 
 def run_slo_reporter(
@@ -353,7 +368,7 @@ def run_slo_reporter(
         if day_of_week == configuration.email_day:
             _LOGGER.info(f"Today is: {day_of_week}, therefore I send email.")
             email_message = generate_email(sli_values_map, sli_report=sli_report)
-            send_sli_email(email_message, configuration=configuration, sli_report=sli_report, using_sendgrid=configuration.using_sandgrid)
+            send_sli_email(email_message, configuration=configuration, sli_report=sli_report, using_tls=configuration.using_tls)
         else:
             _LOGGER.info(
                 f"Today is: {day_of_week}, I do not send emails. I send email only on {configuration.email_day}",
