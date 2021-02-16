@@ -251,23 +251,6 @@ def generate_email(sli_metrics: Dict[str, Any], sli_report: SLIReport) -> str:
 
 def send_sli_email(email_message: str, configuration: Configuration, sli_report: SLIReport, using_tls: False):
     """Send email about Thoth Service Level Objectives."""
-    if using_tls:
-       return send_sli_email_through_smtplib_tls(email_message=email_message, configuration=configuration, sli_report=sli_report)
-
-    return _send_email_through_smtplib(email_message=email_message, configuration=configuration, sli_report=sli_report)
-
-
-def send_sli_email_through_smtplib_tls(email_message: str, configuration: Configuration, sli_report: SLIReport):
-    """Send email using smtplib with TLS."""
-    _LOGGER.info(f"Using {configuration.server_host}:{configuration.server_host_port} server to send email.")
-
-    smtp_username = configuration.smtp_username
-    if not smtp_username:
-        raise Exception("SMTP_SERVER_USERNAME env variable is not set.")
-
-    smtp_password = configuration.smtp_password
-    if not smtp_password:
-        raise Exception("SMTP_SERVER_PASSWORD env variable is not set.")
 
     msg = MIMEMultipart()
     msg["Subject"] = sli_report.report_subject
@@ -279,6 +262,32 @@ def send_sli_email_through_smtplib_tls(email_message: str, configuration: Config
     html_message = MIMEText(email_message, "html")
     msg.attach(html_message)
 
+    if using_tls:
+       return send_sli_email_through_smtplib_tls(
+           email_message=msg,
+           configuration=configuration,
+           sli_report=sli_report
+        )
+
+    return _send_email_through_smtplib(
+        email_message=email_message,
+        configuration=configuration,
+        sli_report=sli_report
+    )
+
+
+def send_sli_email_through_smtplib_tls(email_message: MIMEMultipart, configuration: Configuration):
+    """Send email using smtplib with TLS."""
+    _LOGGER.info(f"Using {configuration.server_host}:{configuration.server_host_port} server to send email.")
+
+    smtp_username = configuration.smtp_username
+    if not smtp_username:
+        raise Exception("SMTP_SERVER_USERNAME env variable is not set.")
+
+    smtp_password = configuration.smtp_password
+    if not smtp_password:
+        raise Exception("SMTP_SERVER_PASSWORD env variable is not set.")
+
     context = ssl.create_default_context()
 
     try:
@@ -287,27 +296,22 @@ def send_sli_email_through_smtplib_tls(email_message: str, configuration: Config
             server.starttls(context=context)
             server.ehlo()
             server.login(smtp_username, smtp_password)
-            server.sendmail(configuration.sender_address, configuration.address_recipients, msg.as_string())
+            server.sendmail(configuration.sender_address, configuration.address_recipients, email_message.as_string())
             server.close()
-            _LOGGER.info(f"Email sent successfully through {configuration.server_host}:{configuration.server_host_port} server.")
+            _LOGGER.info(
+                f"Email sent successfully through {configuration.server_host}:{configuration.server_host_port} server."
+            )
     except Exception as e:
-        _LOGGER.info(f"Exception when sending email using {configuration.server_host}:{configuration.server_host_port} server: %s\n" % e)
+        _LOGGER.info(
+            f"Exception when sending email using {configuration.server_host}:{configuration.server_host_port} server: %s\n" % e
+        )
 
 
-def _send_email_through_smtplib(email_message: str, configuration: Configuration, sli_report: SLIReport):
+def _send_email_through_smtplib(email_message: MIMEMultipart, configuration: Configuration):
     """Send email using smtplib library."""
     server = configuration.server_host
-
-    msg = MIMEMultipart()
-    msg["Subject"] = sli_report.report_subject
-    msg["From"] = configuration.sender_address
-    msg["To"] = configuration.address_recipients
-
-    html_message = MIMEText(email_message, "html")
-    msg.attach(html_message)
-
     _MAIL_SERVER = smtplib.SMTP(server)
-    _MAIL_SERVER.sendmail(configuration.sender_address, configuration.address_recipients, msg.as_string())
+    _MAIL_SERVER.sendmail(configuration.sender_address, configuration.address_recipients, email_message.as_string())
     _MAIL_SERVER.close()
 
 
