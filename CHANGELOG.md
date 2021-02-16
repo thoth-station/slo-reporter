@@ -266,3 +266,8 @@ all the things that you see...
 ### Features
 * Feature/introduce sendgrid to send emails (#201)
 * :arrow_up: Automatic update of dependencies by Kebechet (#199)
+
+## Release 0.10.0 (2021-02-16T14:34:28)
+### Features
+* Generalize smtp tls (#206)
+* :arrow_up: Automatic update of dependencies by Kebechet (#205)
