@@ -41,14 +41,14 @@ _LOGGER = logging.getLogger(__name__)
 
 SLI_CLASSES = [
     SLIPyPIKnowledgeGraph,
-    SLIKnowledgeGraph,
-    SLILearning,
-    SLIThothIntegrations,
-    SLIKebechet,
-    SLIUserAPI,
-    SLIWorkflowQuality,
-    SLIWorkflowTaskQuality,
-    SLIWorkflowLatency,
+    # SLIKnowledgeGraph,
+    # SLILearning,
+    # SLIThothIntegrations,
+    # SLIKebechet,
+    # SLIUserAPI,
+    # SLIWorkflowQuality,
+    # SLIWorkflowTaskQuality,
+    # SLIWorkflowLatency,
 ]
 
 class SLIReport:

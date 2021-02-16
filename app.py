@@ -48,9 +48,9 @@ _LOGGER = logging.getLogger("thoth.slo_reporter")
 _LOGGER.info(f"Thoth SLO Reporter v%s", __service_version__)
 
 _DRY_RUN = bool(int(os.getenv("DRY_RUN", 0)))
-_STORE_HTML = bool(int(os.getenv("STORE_HTML", 0)))
-_STORE_ON_CEPH = bool(int(os.getenv("STORE_ON_CEPH", 1)))
-_ONLY_STORE_ON_CEPH = bool(int(os.getenv("THOTH_ONLY_STORE_ON_CEPH", 0)))
+_STORE_HTML = bool(int(os.getenv("THOTH_SLO_REPORTER_STORE_HTML", 0)))
+_STORE_ON_CEPH = bool(int(os.getenv("THOTH_SLO_REPORTER_STORE_ON_CEPH", 1)))
+_ONLY_STORE_ON_CEPH = bool(int(os.getenv("THOTH_SLO_REPORTER_ONLY_STORE_ON_CEPH", 0)))
 _DEBUG_LEVEL = bool(int(os.getenv("DEBUG_LEVEL", 0)))
 
 if _DEBUG_LEVEL:
@@ -261,9 +261,9 @@ def send_sli_email_through_smtlib_tls(email_message: str, configuration: Configu
     """Send email using sendinblue library."""
     _LOGGER.info("Using sendinblue to send email.")
 
-    sendinblue_api_key = configuration.sendinblue_api_key
-    if not sendinblue_api_key:
-        raise Exception("SENDINBLUE_API_KEY env variable is not set.")
+    smtp_password= configuration.smtp_password
+    if not smtp_password:
+        raise Exception("SMTP_SERVER_PASSWORD env variable is not set.")
 
     msg = MIMEMultipart()
     msg["Subject"] = sli_report.report_subject
@@ -280,12 +280,12 @@ def send_sli_email_through_smtlib_tls(email_message: str, configuration: Configu
             server.ehlo()
             server.starttls(context=context)
             server.ehlo()
-            server.login(configuration.sender_address, sendinblue_api_key)
+            server.login(configuration.sender_address, smtp_password)
             server.sendmail(configuration.sender_address, configuration.address_recipients, msg.as_string())
             server.close()
-            _LOGGER.info("Email sent successfully through SendinBlue server.")
+            _LOGGER.info(f"Email sent successfully through {configuration.server_host}:{configuration.server_host_port} server.")
     except Exception as e:
-        _LOGGER.info("Exception when sending email using SendinBlue server: %s\n" % e)
+        _LOGGER.info(f"Exception when sending email using {configuration.server_host}:{configuration.server_host_port} server: %s\n" % e)
 
 
 def _send_email_through_smtlib(email_message: str, configuration: Configuration, sli_report: SLIReport):

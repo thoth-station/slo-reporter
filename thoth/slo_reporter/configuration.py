@@ -77,9 +77,9 @@ class Configuration:
             self.server_host = os.environ["SMTP_SERVER"]
             self.server_host_port = int(os.getenv("SMTP_SERVER_PORT", 587))
             self.sender_address = os.environ["SMTP_SERVER_USERNAME"]
-            self.password = os.getenv("SMTP_SERVER_PASSWORD")
+            self.smtp_password = os.getenv("SMTP_SERVER_PASSWORD")
             self.address_recipients = os.environ["EMAIL_RECIPIENTS"]
-            self.using_tls = bool(int(os.getenv("SLO_REPORTER_USING_SMTP_TLS", 0)))
+            self.using_tls = bool(int(os.getenv("THOTH_SLO_REPORTER_USING_SMTP_TLS", 0)))
 
             # Prometheus and Thanos
             self.pushgateway_endpoint = os.environ["PROMETHEUS_PUSHGATEWAY_URL"]
@@ -137,7 +137,7 @@ class Configuration:
         # Interval for report
         self.interval = f"{self.number_days}d"
 
-        self.email_day = os.getenv("SLO_REPORTER_DAY_SEND_EMAIL", "Friday")
+        self.email_day = os.getenv("THOTH_SLO_REPORTER_DAY_SEND_EMAIL", "Friday")
 
 
 def _connect_to_ceph(ceph_bucket_prefix: str, environment: str, bucket: Optional[str] = None) -> CephStore:
