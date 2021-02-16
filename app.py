@@ -252,13 +252,13 @@ def generate_email(sli_metrics: Dict[str, Any], sli_report: SLIReport) -> str:
 def send_sli_email(email_message: str, configuration: Configuration, sli_report: SLIReport, using_tls: False):
     """Send email about Thoth Service Level Objectives."""
     if using_tls:
-       return send_sli_email_through_smtlib_tls(email_message=email_message, configuration=configuration, sli_report=sli_report)
+       return send_sli_email_through_smtplib_tls(email_message=email_message, configuration=configuration, sli_report=sli_report)
 
-    return _send_email_through_smtlib(email_message=email_message, configuration=configuration, sli_report=sli_report)
+    return _send_email_through_smtplib(email_message=email_message, configuration=configuration, sli_report=sli_report)
 
 
-def send_sli_email_through_smtlib_tls(email_message: str, configuration: Configuration, sli_report: SLIReport):
-    """Send email using sendinblue library."""
+def send_sli_email_through_smtplib_tls(email_message: str, configuration: Configuration, sli_report: SLIReport):
+    """Send email using smtplib with TLS."""
     _LOGGER.info(f"Using {configuration.server_host}:{configuration.server_host_port} server to send email.")
 
     smtp_username = configuration.smtp_username
@@ -274,7 +274,7 @@ def send_sli_email_through_smtlib_tls(email_message: str, configuration: Configu
     msg["From"] = configuration.sender_address
     msg["To"] = configuration.address_recipients
 
-    _LOGGER.info(f"Adress recipient: {configuration.address_recipients}.")
+    _LOGGER.info(f"Address recipient: {configuration.address_recipients}.")
 
     html_message = MIMEText(email_message, "html")
     msg.attach(html_message)
@@ -294,8 +294,8 @@ def send_sli_email_through_smtlib_tls(email_message: str, configuration: Configu
         _LOGGER.info(f"Exception when sending email using {configuration.server_host}:{configuration.server_host_port} server: %s\n" % e)
 
 
-def _send_email_through_smtlib(email_message: str, configuration: Configuration, sli_report: SLIReport):
-    """Send email using smtlib library."""
+def _send_email_through_smtplib(email_message: str, configuration: Configuration, sli_report: SLIReport):
+    """Send email using smtplib library."""
     server = configuration.server_host
 
     msg = MIMEMultipart()
