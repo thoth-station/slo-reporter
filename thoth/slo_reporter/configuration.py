@@ -76,8 +76,9 @@ class Configuration:
             # Email server variables smtp
             self.server_host = os.environ["SMTP_SERVER"]
             self.server_host_port = int(os.getenv("SMTP_SERVER_PORT", 587))
-            self.sender_address = os.environ["SMTP_SERVER_USERNAME"]
+            self.smtp_username = os.getenv("SMTP_SERVER_USERNAME")
             self.smtp_password = os.getenv("SMTP_SERVER_PASSWORD")
+            self.sender_address = os.environ["EMAIL_SENDER"]
             self.address_recipients = os.environ["EMAIL_RECIPIENTS"]
             self.using_tls = bool(int(os.getenv("THOTH_SLO_REPORTER_USING_SMTP_TLS", 0)))
 
