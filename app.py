@@ -266,19 +266,17 @@ def send_sli_email(email_message: str, configuration: Configuration, sli_report:
        return send_sli_email_through_smtplib_tls(
            email_message=msg,
            configuration=configuration,
-           sli_report=sli_report,
        )
 
     return _send_email_through_smtplib(
-        email_message=email_message,
+        email_message=msg,
         configuration=configuration,
-        sli_report=sli_report,
     )
 
 
 def send_sli_email_through_smtplib_tls(email_message: MIMEMultipart, configuration: Configuration):
     """Send email using smtplib with TLS."""
-    _LOGGER.info(f"Using {configuration.server_host}:{configuration.server_host_port} server to send email.")
+    _LOGGER.info(f"Using {configuration.server_host} with port {configuration.server_host_port} server to send email.")
 
     smtp_username = configuration.smtp_username
     if not smtp_username:
@@ -299,11 +297,13 @@ def send_sli_email_through_smtplib_tls(email_message: MIMEMultipart, configurati
             server.sendmail(configuration.sender_address, configuration.address_recipients, email_message.as_string())
             server.close()
             _LOGGER.info(
-                f"Email sent successfully through {configuration.server_host}:{configuration.server_host_port} server.",
+                f"Email sent successfully through {configuration.server_host}"
+                f" with port {configuration.server_host_port} server.",
             )
     except Exception as e:
         _LOGGER.info(
-            f"Exception when sending email using {configuration.server_host}:{configuration.server_host_port} server: %s\n" % e,
+            f"Exception when sending email using {configuration.server_host}"
+            f" with port{configuration.server_host_port} server: %s\n" % e,
         )
 
 
