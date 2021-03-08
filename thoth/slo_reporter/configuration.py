@@ -101,11 +101,13 @@ class Configuration:
             self.ceph_bucket_prefix = os.environ["THOTH_CEPH_BUCKET_PREFIX"]
             self.ceph_sli = _connect_to_ceph(self.ceph_bucket_prefix, self.environment)
 
+        # TODO: Adjust logic to evaluate metrics not to maintain list of components
         # Registered components (Argo workflows)
         self.registered_workflows = {
             "adviser": {"name": "adviser", "instance": self.instance_wc_backend},
             "kebechet": {"name": "kebechet", "instance": self.instance_wc_backend},
             "inspection": {"name": "main", "instance": self.instance_wc_amun_inspection},
+            "package_extract": {"name": "package-extract", "instance": self.instance_wc_middletier},
             "provenance_checker": {"name": "provenance-checker", "instance": self.instance_wc_backend},
             "qeb_hwt": {"name": "qeb-hwt", "instance": self.instance_wc_backend},
             "revsolver": {"name": "revsolver", "instance": self.instance_wc_middletier},
@@ -115,6 +117,7 @@ class Configuration:
 
         self.registered_workflow_tasks = {
             "adviser": {"name": "adviser", "instance": self.instance_wc_backend},
+            "package_extract": {"name": "package-extract", "instance": self.instance_wc_middletier},
             "provenance_checker": {"name": "provenance-checker", "instance": self.instance_wc_backend},
             "solver": {"name": "solver", "instance": self.instance_wc_middletier},
             "revsolver": {"name": "revsolver", "instance": self.instance_wc_middletier},
@@ -133,7 +136,7 @@ class Configuration:
         self.buckets = ["5", "10", "30", "60", "120", "180", "300", "600", "900", "+Inf"]
 
         # Step for query range
-        self.step = "2h"
+        self.step = "1h"
 
         # Interval for report
         self.interval = f"{self.number_days}d"
