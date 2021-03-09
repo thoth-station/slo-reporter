@@ -220,7 +220,7 @@ def push_thoth_sli_periodic_metrics(
                     weekly_value_metric,
                 )
                 _LOGGER.info("(sli_type=%r, metric_name=%r)=%r", sli_type, metric_name, weekly_value_metric)
-    
+
     push_to_gateway(
         configuration.pushgateway_endpoint, job="Weekly Thoth SLI", registry=configuration.prometheus_registry,
     )
