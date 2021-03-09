@@ -40,16 +40,16 @@ from .sli_template import HTMLTemplates
 _LOGGER = logging.getLogger(__name__)
 
 SLI_CLASSES = [
-    # SLIPyPIKnowledgeGraph,
-    # SLIKnowledgeGraph,
-    # SLILearning,
-    # SLIThothIntegrations,
+    SLIPyPIKnowledgeGraph,
+    SLIKnowledgeGraph,
+    SLILearning,
+    SLIThothIntegrations,
     SLIThothIntegrationsUsers,
-    # SLIKebechet,
-    # SLIUserAPI,
-    # SLIWorkflowQuality,
-    # SLIWorkflowTaskQuality,
-    # SLIWorkflowLatency,
+    SLIKebechet,
+    SLIUserAPI,
+    SLIWorkflowQuality,
+    SLIWorkflowTaskQuality,
+    SLIWorkflowLatency,
 ]
 
 class SLIReport:
