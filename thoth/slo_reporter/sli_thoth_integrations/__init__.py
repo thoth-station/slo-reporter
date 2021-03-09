@@ -18,7 +18,9 @@
 """Thoth integrations SLI."""
 
 from .sli_thoth_integration import SLIThothIntegrations
+from .sli_thoth_integration_users import SLIThothIntegrationsUsers
 
 __all__ = [
     "SLIThothIntegrations",
+    "SLIThothIntegrationsUsers"
 ]

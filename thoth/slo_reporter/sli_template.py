@@ -19,7 +19,6 @@
 
 from pathlib import Path
 from typing import List, Any, Dict
-from jinja2 import Template
 from jinja2 import Environment, FileSystemLoader
 
 _FILE_LOADER = FileSystemLoader(Path.cwd().joinpath("thoth", "slo_reporter", "static"))
@@ -97,6 +96,12 @@ class HTMLTemplates:
         """Create HTML template to be used for Thoth Integrations."""
         parameters = locals()
         template = ENV.get_template("templates/thoth_integrations.html")
+        return template.render(**parameters)
+
+    def thoth_integrations_users_template(html_inputs: Dict[str, Any]):
+        """Create HTML template to be used for Thoth Integrations users."""
+        parameters = locals()
+        template = ENV.get_template("templates/thoth_integrations_users.html")
         return template.render(**parameters)
 
     def thoth_references_template(html_inputs: Dict[str, Any]):

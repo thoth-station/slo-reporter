@@ -17,7 +17,6 @@
 
 """This file contains all sli metrics that should be included in the report."""
 
-import os
 import logging
 
 from .configuration import Configuration
@@ -29,6 +28,7 @@ from thoth.slo_reporter.sli_thoth_services import SLIKebechet
 from thoth.slo_reporter.sli_knowledge_graph import SLIKnowledgeGraph
 from thoth.slo_reporter.sli_python_knowledge_graph import SLIPyPIKnowledgeGraph
 from thoth.slo_reporter.sli_thoth_integrations import SLIThothIntegrations
+from thoth.slo_reporter.sli_thoth_integrations import SLIThothIntegrationsUsers
 from thoth.slo_reporter.sli_apis import SLIUserAPI
 from thoth.slo_reporter.sli_backends import SLIWorkflowQuality
 from thoth.slo_reporter.sli_backends import SLIWorkflowTaskQuality
@@ -40,15 +40,16 @@ from .sli_template import HTMLTemplates
 _LOGGER = logging.getLogger(__name__)
 
 SLI_CLASSES = [
-    SLIPyPIKnowledgeGraph,
-    SLIKnowledgeGraph,
-    SLILearning,
-    SLIThothIntegrations,
-    SLIKebechet,
-    SLIUserAPI,
-    SLIWorkflowQuality,
-    SLIWorkflowTaskQuality,
-    SLIWorkflowLatency,
+    # SLIPyPIKnowledgeGraph,
+    # SLIKnowledgeGraph,
+    # SLILearning,
+    # SLIThothIntegrations,
+    SLIThothIntegrationsUsers,
+    # SLIKebechet,
+    # SLIUserAPI,
+    # SLIWorkflowQuality,
+    # SLIWorkflowTaskQuality,
+    # SLIWorkflowLatency,
 ]
 
 class SLIReport:
@@ -59,7 +60,8 @@ class SLIReport:
         self.configuration = configuration
 
         self.report_subject = (
-            f"Thoth Service Level Indicators Update Day" + f" ({self.configuration.end_time.strftime('%Y-%m-%d')}) ({self.configuration.environment} environment)"
+            f"Thoth Service Level Indicators Update Day" + 
+            f" ({self.configuration.end_time.strftime('%Y-%m-%d')}) ({self.configuration.environment} environment)"
         )
         _LOGGER.info(self.report_subject)
 
