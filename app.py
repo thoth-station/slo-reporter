@@ -49,8 +49,15 @@ _LOGGER.info(f"Thoth SLO Reporter v%s", __service_version__)
 
 _DRY_RUN = bool(int(os.getenv("DRY_RUN", 0)))
 _STORE_HTML = bool(int(os.getenv("THOTH_SLO_REPORTER_STORE_HTML", 0)))
+
 _STORE_ON_CEPH = bool(int(os.getenv("THOTH_SLO_REPORTER_STORE_ON_CEPH", 1)))
-_ONLY_STORE_ON_CEPH = bool(int(os.getenv("THOTH_SLO_REPORTER_ONLY_STORE_ON_CEPH", 0)))
+if not _STORE_ON_CEPH:
+    _LOGGER.info("THOTH_SLO_REPORTER_STORE_ON_CEPH set to 0, data won't be stored on Ceph.")
+
+_SEND_EMAIL = bool(int(os.getenv("THOTH_SLO_REPORTER_SEND_EMAIL", 0)))
+if not _SEND_EMAIL:
+    _LOGGER.info("THOTH_SLO_REPORTER_SEND_EMAIL set to 0, no emails will be sent out.")
+
 _DEBUG_LEVEL = bool(int(os.getenv("DEBUG_LEVEL", 0)))
 
 if _DEBUG_LEVEL:
@@ -213,7 +220,7 @@ def push_thoth_sli_periodic_metrics(
                     weekly_value_metric,
                 )
                 _LOGGER.info("(sli_type=%r, metric_name=%r)=%r", sli_type, metric_name, weekly_value_metric)
-
+    
     push_to_gateway(
         configuration.pushgateway_endpoint, job="Weekly Thoth SLI", registry=configuration.prometheus_registry,
     )
@@ -364,7 +371,7 @@ def run_slo_reporter(
         webbrowser.open(url)
 
     # Generate HTML for email from metrics and send it.
-    if not _DRY_RUN and not _ONLY_STORE_ON_CEPH:
+    if not _DRY_RUN and _SEND_EMAIL:
         if day_of_week == configuration.email_day:
             _LOGGER.info(f"Today is: {day_of_week}, therefore I send email.")
             email_message = generate_email(sli_values_map, sli_report=sli_report)
@@ -386,10 +393,10 @@ def main():
     if EVALUATION_METRICS_DAYS == 0:
         _LOGGER.info(f"No range of days to be collected, set THOTH_EVALUATION_METRICS_NUMBER_DAYS at least to 1.")
 
-    if EVALUATION_METRICS_DAYS > 1 and not _ONLY_STORE_ON_CEPH:
+    if EVALUATION_METRICS_DAYS > 1 and _SEND_EMAIL:
         raise Exception(
-            "You need to set THOTH_ONLY_STORE_ON_CEPH to 1 if you want to evaluate metrics for more than one day."
-            f" Otherwise {EVALUATION_METRICS_DAYS} emails will be sent out.",
+            "You need to set THOTH_SLO_REPORTER_SEND_EMAIL to 0 if you want to evaluate metrics for more than one day."
+            f" Otherwise multiple emails (in this case {EVALUATION_METRICS_DAYS}) will be sent out.",
         )
 
     for i in range(0, EVALUATION_METRICS_DAYS):
