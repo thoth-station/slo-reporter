@@ -1,0 +1,23 @@
+{% extends "templates/base.html" %}
+{% block table_name %} <strong> Thoth Integrations Number of Users </strong> {% endblock %}
+{% block table_info %} <strong> Integrations Users Info </strong> {% endblock %}
+{% block classes %}
+        <thead>
+            <tr>
+                <th>Integration</th>
+                <th>Current value</th>
+                <th>Change since last week </th>
+            </tr>
+        </thead>
+        {% endblock %}
+        {% block inputs %}
+        <tbody>
+            {% for metric_type, metric in html_inputs.items() %}
+                <tr>
+                    <td>{{ metric_type }}</td>
+                    <td>{{ metric['total_users'] }}</td>
+                    <td>{{ metric['new'] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+{% endblock %}
