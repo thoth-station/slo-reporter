@@ -271,3 +271,13 @@ all the things that you see...
 ### Features
 * Generalize smtp tls (#206)
 * :arrow_up: Automatic update of dependencies by Kebechet (#205)
+
+## Release 0.11.0 (2021-03-11T08:40:39)
+### Features
+* :arrow_up: Automatic update of dependencies by Kebechet (#219)
+*  Add integration per user SLI (#220)
+* Add build analysis in the report (#214)
+* :arrow_up: Automatic update of dependencies by Kebechet (#216)
+* :arrow_up: update CI/CD configuration (#215)
+* :arrow_up: Automatic update of dependencies by Kebechet (#212)
+* :arrow_up: Automatic update of dependencies by Kebechet (#211)
