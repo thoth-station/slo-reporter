@@ -17,9 +17,7 @@
 
 """This file contains references to be included in the final report."""
 
-import os
 import logging
-import datetime
 
 from .configuration import Configuration
 
@@ -37,7 +35,7 @@ def _add_dashbords(configuration: Configuration):
 
     knowledge_graph_dashboard_name = f"thoth-knowledge-graph-content-metrics"
     knowledge_graph_dashboard_url = (
-        f"https://grafana.datahub.redhat.com/dashboard/db/{knowledge_graph_dashboard_name}?"
+        f"{configuration.grafana_reference_base_url}/{knowledge_graph_dashboard_name}?"
         + f"refresh=1m&orgId=1&from={start_time_epoch}&to={end_time_epoch}&"
         + f"var-instance={configuration.instance}&"
         + f"var-environment={configuration.environment}"
@@ -49,27 +47,31 @@ def _add_dashbords(configuration: Configuration):
 
     sli_slo_dashboard_name = f"thoth-sli-slo"
     sli_slo_dashboard_url = (
-        f"https://grafana.datahub.redhat.com/dashboard/db/{sli_slo_dashboard_name}?"
+        f"{configuration.grafana_reference_base_url}/{sli_slo_dashboard_name}?"
         + f"refresh=1m&orgId=1&from={start_time_epoch}&to={end_time_epoch}"
     )
     html_inputs["Thoth SLI/SLO"] = {"url": sli_slo_dashboard_url, "description": "Dashboard for SLI/SLO for Thoth."}
 
     sli_slo_dashboard_name = f"thoth-reports"
     sli_slo_dashboard_url = (
-        f"https://grafana.datahub.redhat.com/dashboard/db/{sli_slo_dashboard_name}?"
+        f"{configuration.grafana_reference_base_url}/{sli_slo_dashboard_name}?"
         + f"refresh=1m&orgId=1&from={start_time_epoch}&to={end_time_epoch}"
     )
     html_inputs["Thoth Reports"] = {
         "url": sli_slo_dashboard_url,
         "description": "Dashboard for summary reports created by Thoth reporters components.",
     }
-    if configuration.environment == "stage" or configuration.environment == "dry_run":
-        sli_slo_dashboard_name = f"thoth-superset"
-        sli_slo_dashboard_url = f"https://superset.datahub.redhat.com/superset/dashboard/17/"
-        html_inputs["Thoth Superset"] = {
-            "url": sli_slo_dashboard_url,
-            "description": "Superset Dashboard for SLI/SLO in time.",
-        }
+
+    sli_slo_dashboard_name = f"thoth-superset"
+    html_inputs["Thoth Superset"] = {
+        "url": configuration.superset_dashboard_url,
+        "description": "Superset Dashboard for SLI/SLO in time.",
+    }
+
+    html_inputs["Thoth Station"] = {
+        "url": "https://thoth-station.ninja/",
+        "description": "Superset Dashboard for SLI/SLO in time.",
+    }
 
     report = HTMLTemplates.thoth_references_template(html_inputs=html_inputs)
     return report

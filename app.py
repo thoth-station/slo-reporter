@@ -54,7 +54,7 @@ _STORE_ON_CEPH = bool(int(os.getenv("THOTH_SLO_REPORTER_STORE_ON_CEPH", 1)))
 if not _STORE_ON_CEPH:
     _LOGGER.info("THOTH_SLO_REPORTER_STORE_ON_CEPH set to 0, data won't be stored on Ceph.")
 
-_SEND_EMAIL = bool(int(os.getenv("THOTH_SLO_REPORTER_SEND_EMAIL", 0)))
+_SEND_EMAIL = bool(int(os.getenv("THOTH_SLO_REPORTER_SEND_EMAIL", 1)))
 if not _SEND_EMAIL:
     _LOGGER.info("THOTH_SLO_REPORTER_SEND_EMAIL set to 0, no emails will be sent out.")
 
