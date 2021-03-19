@@ -96,6 +96,12 @@ class Configuration:
             self.thanos_url = os.environ["THANOS_ENDPOINT"]
             self.thanos_token = os.environ["THANOS_ACCESS_TOKEN"]
 
+            # Grafana
+            self.grafana_reference_base_url = os.environ["GRAFANA_DASHBOARD_BASE_URL"]
+
+            # Superset
+            self.superset_dashboard_url = os.environ["SUPERSET_DASHBOARD_URL"]
+
             # Ceph
             self.public_ceph_bucket = os.environ["THOTH_PUBLIC_CEPH_BUCKET"]
             self.ceph_bucket_prefix = os.environ["THOTH_CEPH_BUCKET_PREFIX"]
