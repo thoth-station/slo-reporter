@@ -99,7 +99,7 @@ class SLIThothIntegrationsUsers(SLIBase):
                 html_inputs[name]["total_users"] = "N/A"
 
             if not last_week_data.empty and thoth_integration_counts_total != "ErrorMetricRetrieval":
-                old_value = last_week_data[last_week_data['integration'] == name]['total'].values[0]
+                old_value = last_week_data[last_week_data['integration'] == name]['total_users'].values[0]
                 change = evaluate_change(old_value=old_value, new_value=thoth_integration_counts_total)
 
                 html_inputs[name]["new"] = change
