@@ -286,3 +286,7 @@ all the things that you see...
 ### Features
 * Fix key for changes since last week
 * :arrow_up: Automatic update of dependencies by Kebechet (#225)
+
+## Release 0.12.0 (2021-03-19T17:41:35)
+### Features
+* Generalize references (#233)
