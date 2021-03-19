@@ -281,3 +281,8 @@ all the things that you see...
 * :arrow_up: update CI/CD configuration (#215)
 * :arrow_up: Automatic update of dependencies by Kebechet (#212)
 * :arrow_up: Automatic update of dependencies by Kebechet (#211)
+
+## Release 0.11.1 (2021-03-19T11:55:29)
+### Features
+* Fix key for changes since last week
+* :arrow_up: Automatic update of dependencies by Kebechet (#225)
