@@ -33,6 +33,7 @@ from thoth.slo_reporter.sli_apis import SLIUserAPI
 from thoth.slo_reporter.sli_backends import SLIWorkflowQuality
 from thoth.slo_reporter.sli_backends import SLIWorkflowTaskQuality
 from thoth.slo_reporter.sli_backends import SLIWorkflowLatency
+from thoth.slo_reporter.sli_backends import SLIWorkflowTaskLatency
 
 from .sli_template import HTMLTemplates
 
@@ -50,6 +51,7 @@ SLI_CLASSES = [
     SLIWorkflowQuality,
     SLIWorkflowTaskQuality,
     SLIWorkflowLatency,
+    SLIWorkflowTaskLatency
 ]
 
 class SLIReport:

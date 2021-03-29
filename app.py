@@ -380,7 +380,7 @@ def run_slo_reporter(
             _LOGGER.info(
                 f"Today is: {day_of_week}, I do not send emails. I send email only on {configuration.email_day}",
             )
-
+    _LOGGER.info("SLO-reporter did a good job today and finished successfully!")
 
 def main():
     """Execute the main function for Thoth Service Level Objectives (SLO) Reporter."""

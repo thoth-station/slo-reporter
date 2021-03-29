@@ -86,6 +86,12 @@ class HTMLTemplates:
         template = ENV.get_template("templates/thoth_workflow_latency.html")
         return template.render(**parameters)
 
+    def thoth_workflows_task_latency_template(html_inputs: Dict[str, Any], configuration_buckets: List[str]):
+        """Create HTML template to be used for Thoth services."""
+        parameters = locals()
+        template = ENV.get_template("templates/thoth_workflow_task_latency.html")
+        return template.render(**parameters)
+
     def thoth_kebechet_template(html_inputs: Dict[str, Any]):
         """Create HTML template to be used for Thoth Kebechet."""
         parameters = locals()
