@@ -51,7 +51,7 @@ SLI_CLASSES = [
     SLIWorkflowQuality,
     SLIWorkflowTaskQuality,
     SLIWorkflowLatency,
-    SLIWorkflowTaskLatency
+    SLIWorkflowTaskLatency,
 ]
 
 class SLIReport:
