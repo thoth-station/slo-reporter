@@ -290,3 +290,10 @@ all the things that you see...
 ## Release 0.12.0 (2021-03-19T17:41:35)
 ### Features
 * Generalize references (#233)
+
+## Release 0.13.0 (2021-03-29T12:17:32)
+### Features
+* :arrow_up: Automatic update of dependencies by Kebechet (#240)
+* Add workflows tasks latency (#238)
+* :arrow_up: Automatic update of dependencies by Kebechet (#237)
+* :arrow_up: Automatic update of dependencies by Kebechet (#232)
