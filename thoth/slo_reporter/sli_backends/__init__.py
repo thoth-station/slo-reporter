@@ -18,11 +18,13 @@
 """Thoth Backends SLI."""
 
 from .sli_workflow_latency import SLIWorkflowLatency
+from .sli_workflow_task_latency import SLIWorkflowTaskLatency
 from .sli_workflow_quality import SLIWorkflowQuality
 from .sli_workflow_task_quality import SLIWorkflowTaskQuality
 
 __all__ = [
     "SLIWorkflowLatency",
+    "SLIWorkflowTaskLatency",
     "SLIWorkflowQuality",
     "SLIWorkflowTaskQuality",
 ]
