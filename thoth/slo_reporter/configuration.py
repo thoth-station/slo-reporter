@@ -97,10 +97,16 @@ class Configuration:
             self.thanos_token = os.environ["THANOS_ACCESS_TOKEN"]
 
             # Grafana
-            self.grafana_reference_base_url = os.environ["GRAFANA_DASHBOARD_BASE_URL"]
+            self.grafana_reference_base_url = os.getenv(
+                "GRAFANA_DASHBOARD_BASE_URL",
+                "https://grafana-route-opf-monitoring.apps.zero.massopen.cloud/",
+            )
 
             # Superset
-            self.superset_dashboard_url = os.environ["SUPERSET_DASHBOARD_URL"]
+            self.superset_dashboard_url = os.getenv(
+                "SUPERSET_DASHBOARD_URL",
+                "https://hue-opf-datacatalog.apps.zero.massopen.cloud/",
+            )
 
             # Ceph
             self.public_ceph_bucket = os.environ["THOTH_PUBLIC_CEPH_BUCKET"]
@@ -144,8 +150,8 @@ class Configuration:
         # Step for query range
         self.step = "1h"
 
-        # Interval for report
-        self.interval = f"{self.number_days}d"
+        # Service Interval for report
+        self.interval = os.getenv("SERVICE_INTERVAL", "7d")
 
         self.email_day = os.getenv("THOTH_SLO_REPORTER_DAY_SEND_EMAIL", "Friday")
 
