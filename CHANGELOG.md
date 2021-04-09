@@ -297,3 +297,7 @@ all the things that you see...
 * Add workflows tasks latency (#238)
 * :arrow_up: Automatic update of dependencies by Kebechet (#237)
 * :arrow_up: Automatic update of dependencies by Kebechet (#232)
+
+## Release 0.13.1 (2021-04-09T15:09:50)
+### Features
+* Add defaults (#242)
