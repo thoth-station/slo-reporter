@@ -301,3 +301,10 @@ all the things that you see...
 ## Release 0.13.1 (2021-04-09T15:09:50)
 ### Features
 * Add defaults (#242)
+
+## Release 0.14.0 (2021-04-21T13:22:36)
+### Features
+* Add adviser quality SLI (#251)
+* :arrow_up: Automatic update of dependencies by Kebechet (#249)
+* :arrow_up: Automatic update of dependencies by Kebechet (#247)
+* :arrow_up: Automatic update of dependencies by Kebechet (#246)
