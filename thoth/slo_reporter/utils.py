@@ -30,7 +30,7 @@ from typing import List, Dict, Optional, Any
 
 from thoth.storages import CephStore
 
-from thoth.slo_reporter.configuration import _get_sli_metrics_prefix
+from thoth.slo_reporter.configuration import Configuration, _get_sli_metrics_prefix
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ def manipulate_retrieved_metrics_vector(metrics_vector: List[float], action: str
     :output: metric/SLI
     """
     # Make sure 0 results are not considered
-    metric = 0
+    metric = 0.0
     if not metrics_vector:
         return metric
 
@@ -105,7 +105,10 @@ def evaluate_change(old_value: float, new_value: float, is_storing: bool = False
         diff = new_value
 
     if is_storing:
-        return diff
+        if diff.is_integer():
+            return "{:.2f}".format(diff)
+        else:
+            return "{:.0f}".format(diff)
 
     if diff > 0:
         sign = "+"
@@ -121,6 +124,7 @@ def evaluate_change(old_value: float, new_value: float, is_storing: bool = False
 
     return change
 
+
 def process_html_inputs(
     html_inputs: Dict[str, Any],
     sli_name: str,
@@ -129,7 +133,7 @@ def process_html_inputs(
     sli_columns: List[str],
     store_columns: List[str],
     is_storing: bool = False,
-) -> str:
+) -> Dict[str, Any]:
     """Process HTML inputs."""
     sli_path = f"{sli_name}/{sli_name}-{last_period_time}.csv"
     last_week_data = retrieve_thoth_sli_from_ceph(ceph_sli, sli_path, store_columns)
@@ -163,7 +167,7 @@ def store_thoth_sli_on_ceph(
     ceph_sli: CephStore, metric_class: str, metrics_df: pd.DataFrame, ceph_path: str, is_public: bool = False,
 ) -> None:
     """Store Thoth SLI on Ceph."""
-    metrics_csv = metrics_df.to_csv(index=False, header=False)
+    metrics_csv = metrics_df.to_csv(index=False, sep="`", header=False)
 
     if is_public:
         _LOGGER.info(f"Storing on public bucket... {ceph_path}")
@@ -181,10 +185,70 @@ def retrieve_thoth_sli_from_ceph(ceph_sli: CephStore, ceph_path: str, total_colu
     try:
         retrieved_data = ceph_sli.retrieve_blob(object_key=ceph_path).decode('utf-8')
         data = StringIO(retrieved_data)
-        last_week_data = pd.read_csv(data, names=total_columns)
+        _LOGGER.debug(f"retrieved data:\n {data}")
+        last_data = pd.read_csv(data, names=total_columns, sep="`")
 
     except Exception as e:
         _LOGGER.warning(f"No file could be retrieved from Ceph: {e}")
-        last_week_data = pd.DataFrame(columns=total_columns)
+        last_data = pd.DataFrame(columns=total_columns)
 
-    return last_week_data
+    return last_data
+
+
+def evaluate_total_data_window_days(
+    sli_name: str,
+    total_columns: List[str],
+    quantity: str,
+    configuration: Configuration,
+):
+    """Evaluate weekly data for adviser inputs."""
+    html_inputs: Dict[str, Any] = {}
+    total_quantity: Dict[str, Any] = {}
+
+    number_days = configuration.adviser_inputs_analysis_days
+
+    delta = datetime.timedelta(days=1)
+
+    if not configuration.dry_run:
+
+        e_time = configuration.start_time.strftime('%Y-%m-%d').split("-")
+        current_end_time = datetime.date(year=int(e_time[0]), month=int(e_time[1]), day=int(e_time[2]))
+        + datetime.timedelta(days=1)
+        current_initial_date = current_end_time  - datetime.timedelta(days=number_days)
+
+        while current_initial_date < current_end_time:
+
+            _LOGGER.info(f"Analyzing for start date: {current_initial_date}")
+
+            sli_path = f"{sli_name}/{sli_name}-{current_initial_date}.csv"
+            daily_quantity_df = retrieve_thoth_sli_from_ceph(
+                configuration.ceph_sli,
+                sli_path,
+                [c for c in total_columns if c != "timestamp"],
+            )
+
+            for parameter in daily_quantity_df[quantity].unique():
+                subset_df = daily_quantity_df[daily_quantity_df[quantity] == parameter]
+                if parameter not in total_quantity:
+                    total_quantity[parameter] = subset_df["total"].values[0]
+                else:
+                    total_quantity[parameter] += subset_df["total"].values[0]
+
+            current_initial_date += delta
+
+        total_ = 0
+        for _, total_counts in total_quantity.items():
+            total_ += total_counts
+
+        for quantity__, total_counts in total_quantity.items():
+            html_inputs[quantity__] = {}
+
+            if not total_counts:
+                html_inputs[quantity__]["new"] = 0
+                html_inputs[quantity__]["percentage"] = 0
+            else:
+                percentage = total_counts / total_
+                html_inputs[quantity__]["new"] = "+" + "{:.0f}".format(total_counts)
+                html_inputs[quantity__]["percentage"] = abs(round(percentage * 100, 3))
+
+    return html_inputs
