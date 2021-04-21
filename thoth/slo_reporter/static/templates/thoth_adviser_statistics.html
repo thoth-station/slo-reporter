@@ -1,0 +1,23 @@
+{% extends "templates/base.html" %}
+{% block table_name %} <strong> Adviser statistics </strong> {% endblock %}
+{% block table_info %} <strong> Statistics on recommendations provided to users </strong> {% endblock %}
+{% block classes %}
+        <thead>
+            <tr>
+                <th>Adviser Version</th>
+                <th>Success [%]</th>
+                <th>Failure [%]</th>
+            </tr>
+        </thead>
+        {% endblock %}
+        {% block inputs %}
+        <tbody>
+            {% for result in html_inputs %}
+            <tr>
+                <td>{{ result['adviser_version'] }}</td>
+                <td>{{ result['success_p'] }}</td>
+                <td>{{ result['failure_p'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+{% endblock %}
