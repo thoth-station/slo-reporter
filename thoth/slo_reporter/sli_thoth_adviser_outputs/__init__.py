@@ -22,5 +22,5 @@ from .sli_thoth_adviser_reports_statistics import SLIThothAdviserReportsStatisti
 
 __all__ = [
     "SLIThothAdviserJustificationsErrors",
-    "SLIThothAdviserReportsStatistics"
+    "SLIThothAdviserReportsStatistics",
 ]

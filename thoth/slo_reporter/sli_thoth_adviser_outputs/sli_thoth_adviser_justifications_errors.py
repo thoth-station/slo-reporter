@@ -48,7 +48,7 @@ class SLIThothAdviserJustificationsErrors(SLIBase):
         self.total_columns = self.default_columns + self.sli_columns
         self.store_columns = self.total_columns
 
-    def _query_sli(self) -> List[str]:
+    def _query_sli(self) -> Dict[str, Any]:
         """Aggregate queries for Thoth Adviser Justifications Errors SLI Report."""
         # advise-reporter computes these data daily.
         return {}
@@ -67,7 +67,9 @@ class SLIThothAdviserJustificationsErrors(SLIBase):
         if not self.configuration.dry_run:
 
             e_time = self.configuration.start_time.strftime('%Y-%m-%d').split("-")
-            current_end_time = datetime.date(year=int(e_time[0]), month=int(e_time[1]), day=int(e_time[2])) + datetime.timedelta(days=1)
+            current_end_time = datetime.date(
+                year=int(e_time[0]), month=int(e_time[1]), day=int(e_time[2]),
+            ) + datetime.timedelta(days=1)
             current_initial_date = current_end_time  - datetime.timedelta(days=days)
 
             while current_initial_date < current_end_time:
@@ -78,7 +80,7 @@ class SLIThothAdviserJustificationsErrors(SLIBase):
                 daily_justifications_df = retrieve_thoth_sli_from_ceph(
                     self.configuration.ceph_sli,
                     sli_path,
-                    [c for c in self.total_columns if c != "timestamp"]
+                    [c for c in self.total_columns if c != "timestamp"],
                 )
 
                 for message in daily_justifications_df["message"].unique():
@@ -108,7 +110,7 @@ class SLIThothAdviserJustificationsErrors(SLIBase):
                 current_initial_date += delta
 
             for adviser_version, justifications_info in total_justifications.items():
-                
+
                 total_errors = 0
                 for _, errors_counts in justifications_info.items():
                     total_errors += errors_counts
@@ -116,7 +118,7 @@ class SLIThothAdviserJustificationsErrors(SLIBase):
                 for justification, counts in justifications_info.items():
 
                     if not counts:
-                        total = 0
+                        total = "0"
                         percentage = 0
                     else:
                         total = "+" + "{}".format(int(counts))
@@ -127,8 +129,8 @@ class SLIThothAdviserJustificationsErrors(SLIBase):
                             "adviser_version": adviser_version,
                             "justification": justification,
                             "total": total,
-                            "percentage": abs(round(percentage * 100, 3))
-                        }
+                            "percentage": abs(round(percentage * 100, 3)),
+                        },
                     )
 
         return html_inputs

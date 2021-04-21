@@ -37,7 +37,7 @@ class SLIThothSolversInputs(SLIBase):
 
     sli_columns = [
         "solver",
-        "total"
+        "total",
     ]
 
     def __init__(self, configuration: Configuration):
@@ -46,7 +46,7 @@ class SLIThothSolversInputs(SLIBase):
         self.total_columns = self.default_columns + self.sli_columns
         self.store_columns = self.total_columns
 
-    def _query_sli(self) -> List[str]:
+    def _query_sli(self) -> Dict[str, Any]:
         """Aggregate queries for Thoth Solvers SLI Report."""
         # advise-reporter computes these data daily.
         return {}
@@ -60,7 +60,7 @@ class SLIThothSolversInputs(SLIBase):
             sli_name=self._SLI_NAME,
             total_columns=self.total_columns,
             quantity="solver",
-            configuration=self.configuration
+            configuration=self.configuration,
         )
 
         for solver in html_inputs:
@@ -70,7 +70,6 @@ class SLIThothSolversInputs(SLIBase):
             html_inputs[solver]["python_version"] = ".".join([v for v in solver_parts[2].replace("py", "")])
 
         return html_inputs
-
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:
         """Create report for Thoth Solvers SLI.

@@ -38,7 +38,7 @@ class SLIThothHardwareInputs(SLIBase):
     sli_columns = [
         "cpu_model",
         "cpu_family",
-        "total"
+        "total",
     ]
 
     def __init__(self, configuration: Configuration):
@@ -47,7 +47,7 @@ class SLIThothHardwareInputs(SLIBase):
         self.total_columns = self.default_columns + self.sli_columns
         self.store_columns = self.total_columns
 
-    def _query_sli(self) -> List[str]:
+    def _query_sli(self) -> Dict[str, Any]:
         """Aggregate queries for Thoth Hardware SLI Report."""
         # advise-reporter computes these data daily.
         return {}
@@ -57,7 +57,7 @@ class SLIThothHardwareInputs(SLIBase):
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
-        html_inputs = {}
+        html_inputs: Dict[str, Any] = {}
         total_quantity: Dict[str, Any] = {}
 
         days = self.configuration.adviser_inputs_analysis_days
@@ -66,7 +66,9 @@ class SLIThothHardwareInputs(SLIBase):
         if not self.configuration.dry_run:
 
             e_time = self.configuration.start_time.strftime('%Y-%m-%d').split("-")
-            current_end_time = datetime.date(year=int(e_time[0]), month=int(e_time[1]), day=int(e_time[2])) + datetime.timedelta(days=1)
+            current_end_time = datetime.date(
+                year=int(e_time[0]), month=int(e_time[1]), day=int(e_time[2]),
+            ) + datetime.timedelta(days=1)
             current_initial_date = current_end_time  - datetime.timedelta(days=days)
 
             while current_initial_date < current_end_time:
@@ -77,7 +79,7 @@ class SLIThothHardwareInputs(SLIBase):
                 daily_quantity_df = retrieve_thoth_sli_from_ceph(
                     self.configuration.ceph_sli,
                     sli_path,
-                    [c for c in self.total_columns if c != "timestamp"]
+                    [c for c in self.total_columns if c != "timestamp"],
                 )
 
                 for cpu_model in daily_quantity_df["cpu_model"].unique():
@@ -88,7 +90,7 @@ class SLIThothHardwareInputs(SLIBase):
                         total_quantity[hardware] = {
                             "cpu_model": subset_df['cpu_model'].values[0],
                             "cpu_family": subset_df['cpu_family'].values[0],
-                            "counts": subset_df["total"].values[0]
+                            "counts": subset_df["total"].values[0],
                         }
                     else:
                         total_quantity[hardware]["counts"] += subset_df["total"].values[0]
@@ -101,7 +103,7 @@ class SLIThothHardwareInputs(SLIBase):
 
             for hardware_, hardware_info in total_quantity.items():
                 html_inputs[hardware_] = {}
-                
+
                 html_inputs[hardware_]["cpu_model"] = hardware_info["cpu_model"]
                 html_inputs[hardware_]["cpu_family"] = hardware_info["cpu_family"]
 
@@ -133,4 +135,3 @@ class SLIThothHardwareInputs(SLIBase):
         @param sli: It's a dict of SLI associated with the SLI type.
         """
         return []
-

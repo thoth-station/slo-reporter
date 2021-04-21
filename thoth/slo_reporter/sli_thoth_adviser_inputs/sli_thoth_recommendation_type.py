@@ -37,7 +37,7 @@ class SLIThothRecommendationsTypesInputs(SLIBase):
 
     sli_columns = [
         "recommendation_type",
-        "total"
+        "total",
     ]
 
     def __init__(self, configuration: Configuration):
@@ -46,7 +46,7 @@ class SLIThothRecommendationsTypesInputs(SLIBase):
         self.total_columns = self.default_columns + self.sli_columns
         self.store_columns = self.total_columns
 
-    def _query_sli(self) -> List[str]:
+    def _query_sli(self) -> Dict[str, Any]:
         """Aggregate queries for Thoth Recommendations Types SLI Report."""
         # advise-reporter computes these data daily.
         return {}
@@ -60,7 +60,7 @@ class SLIThothRecommendationsTypesInputs(SLIBase):
             sli_name=self._SLI_NAME,
             total_columns=self.total_columns,
             quantity="recommendation_type",
-            configuration=self.configuration
+            configuration=self.configuration,
         )
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:
@@ -81,4 +81,3 @@ class SLIThothRecommendationsTypesInputs(SLIBase):
         @param sli: It's a dict of SLI associated with the SLI type.
         """
         return []
-

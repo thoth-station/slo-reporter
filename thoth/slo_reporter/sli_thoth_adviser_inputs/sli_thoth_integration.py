@@ -37,7 +37,7 @@ class SLIThothIntegrations(SLIBase):
 
     sli_columns = [
         "integration",
-        "total"
+        "total",
     ]
 
     def __init__(self, configuration: Configuration):
@@ -46,7 +46,7 @@ class SLIThothIntegrations(SLIBase):
         self.total_columns = self.default_columns + self.sli_columns
         self.store_columns = self.total_columns
 
-    def _query_sli(self) -> List[str]:
+    def _query_sli(self) -> Dict[str, Any]:
         """Aggregate queries for Thoth Integrations SLI Report."""
         # advise-reporter computes these data daily.
         return {}
@@ -60,7 +60,7 @@ class SLIThothIntegrations(SLIBase):
             sli_name=self._SLI_NAME,
             total_columns=self.total_columns,
             quantity="integration",
-            configuration=self.configuration
+            configuration=self.configuration,
         )
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:

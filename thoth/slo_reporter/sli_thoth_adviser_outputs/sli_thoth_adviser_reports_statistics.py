@@ -38,7 +38,7 @@ class SLIThothAdviserReportsStatistics(SLIBase):
     sli_columns = [
         "adviser_version",
         "success",
-        "failure"
+        "failure",
     ]
 
     def __init__(self, configuration: Configuration):
@@ -47,12 +47,12 @@ class SLIThothAdviserReportsStatistics(SLIBase):
         self.total_columns = self.default_columns + self.sli_columns
         self.store_columns = self.total_columns
 
-    def _query_sli(self) -> List[str]:
+    def _query_sli(self) -> Dict[str, Any]:
         """Aggregate queries for Thoth Adviser Reports Statistics SLI Report."""
         # advise-reporter computes these data daily.
         return {}
 
-    def _evaluate_sli(self) -> Dict[str, Any]:
+    def _evaluate_sli(self) -> List[Dict[str, Any]]:
         """Evaluate SLI for report for Thoth Adviser Reports Statistics SLI.
 
         @param sli: It's a dict of SLI associated with the SLI type.
@@ -66,7 +66,9 @@ class SLIThothAdviserReportsStatistics(SLIBase):
         if not self.configuration.dry_run:
 
             e_time = self.configuration.start_time.strftime('%Y-%m-%d').split("-")
-            current_end_time = datetime.date(year=int(e_time[0]), month=int(e_time[1]), day=int(e_time[2])) + datetime.timedelta(days=1)
+            current_end_time = datetime.date(
+                year=int(e_time[0]), month=int(e_time[1]), day=int(e_time[2]),
+            ) + datetime.timedelta(days=1)
             current_initial_date = current_end_time  - datetime.timedelta(days=days)
 
             while current_initial_date < current_end_time:
@@ -77,7 +79,7 @@ class SLIThothAdviserReportsStatistics(SLIBase):
                 daily_statistics_df = retrieve_thoth_sli_from_ceph(
                     self.configuration.ceph_sli,
                     sli_path,
-                    [c for c in self.total_columns if c not in ["timestamp", "datetime"]]
+                    [c for c in self.total_columns if c not in ["timestamp", "datetime"]],
                 )
 
                 for adviser_version in daily_statistics_df["adviser_version"].unique():
@@ -116,8 +118,8 @@ class SLIThothAdviserReportsStatistics(SLIBase):
                     {
                         "adviser_version": adviser_version,
                         "success_p": abs(round(success_p * 100, 3)),
-                        "failure_p": abs(round(failure_p * 100, 3))
-                    }
+                        "failure_p": abs(round(failure_p * 100, 3)),
+                    },
                 )
 
         return html_inputs

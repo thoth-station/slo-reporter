@@ -49,7 +49,7 @@ class SLIThothIntegrationsUsers(SLIBase):
         self.total_columns = self.default_columns + self.sli_columns
         self.store_columns = self.total_columns
 
-    def _query_sli(self) -> List[str]:
+    def _query_sli(self) -> Dict[str, Any]:
         """Aggregate queries for Thoth Integrations SLI Report."""
         queries = {}
         for thoth_integration in ["KEBECHET", "GITHUB_APP"]:
@@ -79,7 +79,7 @@ class SLIThothIntegrationsUsers(SLIBase):
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
-        html_inputs = {}
+        html_inputs: Dict[str, Any] = {}
 
         last_week_data = pd.DataFrame()
 
