@@ -19,10 +19,7 @@
 
 import datetime
 
-import pandas as pd
-
-from typing import Dict, Any
-from thoth.slo_reporter.utils import retrieve_thoth_sli_from_ceph, evaluate_change
+from typing import Dict, List, Any
 
 
 class SLIBase:
@@ -31,7 +28,7 @@ class SLIBase:
     _SLI_NAME = None
 
     default_columns = ["datetime", "timestamp"]
-    sli_columns = []
+    sli_columns: List[str] = []
 
     def _aggregate_info(self):
         """Aggregate info required for specific SLI Report."""
