@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # slo-reporter
-# Copyright(C) 2020 Francesco Murdaca
+# Copyright(C) 2020, 2021 Francesco Murdaca
 #
 # This program is free software: you can redistribute it and / or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ import datetime
 
 import numpy as np
 
-from typing import Dict, List, Any
+from typing import Dict, Any
 
 from thoth.slo_reporter.sli_base import SLIBase
 from thoth.slo_reporter.sli_template import HTMLTemplates
@@ -61,7 +61,7 @@ class SLIUserAPI(SLIBase):
         self.total_columns = self.default_columns + self.sli_columns
         self.store_columns = self.total_columns
 
-    def _query_sli(self) -> List[str]:
+    def _query_sli(self) -> Dict[str, Any]:
         """Aggregate queries for User-API SLI Report."""
         query_labels = f'{{instance="{self.instance}"}}'
         query_labels_success = f'{{instance="{self.instance}", status=~"2.*"}}'
@@ -88,7 +88,7 @@ class SLIUserAPI(SLIBase):
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
-        html_inputs = {}
+        html_inputs: Dict[str, Any] = {}
 
         for user_api_quantity in _USER_API_MEASUREMENT_UNIT.keys():
             user_api_quantity_data = _USER_API_MEASUREMENT_UNIT[user_api_quantity]
@@ -96,7 +96,8 @@ class SLIUserAPI(SLIBase):
 
             if user_api_quantity == "avg_percentage_successfull_request":
                 results = {}
-                for quantity in user_api_quantity_data["quantities"]:
+
+                for quantity in user_api_quantity_data["quantities"]:  # type: ignore
                     if sli[quantity] != "ErrorMetricRetrieval":
                         results[quantity] = sli[quantity]
                     else:
@@ -118,8 +119,8 @@ class SLIUserAPI(SLIBase):
                 else:
                     html_inputs[user_api_quantity]["value"] = np.nan
 
-            html_inputs[user_api_quantity]["name"] = user_api_quantity_data["name"]
-            html_inputs[user_api_quantity]["measurement_unit"] = user_api_quantity_data["measurement_unit"]
+            html_inputs[user_api_quantity]["name"] = user_api_quantity_data["name"]  # type: ignore
+            html_inputs[user_api_quantity]["measurement_unit"] = user_api_quantity_data["measurement_unit"]  # type: ignore
 
         return html_inputs
 

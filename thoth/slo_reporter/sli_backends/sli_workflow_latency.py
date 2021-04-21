@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # slo-reporter
-# Copyright(C) 2020 Francesco Murdaca
+# Copyright(C) 2020, 2021 Francesco Murdaca
 #
 # This program is free software: you can redistribute it and / or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,18 +18,14 @@
 """This file contains class for Workflow Latency SLI."""
 
 import logging
-import os
 import datetime
 
 import numpy as np
-import pandas as pd
-
 from typing import Dict, List, Any
 
 from thoth.slo_reporter.sli_base import SLIBase
 from thoth.slo_reporter.sli_template import HTMLTemplates
 from thoth.slo_reporter.configuration import Configuration
-from thoth.slo_reporter.utils import retrieve_thoth_sli_from_ceph, evaluate_change
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -51,7 +47,7 @@ class SLIWorkflowLatency(SLIBase):
         self.total_columns = self.default_columns + self.sli_columns
         self.store_columns = self.total_columns
 
-    def _query_sli(self) -> List[str]:
+    def _query_sli(self) -> Dict[str, Any]:
         """Aggregate queries for component_latency SLI Report."""
         queries = {}
         for component in self.configuration.registered_workflows:
@@ -71,9 +67,9 @@ class SLIWorkflowLatency(SLIBase):
         for bucket in self.configuration.buckets:
             query_labels_workflows = f'{{instance="{instance}", name="{name}", le="{bucket}"}}'
             queries[f"{component}_workflows_latency_bucket_{bucket}"] = {
-                    "query": f"argo_workflows_duration_seconds_histogram_bucket{query_labels_workflows}",
-                    "requires_range": True,
-                    "type": "latest",
+                "query": f"argo_workflows_duration_seconds_histogram_bucket{query_labels_workflows}",
+                "requires_range": True,
+                "type": "latest",
             }
         return queries
 
@@ -82,7 +78,7 @@ class SLIWorkflowLatency(SLIBase):
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
-        html_inputs = {}
+        html_inputs: Dict[str, Any] = {}
 
         for component in self.configuration.registered_workflows:
             html_inputs[component] = {}
@@ -138,7 +134,7 @@ class SLIWorkflowLatency(SLIBase):
 
     def _process_results_to_be_stored(
         self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime,
-    ) -> Dict[str, Any]:
+    ) -> List[Dict[str, Any]]:
         """Create inputs for SLI dataframe to be stored.
 
         @param sli: It's a dict of SLI associated with the SLI type.
@@ -155,7 +151,7 @@ class SLIWorkflowLatency(SLIBase):
                             "timestamp": timestamp,
                             "component": component,
                             "bucket": bucket,
-                            "percentage": html_inputs[component][bucket],
+                            "percentage": html_inputs[component][bucket],  # type: ignore
                         },
                     )
 

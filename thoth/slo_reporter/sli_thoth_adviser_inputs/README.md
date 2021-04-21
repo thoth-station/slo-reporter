@@ -1,4 +1,18 @@
-# Thoth adviser integrations (e.g. Qeb-Hwt GitHub App, Kebechet)
+# Thoth adviser inputs analysis
+
+## Adviser inputs overview
+
+Thoth Adviser inputs SLIs are selected to have an overview of which inputs are given to Thoth for recommendation.
+They all include
+
+- `{thoth_integration}_counts_total` considers how many times has been in the time window considered (e.g. 7 days).
+
+The following adviser inputs are considered at the moment:
+
+- `SLIThothRecommendationsTypesInputs`
+- `SLIThothSolversInputs`
+- `SLIThothBaseImagesInputs`
+- `SLIThothHardwareInputs`
 
 ## SLIThothIntegrations
 
@@ -13,4 +27,4 @@ per day, the value obtained is relative to the number of times a certain Thoth i
 
 ## SLIThothIntegrationsUsers
 
-Thoth integrations Users SLI is selected to have an overview of number of users per integration in Thoth.
+Thoth integrations Users SLI is selected to have an overview of number of users per integration in Thoth. (only for Kebechet and Qeb-Hwt)

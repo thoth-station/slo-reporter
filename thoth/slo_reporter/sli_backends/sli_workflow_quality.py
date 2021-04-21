@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # slo-reporter
-# Copyright(C) 2020 Francesco Murdaca
+# Copyright(C) 2020, 2021 Francesco Murdaca
 #
 # This program is free software: you can redistribute it and / or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ import datetime
 import numpy as np
 import pandas as pd
 
-from typing import Dict, List, Any
+from typing import Dict, Any
 
 from thoth.slo_reporter.sli_base import SLIBase
 from thoth.slo_reporter.sli_template import HTMLTemplates
@@ -46,7 +46,7 @@ class SLIWorkflowQuality(SLIBase):
         self.total_columns = self.default_columns + self.sli_columns
         self.store_columns = self.total_columns
 
-    def _query_sli(self) -> List[str]:
+    def _query_sli(self) -> Dict[str, Any]:
         """Aggregate queries for component_quality SLI Report."""
         queries = {}
         for component in self.configuration.registered_workflows:
@@ -88,7 +88,7 @@ class SLIWorkflowQuality(SLIBase):
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
-        html_inputs = {}
+        html_inputs: Dict[str, Any] = {}
 
         for component in self.configuration.registered_workflows:
             service_metrics = {}
@@ -136,7 +136,6 @@ class SLIWorkflowQuality(SLIBase):
                 else:
                     html_inputs[component]["value"] = 0
 
-
         return html_inputs
 
     def _report_sli(self, sli: Dict[str, Any]) -> str:
@@ -155,9 +154,9 @@ class SLIWorkflowQuality(SLIBase):
         for component in self.configuration.registered_workflows:
             if not last_week_data.empty:
                 old_value = last_week_data[component].values[0]
-                change = evaluate_change(old_value=old_value, new_value=html_inputs[component]["value"])
+                change = evaluate_change(old_value=old_value, new_value=html_inputs[component]["value"])  # type: ignore
 
-                html_inputs[component]["change"] = change
+                html_inputs[component]["change"] = change  # type: ignore
 
         report = HTMLTemplates.thoth_workflows_quality_template(html_inputs=html_inputs)
 

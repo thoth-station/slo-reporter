@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # slo-reporter
-# Copyright(C) 2020 Francesco Murdaca
+# Copyright(C) 2020, 2021 Francesco Murdaca
 #
 # This program is free software: you can redistribute it and / or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,9 +22,8 @@ import os
 import datetime
 
 import numpy as np
-import pandas as pd
 
-from typing import Dict, List, Any
+from typing import Dict, Any
 
 from thoth.slo_reporter.sli_base import SLIBase
 from thoth.slo_reporter.sli_template import HTMLTemplates
@@ -57,7 +56,7 @@ class SLILearning(SLIBase):
         self.total_columns = self.default_columns + self.sli_columns
         self.store_columns = self.total_columns + ["new_solvers"]
 
-    def _query_sli(self) -> List[str]:
+    def _query_sli(self) -> Dict[str, Any]:
         """Aggregate queries for learning quantities SLI Report."""
         query_labels = (
             f'{{instance="{self.configuration.instance}", job="Thoth Metrics"}}'
@@ -66,7 +65,7 @@ class SLILearning(SLIBase):
         return {
             "average_learning_rate": {
                 "query": "increase("
-                    f"thoth_graphdb_unsolved_python_package_versions_change_total{query_labels}[{_LEARNING_RATE_INTERVAL}])",
+                f"thoth_graphdb_unsolved_python_package_versions_change_total{query_labels}[{_LEARNING_RATE_INTERVAL}])",
                 "requires_range": True,
                 "type": "average",
             },
@@ -82,7 +81,7 @@ class SLILearning(SLIBase):
             },
             "average_si_learning_rate": {
                 "query": "increase("
-                    f"thoth_graphdb_si_unanalyzed_python_package_versions_change_total{query_labels}[{_LEARNING_RATE_INTERVAL}])",
+                f"thoth_graphdb_si_unanalyzed_python_package_versions_change_total{query_labels}[{_LEARNING_RATE_INTERVAL}])",
                 "requires_range": True,
                 "type": "average",
             },
@@ -98,7 +97,7 @@ class SLILearning(SLIBase):
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
-        html_inputs = {}
+        html_inputs: Dict[str, Any] = {}
 
         for learning_quantity in _REGISTERED_LEARNING_MEASUREMENT_UNIT.keys():
 
@@ -160,14 +159,14 @@ class SLILearning(SLIBase):
 
         if not self.configuration.dry_run:
             html_inputs=process_html_inputs(
-                    html_inputs=html_inputs,
-                    sli_name=self._SLI_NAME,
-                    last_period_time=self.configuration.last_week_time,
-                    ceph_sli=self.configuration.ceph_sli,
-                    sli_columns=self.sli_columns,
-                    store_columns=self.store_columns,
-                    is_storing=True,
+                html_inputs=html_inputs,
+                sli_name=self._SLI_NAME,
+                last_period_time=self.configuration.last_week_time,
+                ceph_sli=self.configuration.ceph_sli,
+                sli_columns=self.sli_columns,
+                store_columns=self.store_columns,
+                is_storing=True,
             )
-            output["new_solvers"] = html_inputs["solvers"]["change"]
+            output["new_solvers"] = html_inputs["solvers"]["change"]  # type: ignore
 
         return output

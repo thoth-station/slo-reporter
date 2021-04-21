@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # thoth-slo-reporter
-# Copyright(C) 2020 Francesco Murdaca
+# Copyright(C) 2020, 2021 Francesco Murdaca
 #
 # This program is free software: you can redistribute it and / or modify
 # it under the terms of the GNU General Public License as published by
@@ -59,7 +59,6 @@ class Configuration:
             self.instance_wc_middletier = "dry_run"
             self.instance_wc_amun_inspection = "dry_run"
 
-
         if not dry_run:
 
             # Thoth
@@ -96,22 +95,22 @@ class Configuration:
             self.thanos_url = os.environ["THANOS_ENDPOINT"]
             self.thanos_token = os.environ["THANOS_ACCESS_TOKEN"]
 
-            # Grafana
-            self.grafana_reference_base_url = os.getenv(
-                "GRAFANA_DASHBOARD_BASE_URL",
-                "https://grafana-route-opf-monitoring.apps.zero.massopen.cloud/",
-            )
-
-            # Superset
-            self.superset_dashboard_url = os.getenv(
-                "SUPERSET_DASHBOARD_URL",
-                "https://hue-opf-datacatalog.apps.zero.massopen.cloud/",
-            )
-
             # Ceph
-            self.public_ceph_bucket = os.environ["THOTH_PUBLIC_CEPH_BUCKET"]
+            self.public_ceph_bucket = os.getenv("THOTH_PUBLIC_CEPH_BUCKET")
             self.ceph_bucket_prefix = os.environ["THOTH_CEPH_BUCKET_PREFIX"]
             self.ceph_sli = _connect_to_ceph(self.ceph_bucket_prefix, self.environment)
+
+        # Grafana
+        self.grafana_reference_base_url = os.getenv(
+            "GRAFANA_DASHBOARD_BASE_URL",
+            "https://grafana-route-opf-monitoring.apps.zero.massopen.cloud/",
+        )
+
+        # Superset
+        self.superset_dashboard_url = os.getenv(
+            "SUPERSET_DASHBOARD_URL",
+            "https://hue-opf-datacatalog.apps.zero.massopen.cloud/",
+        )
 
         # TODO: Adjust logic to evaluate metrics not to maintain list of components
         # Registered components (Argo workflows)
@@ -150,9 +149,13 @@ class Configuration:
         # Step for query range
         self.step = "1h"
 
+        # Period considered for adviser inputs analysis (in days)
+        self.adviser_inputs_analysis_days = 7
+
         # Service Interval for report
         self.interval = os.getenv("SERVICE_INTERVAL", "7d")
 
+        # Which day of the week do we send the email?
         self.email_day = os.getenv("THOTH_SLO_REPORTER_DAY_SEND_EMAIL", "Friday")
 
 

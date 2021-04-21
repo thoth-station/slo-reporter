@@ -18,13 +18,11 @@
 """This file contains class for PyPI Knowledge Graph."""
 
 import logging
-import os
 import datetime
 
 import numpy as np
-import pandas as pd
 
-from typing import Dict, List, Any
+from typing import Dict, Any
 
 from thoth.slo_reporter.sli_base import SLIBase
 from thoth.slo_reporter.sli_template import HTMLTemplates
@@ -52,7 +50,7 @@ class SLIPyPIKnowledgeGraph(SLIBase):
         self.total_columns = self.default_columns + self.sli_columns
         self.store_columns = self.total_columns + ["new_packages", "new_packages_releases"]
 
-    def _query_sli(self) -> List[str]:
+    def _query_sli(self) -> Dict[str, Any]:
         """Aggregate queries for knowledge graph SLI Report."""
         query_labels_packages = f'{{instance="{self.configuration.instance}", job="Thoth Metrics", stats_type="packages"}}'
         query_labels_releases = f'{{instance="{self.configuration.instance}", job="Thoth Metrics", stats_type="releases"}}'
@@ -75,7 +73,7 @@ class SLIPyPIKnowledgeGraph(SLIBase):
 
         @param sli: It's a dict of SLI associated with the SLI type.
         """
-        html_inputs = {}
+        html_inputs: Dict[str, Any] = {}
 
         for knowledge_quantity in _REGISTERED_KNOWLEDGE_QUANTITY.keys():
 
@@ -131,15 +129,15 @@ class SLIPyPIKnowledgeGraph(SLIBase):
 
         if not self.configuration.dry_run:
             html_inputs=process_html_inputs(
-                    html_inputs=html_inputs,
-                    sli_name=self._SLI_NAME,
-                    last_period_time=self.configuration.last_week_time,
-                    ceph_sli=self.configuration.ceph_sli,
-                    sli_columns=self.sli_columns,
-                    store_columns=self.store_columns,
-                    is_storing=True,
+                html_inputs=html_inputs,
+                sli_name=self._SLI_NAME,
+                last_period_time=self.configuration.last_week_time,
+                ceph_sli=self.configuration.ceph_sli,
+                sli_columns=self.sli_columns,
+                store_columns=self.store_columns,
+                is_storing=True,
             )
-            output["new_packages"] = html_inputs["total_packages"]["change"]
-            output["new_packages_releases"] = html_inputs["total_releases"]["change"]
+            output["new_packages"] = html_inputs["total_packages"]["change"]  # type: ignore
+            output["new_packages_releases"] = html_inputs["total_releases"]["change"]  # type: ignore
 
         return output

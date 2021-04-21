@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # slo-reporter
-# Copyright(C) 2020 Francesco Murdaca
+# Copyright(C) 2020, 2021 Francesco Murdaca
 #
 # This program is free software: you can redistribute it and / or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,8 +27,14 @@ from thoth.slo_reporter.sli_learning import SLILearning
 from thoth.slo_reporter.sli_thoth_services import SLIKebechet
 from thoth.slo_reporter.sli_knowledge_graph import SLIKnowledgeGraph
 from thoth.slo_reporter.sli_python_knowledge_graph import SLIPyPIKnowledgeGraph
-from thoth.slo_reporter.sli_thoth_integrations import SLIThothIntegrations
-from thoth.slo_reporter.sli_thoth_integrations import SLIThothIntegrationsUsers
+from thoth.slo_reporter.sli_thoth_adviser_inputs import SLIThothIntegrations
+from thoth.slo_reporter.sli_thoth_adviser_inputs import SLIThothRecommendationsTypesInputs
+from thoth.slo_reporter.sli_thoth_adviser_inputs import SLIThothSolversInputs
+from thoth.slo_reporter.sli_thoth_adviser_inputs import SLIThothBaseImagesInputs
+from thoth.slo_reporter.sli_thoth_adviser_inputs import SLIThothHardwareInputs
+from thoth.slo_reporter.sli_thoth_adviser_inputs import SLIThothIntegrationsUsers
+from thoth.slo_reporter.sli_thoth_adviser_outputs import SLIThothAdviserReportsStatistics
+from thoth.slo_reporter.sli_thoth_adviser_outputs import SLIThothAdviserJustificationsErrors
 from thoth.slo_reporter.sli_apis import SLIUserAPI
 from thoth.slo_reporter.sli_backends import SLIWorkflowQuality
 from thoth.slo_reporter.sli_backends import SLIWorkflowTaskQuality
@@ -44,15 +50,22 @@ SLI_CLASSES = [
     SLIPyPIKnowledgeGraph,
     SLIKnowledgeGraph,
     SLILearning,
-    SLIThothIntegrations,
     SLIThothIntegrationsUsers,
     SLIKebechet,
     SLIUserAPI,
+    SLIThothIntegrations,
+    SLIThothRecommendationsTypesInputs,
+    SLIThothSolversInputs,
+    SLIThothBaseImagesInputs,
+    SLIThothHardwareInputs,
+    SLIThothAdviserReportsStatistics,
+    SLIThothAdviserJustificationsErrors,
     SLIWorkflowQuality,
     SLIWorkflowTaskQuality,
     SLIWorkflowLatency,
     SLIWorkflowTaskLatency,
 ]
+
 
 class SLIReport:
     """This class contains all sections included in a report."""

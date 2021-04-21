@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # thoth-slo-reporter
-# Copyright(C) 2020 Francesco Murdaca
+# Copyright(C) 2021 Francesco Murdaca
 #
 # This program is free software: you can redistribute it and / or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,12 +15,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-"""Thoth integrations SLI."""
+"""Thoth adviser outputs SLI."""
 
-from .sli_thoth_integration import SLIThothIntegrations
-from .sli_thoth_integration_users import SLIThothIntegrationsUsers
+from .sli_thoth_adviser_justifications_errors import SLIThothAdviserJustificationsErrors
+from .sli_thoth_adviser_reports_statistics import SLIThothAdviserReportsStatistics
 
 __all__ = [
-    "SLIThothIntegrations",
-    "SLIThothIntegrationsUsers",
+    "SLIThothAdviserJustificationsErrors",
+    "SLIThothAdviserReportsStatistics",
 ]

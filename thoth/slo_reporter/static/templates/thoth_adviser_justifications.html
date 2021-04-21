@@ -1,0 +1,25 @@
+{% extends "templates/base.html" %}
+{% block table_name %} <strong> Adviser justifications </strong> {% endblock %}
+{% block table_info %} <strong> Failures analysis </strong> {% endblock %}
+{% block classes %}
+        <thead>
+            <tr>
+                <th>Adviser Version</th>
+                <th>Justification</th>
+                <th>Change (7 days) </th>
+                <th> [%] </th>
+            </tr>
+        </thead>
+        {% endblock %}
+        {% block inputs %}
+        <tbody>
+            {% for result in html_inputs %}
+            <tr>
+                <td>{{ result['adviser_version'] }}</td>
+                <td>{{ result['justification'] }}</td>
+                <td>{{ result['total'] }}</td>
+                <td>{{ result['percentage'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+{% endblock %}
