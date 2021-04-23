@@ -104,8 +104,8 @@ class SLIThothHardwareInputs(SLIBase):
             for hardware_, hardware_info in total_quantity.items():
                 html_inputs[hardware_] = {}
 
-                html_inputs[hardware_]["cpu_model"] = hardware_info["cpu_model"]
-                html_inputs[hardware_]["cpu_family"] = hardware_info["cpu_family"]
+                html_inputs[hardware_]["cpu_model"] = int(hardware_info["cpu_model"])
+                html_inputs[hardware_]["cpu_family"] = int(hardware_info["cpu_family"])
 
                 if not hardware_info["counts"]:
                     html_inputs[hardware_]["new"] = 0
