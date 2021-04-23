@@ -44,15 +44,15 @@ from thoth.slo_reporter.utils import store_thoth_sli_on_ceph, connect_to_ceph
 
 
 _LOGGER = logging.getLogger("thoth.slo_reporter")
-_LOGGER.info(f"Thoth SLO Reporter v%s", __service_version__)
+_LOGGER.info("Thoth SLO Reporter v%s", __service_version__)
 
 _DRY_RUN = bool(int(os.getenv("DRY_RUN", 0)))
 
 INTERVAL_REPORT_DAYS = int(os.getenv("THOTH_INTERVAL_REPORT_NUMBER_DAYS", 1))
-_LOGGER.info(f"Considering interval for metrics of {INTERVAL_REPORT_DAYS} day/s.")
+_LOGGER.info("Considering interval for metrics of %s day/s.", INTERVAL_REPORT_DAYS)
 
 EVALUATION_METRICS_DAYS = int(os.getenv("THOTH_EVALUATION_METRICS_NUMBER_DAYS", 1))
-_LOGGER.info(f"THOTH_EVALUATION_METRICS_NUMBER_DAYS set to {EVALUATION_METRICS_DAYS}.")
+_LOGGER.info("THOTH_EVALUATION_METRICS_NUMBER_DAYS set to %s.", EVALUATION_METRICS_DAYS)
 
 _STORE_HTML = bool(int(os.getenv("THOTH_SLO_REPORTER_STORE_HTML", 0)))
 
@@ -163,7 +163,9 @@ def collect_metrics(configuration: Configuration, sli_report: SLIReport):
 
 
 def store_sli_periodic_metrics_to_ceph(
-    periodic_metrics: Dict[str, Any], configuration: Configuration, sli_report: SLIReport,
+    periodic_metrics: Dict[str, Any],
+    configuration: Configuration,
+    sli_report: SLIReport,
 ):
     """Store weekly metrics to ceph."""
     datetime = str(configuration.end_time.strftime("%Y-%m-%d"))
@@ -180,7 +182,9 @@ def store_sli_periodic_metrics_to_ceph(
     for metric_class in periodic_metrics:
         evaluation_method = sli_report.report_sli_context[metric_class]["df_method"]
         inputs_for_df_sli = evaluation_method(
-            periodic_metrics[metric_class], datetime=datetime, timestamp=configuration.end_time_epoch,
+            periodic_metrics[metric_class],
+            datetime=datetime,
+            timestamp=configuration.end_time_epoch,
         )
 
         metrics_df = pd.DataFrame(pd.json_normalize(inputs_for_df_sli))
@@ -192,7 +196,7 @@ def store_sli_periodic_metrics_to_ceph(
         csv_columns = sli_report.report_sli_context_columns[metric_class]
 
         if [c for c in metrics_df.columns.values] != csv_columns:
-            raise Exception (
+            raise Exception(
                 f"Data stored on Ceph {metrics_df.columns} should be stored with correct columns: {csv_columns}",
             )
 
@@ -224,11 +228,13 @@ def store_sli_periodic_metrics_to_ceph(
                     _LOGGER.exception(f"Could not store metrics on Public bucket on Ceph...{e_ceph}")
                     pass
             else:
-                _LOGGER.warning(f"Public bucket to store data is not set!")
+                _LOGGER.warning("Public bucket to store data is not set!")
 
 
 def push_thoth_sli_periodic_metrics(
-    periodic_metrics: Dict[str, Metric], configuration: Configuration, sli_report: SLIReport,
+    periodic_metrics: Dict[str, Metric],
+    configuration: Configuration,
+    sli_report: SLIReport,
 ):
     """Push Thoth SLI weekly metric to PushGateway."""
     for sli_type, metric_data in periodic_metrics.items():
@@ -243,9 +249,11 @@ def push_thoth_sli_periodic_metrics(
                 _LOGGER.info("(sli_type=%r, metric_name=%r)=%r", sli_type, metric_name, weekly_value_metric)
 
     push_to_gateway(
-        configuration.pushgateway_endpoint, job="Weekly Thoth SLI", registry=configuration.prometheus_registry,
+        configuration.pushgateway_endpoint,
+        job="Weekly Thoth SLI",
+        registry=configuration.prometheus_registry,
     )
-    _LOGGER.info(f"Pushed Thoth weekly SLI to Prometheus Pushgateway.")
+    _LOGGER.info("Pushed Thoth weekly SLI to Prometheus Pushgateway.")
 
 
 def generate_email(sli_metrics: Dict[str, Any], sli_report: SLIReport) -> str:
@@ -352,7 +360,11 @@ def _send_email_through_smtplib(email_message: MIMEMultipart, configuration: Con
 
 
 def run_slo_reporter(
-    start_time: datetime.datetime, end_time: datetime.datetime, number_days: int, dry_run: bool, day_of_week: str,
+    start_time: datetime.datetime,
+    end_time: datetime.datetime,
+    number_days: int,
+    dry_run: bool,
+    day_of_week: str,
 ) -> None:
     """Run SLO reporter."""
     configuration = Configuration(start_time=start_time, end_time=end_time, number_days=number_days, dry_run=dry_run)
@@ -372,7 +384,9 @@ def run_slo_reporter(
     # Store metrics on Ceph and push them to Pushgateway.
     if not _DRY_RUN:
         store_sli_periodic_metrics_to_ceph(
-            periodic_metrics=sli_values_map, configuration=configuration, sli_report=sli_report,
+            periodic_metrics=sli_values_map,
+            configuration=configuration,
+            sli_report=sli_report,
         )
 
         try:
@@ -423,7 +437,7 @@ def main():
         _LOGGER.info("Dry run mode...")
 
     if EVALUATION_METRICS_DAYS == 0:
-        _LOGGER.info(f"No range of days to be collected, set THOTH_EVALUATION_METRICS_NUMBER_DAYS at least to 1.")
+        _LOGGER.info("No range of days to be collected, set THOTH_EVALUATION_METRICS_NUMBER_DAYS at least to 1.")
 
     if EVALUATION_METRICS_DAYS > 1 and _SEND_EMAIL:
         raise Exception(

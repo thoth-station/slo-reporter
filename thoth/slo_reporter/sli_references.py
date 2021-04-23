@@ -33,7 +33,7 @@ def _add_dashbords(configuration: Configuration):
 
     html_inputs = {}
 
-    knowledge_graph_dashboard_name = f"thoth-knowledge-graph-content-metrics"
+    knowledge_graph_dashboard_name = "thoth-knowledge-graph-content-metrics"
     knowledge_graph_dashboard_url = (
         f"{configuration.grafana_reference_base_url}/{knowledge_graph_dashboard_name}?"
         + f"refresh=1m&orgId=1&from={start_time_epoch}&to={end_time_epoch}&"
@@ -45,14 +45,14 @@ def _add_dashbords(configuration: Configuration):
         "description": "Dashboard for Thoth Knowledge Graph data stored.",
     }
 
-    sli_slo_dashboard_name = f"thoth-sli-slo"
+    sli_slo_dashboard_name = "thoth-sli-slo"
     sli_slo_dashboard_url = (
         f"{configuration.grafana_reference_base_url}/{sli_slo_dashboard_name}?"
         + f"refresh=1m&orgId=1&from={start_time_epoch}&to={end_time_epoch}"
     )
     html_inputs["Thoth SLI/SLO"] = {"url": sli_slo_dashboard_url, "description": "Dashboard for SLI/SLO for Thoth."}
 
-    sli_slo_dashboard_name = f"thoth-reports"
+    sli_slo_dashboard_name = "thoth-reports"
     sli_slo_dashboard_url = (
         f"{configuration.grafana_reference_base_url}/{sli_slo_dashboard_name}?"
         + f"refresh=1m&orgId=1&from={start_time_epoch}&to={end_time_epoch}"
@@ -62,7 +62,7 @@ def _add_dashbords(configuration: Configuration):
         "description": "Dashboard for summary reports created by Thoth reporters components.",
     }
 
-    sli_slo_dashboard_name = f"thoth-superset"
+    sli_slo_dashboard_name = "thoth-superset"
     html_inputs["Thoth Superset"] = {
         "url": configuration.superset_dashboard_url,
         "description": "Superset Dashboard for SLI/SLO in time.",
