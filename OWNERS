@@ -8,4 +8,4 @@ reviewers:
   - harshad16
 
 labels:
- - sig/slo
+ - sig/observability
