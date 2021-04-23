@@ -1,27 +1,27 @@
 {% extends "templates/base.html" %}
-{% block table_name %} <strong> Operating System and Python Interpreter Inputs </strong> {% endblock %}
-{% block table_info %} <strong> Solvers used in requests to Thoth </strong> {% endblock %}
+{% block table_name %} <strong> Operating System and Python Interpreter </strong> {% endblock %}
+{% block table_info %} <strong> Solvers used in requests </strong> {% endblock %}
 {% block classes %}
-        <thead>
-            <tr>
-                <th>OS name</th>
-                <th>OS version </th>
-                <th>Python Version </th>
-                <th>Change (7 days) </th>
-                <th> [%] </th>
-            </tr>
-        </thead>
-        {% endblock %}
-        {% block inputs %}
-        <tbody>
-            {% for metric_type, metric in html_inputs.items() %}
-                <tr>
-                    <td>{{ metric['os_name'] }}</td>
-                    <td>{{ metric['os_version'] }}</td>
-                    <td>{{ metric['python_version'] }}</td>
-                    <td>{{ metric['new'] }}</td>
-                    <td>{{ metric['percentage'] }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
+<thead>
+    <tr>
+        <th>OS name</th>
+        <th>OS version </th>
+        <th>Python Version </th>
+        <th>Change (7 days) </th>
+        <th> [%] </th>
+    </tr>
+</thead>
+{% endblock %}
+{% block inputs %}
+<tbody>
+    {% for metric_type, metric in html_inputs.items() %}
+    <tr>
+        <td>{{ metric['os_name'] }}</td>
+        <td>{{ metric['os_version'] }}</td>
+        <td>{{ metric['python_version'] }}</td>
+        <td>{{ metric['new'] }}</td>
+        <td>{{ metric['percentage'] }}</td>
+    </tr>
+    {% endfor %}
+</tbody>
 {% endblock %}

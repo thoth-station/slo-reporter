@@ -1,25 +1,25 @@
 {% extends "templates/base.html" %}
-{% block table_name %} <strong> Hardware Inputs </strong> {% endblock %}
-{% block table_info %} <strong> Hardware used in requests to Thoth </strong> {% endblock %}
+{% block table_name %} <strong> Runtime Hardware </strong> {% endblock %}
+{% block table_info %} <strong> Hardware Environments observed </strong> {% endblock %}
 {% block classes %}
-        <thead>
-            <tr>
-                <th>CPU model</th>
-                <th>CPU family </th>
-                <th>Change (7 days) </th>
-                <th>[%] </th>
-            </tr>
-        </thead>
-        {% endblock %}
-        {% block inputs %}
-        <tbody>
-            {% for metric_type, metric in html_inputs.items() %}
-                <tr>
-                    <td>{{ metric['cpu_model'] }}</td>
-                    <td>{{ metric['cpu_family'] }}</td>
-                    <td>{{ metric['new'] }}</td>
-                    <td>{{ metric['percentage'] }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
+<thead>
+    <tr>
+        <th>CPU model</th>
+        <th>CPU family </th>
+        <th>Change (7 days) </th>
+        <th>[%] </th>
+    </tr>
+</thead>
+{% endblock %}
+{% block inputs %}
+<tbody>
+    {% for metric_type, metric in html_inputs.items() %}
+    <tr>
+        <td>{{ metric['cpu_model'] }}</td>
+        <td>{{ metric['cpu_family'] }}</td>
+        <td>{{ metric['new'] }}</td>
+        <td>{{ metric['percentage'] }}</td>
+    </tr>
+    {% endfor %}
+</tbody>
 {% endblock %}
