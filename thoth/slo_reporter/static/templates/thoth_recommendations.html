@@ -1,23 +1,23 @@
 {% extends "templates/base.html" %}
-{% block table_name %} <strong> Recommendations Inputs </strong> {% endblock %}
-{% block table_info %} <strong> Recommendations requested to Thoth </strong> {% endblock %}
+{% block table_name %} <strong> Recommendation Types </strong> {% endblock %}
+{% block table_info %} <strong> Recommendations requested by consumers</strong> {% endblock %}
 {% block classes %}
-        <thead>
-            <tr>
-                <th>Recommendation</th>
-                <th>Change (7 days) </th>
-                <th> [%] </th>
-            </tr>
-        </thead>
-        {% endblock %}
-        {% block inputs %}
-        <tbody>
-            {% for metric_type, metric in html_inputs.items() %}
-                <tr>
-                    <td>{{ metric_type }}</td>
-                    <td>{{ metric['new'] }}</td>
-                    <td>{{ metric['percentage'] }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
+<thead>
+    <tr>
+        <th>Recommendation</th>
+        <th>Change (7 days) </th>
+        <th> [%] </th>
+    </tr>
+</thead>
+{% endblock %}
+{% block inputs %}
+<tbody>
+    {% for metric_type, metric in html_inputs.items() %}
+    <tr>
+        <td>{{ metric_type }}</td>
+        <td>{{ metric['new'] }}</td>
+        <td>{{ metric['percentage'] }}</td>
+    </tr>
+    {% endfor %}
+</tbody>
 {% endblock %}
