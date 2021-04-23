@@ -308,3 +308,9 @@ all the things that you see...
 * :arrow_up: Automatic update of dependencies by Kebechet (#249)
 * :arrow_up: Automatic update of dependencies by Kebechet (#247)
 * :arrow_up: Automatic update of dependencies by Kebechet (#246)
+
+## Release 0.14.1 (2021-04-23T08:32:28)
+### Features
+* Minor adjustments (#255)
+### Improvements
+* some minor wording changes (#254)
