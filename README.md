@@ -2,6 +2,8 @@
 
 This is Thoth SLO Reporter to share Thoth achievements and behaviour with the outside world.
 
+You can check last report created by SLO-reporter using this [link]](https://htmlpreview.github.io/?https://github.com/thoth-station/slo-reporter/blob/master/thoth/slo_reporter/SLO-reporter.html).
+
 ## Service Level Indicators
 
 SLI indicators are collected in order to create a final report that is sent out to Thoth Team and Users with the following structure:
