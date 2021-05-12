@@ -105,7 +105,7 @@ def evaluate_change(old_value: float, new_value: float, is_storing: bool = False
         diff = new_value
 
     if is_storing:
-        if diff.is_integer():
+        if not isinstance(diff, float) or diff.is_integer():
             return "{:.2f}".format(diff)
         else:
             return "{:.0f}".format(diff)
