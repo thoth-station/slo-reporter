@@ -314,3 +314,9 @@ all the things that you see...
 * Minor adjustments (#255)
 ### Improvements
 * some minor wording changes (#254)
+
+## Release 0.14.2 (2021-05-12T15:21:22)
+### Features
+* Add link html preview to README to easily discover status (#260)
+* Fix issue on datatype
+* :arrow_up: Automatic update of dependencies by Kebechet (#258)
