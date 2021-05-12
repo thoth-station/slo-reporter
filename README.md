@@ -2,7 +2,7 @@
 
 This is Thoth SLO Reporter to share Thoth achievements and behaviour with the outside world.
 
-You can check last report created by SLO-reporter using this [link]](https://htmlpreview.github.io/?https://github.com/thoth-station/slo-reporter/blob/master/thoth/slo_reporter/SLO-reporter.html).
+You can check last report created by SLO-reporter using this [link](https://htmlpreview.github.io/?https://github.com/thoth-station/slo-reporter/blob/master/thoth/slo_reporter/SLO-reporter.html).
 
 ## Service Level Indicators
 
