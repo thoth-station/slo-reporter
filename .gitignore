@@ -104,5 +104,4 @@ venv.bak/
 .mypy_cache/
 
 
-thoth/slo_reporter/SLO-reporter.html
 test.py

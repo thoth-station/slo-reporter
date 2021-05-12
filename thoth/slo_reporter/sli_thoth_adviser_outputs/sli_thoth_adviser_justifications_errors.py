@@ -90,6 +90,9 @@ class SLIThothAdviserJustificationsErrors(SLIBase):
                             (daily_justifications_df["adviser_version"] == adviser_version)
                         ]
 
+                        if subset_df.shape[0] < 1:
+                            continue
+
                         counts = subset_df["total"].values[0]
 
                         message_type = subset_df["type"].values[0]
