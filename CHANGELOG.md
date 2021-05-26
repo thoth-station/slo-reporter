@@ -320,3 +320,10 @@ all the things that you see...
 * Add link html preview to README to easily discover status (#260)
 * Fix issue on datatype
 * :arrow_up: Automatic update of dependencies by Kebechet (#258)
+
+## Release 0.14.3 (2021-05-26T09:27:52)
+### Features
+* :arrow_up: Automatic update of dependencies by Kebechet (#267)
+* Fix Description of the reference in the report (#265)
+* :arrow_up: Automatic update of dependencies by Kebechet (#263)
+* :hatched_chick: update the prow resource limits (#264)
