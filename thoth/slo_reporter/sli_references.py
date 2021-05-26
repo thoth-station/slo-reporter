@@ -70,7 +70,7 @@ def _add_dashbords(configuration: Configuration):
 
     html_inputs["Thoth Station"] = {
         "url": "https://thoth-station.ninja/",
-        "description": "Superset Dashboard for SLI/SLO in time.",
+        "description": "Thoth station website.",
     }
 
     report = HTMLTemplates.thoth_references_template(html_inputs=html_inputs)
