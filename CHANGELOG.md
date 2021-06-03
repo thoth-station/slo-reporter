@@ -327,3 +327,10 @@ all the things that you see...
 * Fix Description of the reference in the report (#265)
 * :arrow_up: Automatic update of dependencies by Kebechet (#263)
 * :hatched_chick: update the prow resource limits (#264)
+
+## Release 0.14.4 (2021-06-03T17:40:21)
+### Features
+* :arrow_up: Automatic update of dependencies by Kebechet
+* Add standard GitHub templates
+* :arrow_up: Automatic update of dependencies by Kebechet
+* :arrow_up: Automatic update of dependencies by Kebechet
