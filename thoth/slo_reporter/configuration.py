@@ -58,6 +58,7 @@ class Configuration:
             self.instance_wc_backend = "dry_run"
             self.instance_wc_middletier = "dry_run"
             self.instance_wc_amun_inspection = "dry_run"
+            self.ceph_sli = "dry_run"
 
         if not dry_run:
 
