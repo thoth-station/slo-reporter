@@ -334,3 +334,12 @@ all the things that you see...
 * Add standard GitHub templates
 * :arrow_up: Automatic update of dependencies by Kebechet
 * :arrow_up: Automatic update of dependencies by Kebechet
+
+## Release 0.15.0 (2021-06-29T08:52:30)
+### Features
+* :arrow_up: Automatic update of dependencies by Kebechet
+* Add environment label to metrics sent to pushgateway
+* Add missing configuration env
+* Add missing direct dependency
+* :arrow_up: Automatic update of dependencies by Kebechet
+* :arrow_up: Automatic update of dependencies by Kebechet
