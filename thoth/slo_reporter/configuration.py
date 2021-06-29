@@ -122,7 +122,6 @@ class Configuration:
             "inspection": {"name": "main", "instance": self.instance_wc_amun_inspection},
             "package_extract": {"name": "package-extract", "instance": self.instance_wc_middletier},
             "provenance_checker": {"name": "provenance-checker", "instance": self.instance_wc_backend},
-            "qeb_hwt": {"name": "qeb-hwt", "instance": self.instance_wc_backend},
             "revsolver": {"name": "revsolver", "instance": self.instance_wc_middletier},
             "security": {"name": "security-indicator", "instance": self.instance_wc_middletier},
             "solver": {"name": "solver", "instance": self.instance_wc_middletier},
