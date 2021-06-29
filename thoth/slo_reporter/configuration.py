@@ -69,6 +69,7 @@ class Configuration:
             self.instance_wc_amun_inspection = os.environ["PROMETHEUS_INSTANCE_WORKFLOW_CONTROLLER_AMUN_INSPECTION"]
 
             self.environment = os.environ["THOTH_DEPLOYMENT_NAME"].split("-")[1]  # e.g. ocp-stage, take only stage
+            self.deployment_name = os.environ["THOTH_DEPLOYMENT_NAME"]
             self.backend_namespace = os.environ["THOTH_BACKEND_NAMESPACE"]
             self.middletier_namespace = os.environ["THOTH_MIDDLETIER_NAMESPACE"]
             self.amun_inspection_namespace = os.environ["THOTH_AMUN_INSPECTION_NAMESPACE"]
@@ -89,7 +90,7 @@ class Configuration:
             self.thoth_weekly_sli = Gauge(
                 f"thoth_sli_weekly_{self.environment}",
                 "Weekly Thoth Service Level Indicators",
-                ["sli_type", "metric_name"],
+                ["sli_type", "metric_name", "env"],
                 registry=self.prometheus_registry,
             )
 
