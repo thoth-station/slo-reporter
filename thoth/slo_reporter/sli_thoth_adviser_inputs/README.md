@@ -27,4 +27,4 @@ per day, the value obtained is relative to the number of times a certain Thoth i
 
 ## SLIThothIntegrationsUsers
 
-Thoth integrations Users SLI is selected to have an overview of number of users per integration in Thoth. (only for Kebechet and Qeb-Hwt)
+Thoth integrations Users SLI is selected to have an overview of number of users per integration in Thoth. (only for Kebechet)

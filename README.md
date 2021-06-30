@@ -26,7 +26,7 @@ This category contains information about Thoth knowledge collected:
 
 - [SLIKnowledgeGraph](https://github.com/thoth-station/slo-reporter/tree/master/thoth/slo_reporter/sli_knowledge_graph/README.md).
 
-### Thoth adviser integrations (e.g. Qeb-Hwt GitHub App, Kebechet)
+### Thoth adviser integrations (e.g. Kebechet)
 
 This part of the report is focused on [Thoth integrations](https://github.com/thoth-station/adviser/blob/master/docs/source/integration.rst) and their use:
 
@@ -81,7 +81,7 @@ The new class would inherit the base class `SLIBase` from [sli_base.py](https://
         }
 ```
 
-6. Remember to import the class in [sli_report.py](https://github.com/thoth-station/slo-reporter/blob/master/thoth/slo_reporter/sli_report.py) and add it to the `REPORT_SLI_CONTEXT` dictionary. The order of the class in `REPORT_SLI_CONTEXT` is the order which the report is populated. The general practice for the adding order of reports is - Python world description of packages/releases from indexes (e.g. PyPI, AICoE), Thoth Learning and Thoth Knoweldge Graph, Thoth adviser integrations (e.g. Qeb-Hwt, Kebechet), analytics for requests (e.g. User-API) and backend processes (e.g. Argo workflows).
+6. Remember to import the class in [sli_report.py](https://github.com/thoth-station/slo-reporter/blob/master/thoth/slo_reporter/sli_report.py) and add it to the `REPORT_SLI_CONTEXT` dictionary. The order of the class in `REPORT_SLI_CONTEXT` is the order which the report is populated. The general practice for the adding order of reports is - Python world description of packages/releases from indexes (e.g. PyPI, AICoE), Thoth Learning and Thoth Knoweldge Graph, Thoth adviser integrations (e.g. Kebechet), analytics for requests (e.g. User-API) and backend processes (e.g. Argo workflows).
 7. The HTML report structure can be tested using the command stated below.
 8. Create a README.md describing the metrics collected for the SLI.
 
@@ -110,10 +110,6 @@ REGISTERED_SERVICES = {
     "inspection": {
         "entrypoint": "main",
         "namespace": _AMUN_INSPECTION_NAMESPACE,
-    },
-    "qeb-hwt": {
-        "entrypoint": "qeb-hwt",
-        "namespace": _BACKEND_NAMESPACE,
     },
     "solver": {
         "entrypoint": 'solve-and-sync',
