@@ -343,3 +343,10 @@ all the things that you see...
 * Add missing direct dependency
 * :arrow_up: Automatic update of dependencies by Kebechet
 * :arrow_up: Automatic update of dependencies by Kebechet
+
+## Release 0.16.0 (2021-07-02T14:32:19)
+### Features
+* :arrow_up: Automatic update of dependencies by Kebechet
+* :arrow_up: Automatic update of dependencies by Kebechet
+* Remove qeb-hwt bits
+* :arrow_up: Automatic update of dependencies by Kebechet
