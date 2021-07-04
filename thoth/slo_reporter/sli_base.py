@@ -58,7 +58,10 @@ class SLIBase:
         raise NotImplementedError
 
     def _process_results_to_be_stored(
-        self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime,
+        self,
+        sli: Dict[str, Any],
+        datetime: datetime.datetime,
+        timestamp: datetime.datetime,
     ) -> Dict[str, Any]:
         """Create inputs for SLI dataframe to be stored.
 
@@ -67,7 +70,10 @@ class SLIBase:
         raise NotImplementedError
 
     def _create_default_inputs_for_df_sli(
-        self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime,
+        self,
+        sli: Dict[str, Any],
+        datetime: datetime.datetime,
+        timestamp: datetime.datetime,
     ) -> Dict[str, Any]:
         """Create default inputs for SLI dataframe to be stored.
 

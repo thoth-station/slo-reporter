@@ -65,11 +65,16 @@ class SLIThothHardwareInputs(SLIBase):
 
         if not self.configuration.dry_run:
 
-            e_time = self.configuration.start_time.strftime('%Y-%m-%d').split("-")
-            current_end_time = datetime.date(
-                year=int(e_time[0]), month=int(e_time[1]), day=int(e_time[2]),
-            ) + datetime.timedelta(days=1)
-            current_initial_date = current_end_time  - datetime.timedelta(days=days)
+            e_time = self.configuration.start_time.strftime("%Y-%m-%d").split("-")
+            current_end_time = (
+                datetime.date(
+                    year=int(e_time[0]),
+                    month=int(e_time[1]),
+                    day=int(e_time[2]),
+                )
+                + datetime.timedelta(days=1)
+            )
+            current_initial_date = current_end_time - datetime.timedelta(days=days)
 
             while current_initial_date < current_end_time:
 
@@ -88,8 +93,8 @@ class SLIThothHardwareInputs(SLIBase):
                     hardware = f"{subset_df['cpu_model'].values[0]}-{subset_df['cpu_family'].values[0]}"
                     if hardware not in total_quantity:
                         total_quantity[hardware] = {
-                            "cpu_model": subset_df['cpu_model'].values[0],
-                            "cpu_family": subset_df['cpu_family'].values[0],
+                            "cpu_model": subset_df["cpu_model"].values[0],
+                            "cpu_family": subset_df["cpu_family"].values[0],
                             "counts": subset_df["total"].values[0],
                         }
                     else:
@@ -128,7 +133,10 @@ class SLIThothHardwareInputs(SLIBase):
         return report
 
     def _process_results_to_be_stored(
-        self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime,
+        self,
+        sli: Dict[str, Any],
+        datetime: datetime.datetime,
+        timestamp: datetime.datetime,
     ) -> List[Dict[str, Any]]:
         """Create inputs for SLI dataframe to be stored.
 

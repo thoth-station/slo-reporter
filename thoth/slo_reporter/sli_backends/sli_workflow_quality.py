@@ -58,8 +58,8 @@ class SLIWorkflowQuality(SLIBase):
 
     def _aggregate_queries(self, component: str):
         """Aggregate component queries."""
-        instance = self.configuration.registered_workflows[component]['instance']
-        name = self.configuration.registered_workflows[component]['name']
+        instance = self.configuration.registered_workflows[component]["instance"]
+        name = self.configuration.registered_workflows[component]["name"]
 
         query_labels_workflows_s = f'{{instance="{instance}", name="{name}", status="Succeeded"}}'
         query_labels_workflows_f = f'{{instance="{instance}", name="{name}", status="Failed"}}'
@@ -163,7 +163,10 @@ class SLIWorkflowQuality(SLIBase):
         return report
 
     def _process_results_to_be_stored(
-        self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime,
+        self,
+        sli: Dict[str, Any],
+        datetime: datetime.datetime,
+        timestamp: datetime.datetime,
     ) -> Dict[str, Any]:
         """Create inputs for SLI dataframe to be stored.
 

@@ -65,9 +65,7 @@ class SLIUserAPI(SLIBase):
         """Aggregate queries for User-API SLI Report."""
         query_labels = f'{{instance="{self.instance}"}}'
         query_labels_success = f'{{instance="{self.instance}", status=~"2.*"}}'
-        query_labels_up = (
-            f'{{instance="{self.instance}", job="Thoth User API Metrics"}}'
-        )
+        query_labels_up = f'{{instance="{self.instance}", job="Thoth User API Metrics"}}'
 
         return {
             "avg_total_request": {
@@ -148,7 +146,10 @@ class SLIUserAPI(SLIBase):
         return report
 
     def _process_results_to_be_stored(
-        self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime,
+        self,
+        sli: Dict[str, Any],
+        datetime: datetime.datetime,
+        timestamp: datetime.datetime,
     ) -> Dict[str, Any]:
         """Create inputs for SLI dataframe to be stored.
 

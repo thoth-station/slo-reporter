@@ -65,11 +65,16 @@ class SLIThothAdviserReportsStatistics(SLIBase):
 
         if not self.configuration.dry_run:
 
-            e_time = self.configuration.start_time.strftime('%Y-%m-%d').split("-")
-            current_end_time = datetime.date(
-                year=int(e_time[0]), month=int(e_time[1]), day=int(e_time[2]),
-            ) + datetime.timedelta(days=1)
-            current_initial_date = current_end_time  - datetime.timedelta(days=days)
+            e_time = self.configuration.start_time.strftime("%Y-%m-%d").split("-")
+            current_end_time = (
+                datetime.date(
+                    year=int(e_time[0]),
+                    month=int(e_time[1]),
+                    day=int(e_time[2]),
+                )
+                + datetime.timedelta(days=1)
+            )
+            current_initial_date = current_end_time - datetime.timedelta(days=days)
 
             while current_initial_date < current_end_time:
 
@@ -89,12 +94,8 @@ class SLIThothAdviserReportsStatistics(SLIBase):
                     f_counts = 0
 
                     if not subset_df.empty:
-                        s_counts = subset_df[subset_df["adviser_version"] == adviser_version][
-                            "success"
-                        ].values[0]
-                        f_counts = subset_df[subset_df["adviser_version"] == adviser_version][
-                            "failure"
-                        ].values[0]
+                        s_counts = subset_df[subset_df["adviser_version"] == adviser_version]["success"].values[0]
+                        f_counts = subset_df[subset_df["adviser_version"] == adviser_version]["failure"].values[0]
 
                     if adviser_version not in total_statistics:
                         total_statistics[adviser_version] = {}
@@ -135,7 +136,10 @@ class SLIThothAdviserReportsStatistics(SLIBase):
         return report
 
     def _process_results_to_be_stored(
-        self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime,
+        self,
+        sli: Dict[str, Any],
+        datetime: datetime.datetime,
+        timestamp: datetime.datetime,
     ) -> List[Dict[str, Any]]:
         """Create inputs for SLI dataframe to be stored.
 

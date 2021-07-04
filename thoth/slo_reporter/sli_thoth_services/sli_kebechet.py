@@ -51,9 +51,7 @@ class SLIKebechet(SLIBase):
 
     def _query_sli(self) -> Dict[str, Any]:
         """Aggregate queries for Kebechet SLI Report."""
-        query_labels = (
-            f'{{instance="{self.configuration.instance}", job="Thoth Metrics"}}'
-        )
+        query_labels = f'{{instance="{self.configuration.instance}", job="Thoth Metrics"}}'
         return {
             "total_active_repositories": {
                 "query": f"thoth_kebechet_total_active_repo_count{query_labels}",
@@ -104,7 +102,10 @@ class SLIKebechet(SLIBase):
         return report
 
     def _process_results_to_be_stored(
-        self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime,
+        self,
+        sli: Dict[str, Any],
+        datetime: datetime.datetime,
+        timestamp: datetime.datetime,
     ) -> Dict[str, Any]:
         """Create inputs for SLI dataframe to be stored.
 
@@ -120,7 +121,7 @@ class SLIKebechet(SLIBase):
         output["delta_total_active_repositories"] = np.nan
 
         if not self.configuration.dry_run:
-            html_inputs=process_html_inputs(
+            html_inputs = process_html_inputs(
                 html_inputs=html_inputs,
                 sli_name=self._SLI_NAME,
                 last_period_time=self.configuration.last_week_time,

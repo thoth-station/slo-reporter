@@ -53,9 +53,7 @@ class SLIKnowledgeGraph(SLIBase):
 
     def _query_sli(self) -> Dict[str, Any]:
         """Aggregate queries for knowledge graph SLI Report."""
-        query_labels = (
-            f'{{instance="{self.configuration.instance}", job="Thoth Metrics"}}'
-        )
+        query_labels = f'{{instance="{self.configuration.instance}", job="Thoth Metrics"}}'
 
         return {
             "python_indices_registered": {
@@ -118,7 +116,10 @@ class SLIKnowledgeGraph(SLIBase):
         return report
 
     def _process_results_to_be_stored(
-        self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime,
+        self,
+        sli: Dict[str, Any],
+        datetime: datetime.datetime,
+        timestamp: datetime.datetime,
     ) -> Dict[str, Any]:
         """Create inputs for SLI dataframe to be stored.
 
@@ -135,7 +136,7 @@ class SLIKnowledgeGraph(SLIBase):
         output["new_packages_releases"] = np.nan
 
         if not self.configuration.dry_run:
-            html_inputs=process_html_inputs(
+            html_inputs = process_html_inputs(
                 html_inputs=html_inputs,
                 sli_name=self._SLI_NAME,
                 last_period_time=self.configuration.last_week_time,
