@@ -164,7 +164,11 @@ def connect_to_ceph(ceph_bucket_prefix: str, environment: str, bucket: Optional[
 
 
 def store_thoth_sli_on_ceph(
-    ceph_sli: CephStore, metric_class: str, metrics_df: pd.DataFrame, ceph_path: str, is_public: bool = False,
+    ceph_sli: CephStore,
+    metric_class: str,
+    metrics_df: pd.DataFrame,
+    ceph_path: str,
+    is_public: bool = False,
 ) -> None:
     """Store Thoth SLI on Ceph."""
     metrics_csv = metrics_df.to_csv(index=False, sep="`", header=False)
@@ -183,7 +187,7 @@ def retrieve_thoth_sli_from_ceph(ceph_sli: CephStore, ceph_path: str, total_colu
     """Retrieve Thoth SLI from Ceph."""
     _LOGGER.info(f"Retrieving... \n{ceph_path}")
     try:
-        retrieved_data = ceph_sli.retrieve_blob(object_key=ceph_path).decode('utf-8')
+        retrieved_data = ceph_sli.retrieve_blob(object_key=ceph_path).decode("utf-8")
         data = StringIO(retrieved_data)
         _LOGGER.debug(f"retrieved data:\n {data}")
         last_data = pd.read_csv(data, names=total_columns, sep="`")
@@ -211,11 +215,16 @@ def evaluate_total_data_window_days(
 
     if not configuration.dry_run:
 
-        e_time = configuration.start_time.strftime('%Y-%m-%d').split("-")
-        current_end_time = datetime.date(
-            year=int(e_time[0]), month=int(e_time[1]), day=int(e_time[2]),
-        ) + datetime.timedelta(days=1)
-        current_initial_date = current_end_time  - datetime.timedelta(days=number_days)
+        e_time = configuration.start_time.strftime("%Y-%m-%d").split("-")
+        current_end_time = (
+            datetime.date(
+                year=int(e_time[0]),
+                month=int(e_time[1]),
+                day=int(e_time[2]),
+            )
+            + datetime.timedelta(days=1)
+        )
+        current_initial_date = current_end_time - datetime.timedelta(days=number_days)
 
         while current_initial_date < current_end_time:
 

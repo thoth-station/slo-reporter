@@ -66,11 +66,16 @@ class SLIThothAdviserJustificationsErrors(SLIBase):
 
         if not self.configuration.dry_run:
 
-            e_time = self.configuration.start_time.strftime('%Y-%m-%d').split("-")
-            current_end_time = datetime.date(
-                year=int(e_time[0]), month=int(e_time[1]), day=int(e_time[2]),
-            ) + datetime.timedelta(days=1)
-            current_initial_date = current_end_time  - datetime.timedelta(days=days)
+            e_time = self.configuration.start_time.strftime("%Y-%m-%d").split("-")
+            current_end_time = (
+                datetime.date(
+                    year=int(e_time[0]),
+                    month=int(e_time[1]),
+                    day=int(e_time[2]),
+                )
+                + datetime.timedelta(days=1)
+            )
+            current_initial_date = current_end_time - datetime.timedelta(days=days)
 
             while current_initial_date < current_end_time:
 
@@ -86,8 +91,8 @@ class SLIThothAdviserJustificationsErrors(SLIBase):
                 for message in daily_justifications_df["message"].unique():
                     for adviser_version in daily_justifications_df["adviser_version"].unique():
                         subset_df = daily_justifications_df[
-                            (daily_justifications_df["message"] == message) &
-                            (daily_justifications_df["adviser_version"] == adviser_version)
+                            (daily_justifications_df["message"] == message)
+                            & (daily_justifications_df["adviser_version"] == adviser_version)
                         ]
 
                         if subset_df.shape[0] < 1:
@@ -149,7 +154,10 @@ class SLIThothAdviserJustificationsErrors(SLIBase):
         return report
 
     def _process_results_to_be_stored(
-        self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime,
+        self,
+        sli: Dict[str, Any],
+        datetime: datetime.datetime,
+        timestamp: datetime.datetime,
     ) -> List[Dict[str, Any]]:
         """Create inputs for SLI dataframe to be stored.
 

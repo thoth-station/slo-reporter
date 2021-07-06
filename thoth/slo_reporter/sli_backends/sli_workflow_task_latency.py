@@ -60,8 +60,8 @@ class SLIWorkflowTaskLatency(SLIBase):
 
     def _aggregate_queries(self, component: str):
         """Aggregate service queries."""
-        instance = self.configuration.registered_workflow_tasks[component]['instance']
-        name = self.configuration.registered_workflow_tasks[component]['name']
+        instance = self.configuration.registered_workflow_tasks[component]["instance"]
+        name = self.configuration.registered_workflow_tasks[component]["name"]
 
         queries = {}
 
@@ -100,13 +100,13 @@ class SLIWorkflowTaskLatency(SLIBase):
                 for bucket in self.configuration.buckets:
                     if bucket == "+Inf":
                         if buckets_results["+Inf"] > 0:
-                            percentage = (buckets_results["+Inf"] - buckets_results["900"])/buckets_results["+Inf"]
+                            percentage = (buckets_results["+Inf"] - buckets_results["900"]) / buckets_results["+Inf"]
                             html_inputs[component]["+Inf"] = round(percentage * 100, 3)
                         else:
                             html_inputs[component]["+Inf"] = np.nan
                     else:
                         if buckets_results["+Inf"] > 0:
-                            percentage = buckets_results[bucket]/buckets_results["+Inf"]
+                            percentage = buckets_results[bucket] / buckets_results["+Inf"]
                             html_inputs[component][bucket] = round(percentage * 100, 3)
                         else:
                             html_inputs[component][bucket] = np.nan
@@ -134,7 +134,10 @@ class SLIWorkflowTaskLatency(SLIBase):
         return report
 
     def _process_results_to_be_stored(
-        self, sli: Dict[str, Any], datetime: datetime.datetime, timestamp: datetime.datetime,
+        self,
+        sli: Dict[str, Any],
+        datetime: datetime.datetime,
+        timestamp: datetime.datetime,
     ) -> List[Dict[str, Any]]:
         """Create inputs for SLI dataframe to be stored.
 
