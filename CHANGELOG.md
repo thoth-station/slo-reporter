@@ -350,3 +350,11 @@ all the things that you see...
 * :arrow_up: Automatic update of dependencies by Kebechet
 * Remove qeb-hwt bits
 * :arrow_up: Automatic update of dependencies by Kebechet
+
+## Release 0.16.1 (2021-07-30T10:34:58)
+### Features
+* :arrow_up: Automatic update of dependencies by Kebechet (#292)
+* :arrow_up: Automatic update of dependencies by Kebechet
+* black re-formatting happened :sparkles:
+### Improvements
+* minor CI/CD config updates :arrow_up:
