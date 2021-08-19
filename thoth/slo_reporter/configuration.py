@@ -22,7 +22,7 @@ import os
 import datetime
 
 from prometheus_client import CollectorRegistry, Gauge
-from thoth.storages.graph.enums import ThothAdviserIntegrationEnum
+from thoth.common.enums import ThothAdviserIntegrationEnum
 
 from thoth.storages import CephStore
 
@@ -140,7 +140,7 @@ class Configuration:
 
         integrations = []
 
-        for thoth_integration in ThothAdviserIntegrationEnum._member_names_:
+        for thoth_integration in ThothAdviserIntegrationEnum._member_names_:  # type: ignore
             integrations.append(thoth_integration)
 
         self.thoth_integrations = integrations
