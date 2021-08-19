@@ -1,5 +1,9 @@
 # Changelog for Thoth's Template GitHub Project
 
+## Release 0.16.2 (2021-08-19T16:43:33)
+### Features
+* Fix integration enum
+
 ## [0.1.0] - 2019-Sep-11 - goern
 
 ### Added
