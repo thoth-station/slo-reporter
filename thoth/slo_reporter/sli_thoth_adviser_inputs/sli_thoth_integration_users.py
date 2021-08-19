@@ -52,7 +52,7 @@ class SLIThothIntegrationsUsers(SLIBase):
     def _query_sli(self) -> Dict[str, Any]:
         """Aggregate queries for Thoth Integrations SLI Report."""
         queries = {}
-        for thoth_integration in ["KEBECHET", "GITHUB_APP"]:
+        for thoth_integration in ["KEBECHET"]:
             result = self._aggregate_queries(thoth_integration=thoth_integration)
 
             for query_name, query in result.items():
@@ -87,7 +87,7 @@ class SLIThothIntegrationsUsers(SLIBase):
             sli_path = f"{self._SLI_NAME}/{self._SLI_NAME}-{self.configuration.last_week_time}.csv"
             last_week_data = retrieve_thoth_sli_from_ceph(self.configuration.ceph_sli, sli_path, self.total_columns)
 
-        for thoth_integration in ["KEBECHET", "GITHUB_APP"]:
+        for thoth_integration in ["KEBECHET"]:
             name = thoth_integration.lower()
             html_inputs[name] = {}
 
@@ -130,7 +130,7 @@ class SLIThothIntegrationsUsers(SLIBase):
         """
         df_inputs = []
 
-        for thoth_integration in ["KEBECHET", "GITHUB_APP"]:
+        for thoth_integration in ["KEBECHET"]:
             name = thoth_integration.lower()
 
             thoth_integration_counts_total = sli[f"{thoth_integration}_counts_users_total"]
