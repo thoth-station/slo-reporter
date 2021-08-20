@@ -1,5 +1,9 @@
 # Changelog for Thoth's Template GitHub Project
 
+## Release 0.17.0 (2021-08-20T09:37:15)
+### Features
+* Generalize metric
+
 ## Release 0.16.2 (2021-08-19T16:43:33)
 ### Features
 * Fix integration enum
