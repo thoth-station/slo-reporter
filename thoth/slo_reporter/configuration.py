@@ -88,7 +88,7 @@ class Configuration:
             self.prometheus_registry = CollectorRegistry()
 
             self.thoth_weekly_sli = Gauge(
-                f"thoth_sli_weekly_{self.environment}",
+                "thoth_sli_weekly",
                 "Weekly Thoth Service Level Indicators",
                 ["sli_type", "metric_name", "env"],
                 registry=self.prometheus_registry,
