@@ -1,5 +1,9 @@
 # Changelog for Thoth's Template GitHub Project
 
+## Release 0.17.1 (2021-09-14T20:49:01)
+### Features
+* Update of the dependencies
+
 ## Release 0.17.0 (2021-08-20T09:37:15)
 ### Features
 * Generalize metric
