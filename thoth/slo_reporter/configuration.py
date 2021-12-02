@@ -68,7 +68,7 @@ class Configuration:
             self.instance_wc_middletier = os.environ["PROMETHEUS_INSTANCE_WORKFLOW_CONTROLLER_MIDDLETIER"]
             self.instance_wc_amun_inspection = os.environ["PROMETHEUS_INSTANCE_WORKFLOW_CONTROLLER_AMUN_INSPECTION"]
 
-            self.environment = os.environ["THOTH_DEPLOYMENT_NAME"].split("-")[1]  # e.g. ocp-stage, take only stage
+            self.environment = os.environ["THOTH_DEPLOYMENT_NAME"]
             self.deployment_name = os.environ["THOTH_DEPLOYMENT_NAME"]
             self.backend_namespace = os.environ["THOTH_BACKEND_NAMESPACE"]
             self.middletier_namespace = os.environ["THOTH_MIDDLETIER_NAMESPACE"]
