@@ -243,11 +243,7 @@ def push_thoth_sli_periodic_metrics(
 
             if weekly_value_metric != "ErrorMetricRetrieval":
 
-                configuration.thoth_weekly_sli.labels(
-                    sli_type=sli_type,
-                    metric_name=metric_name,
-                    env=configuration.deployment_name,
-                ).set(
+                configuration.thoth_weekly_sli.labels(sli_type=sli_type, metric_name=metric_name, env=configuration.deployment_name,).set(
                     weekly_value_metric,
                 )
                 _LOGGER.info("(sli_type=%r, metric_name=%r)=%r", sli_type, metric_name, weekly_value_metric)
@@ -337,13 +333,11 @@ def send_sli_email_through_smtplib_tls(email_message: MIMEMultipart, configurati
             server.sendmail(configuration.sender_address, configuration.address_recipients, email_message.as_string())
             server.close()
             _LOGGER.info(
-                f"Email sent successfully through {configuration.server_host}"
-                f" with port {configuration.server_host_port} server.",
+                f"Email sent successfully through {configuration.server_host}" f" with port {configuration.server_host_port} server.",
             )
     except Exception as e:
         _LOGGER.info(
-            f"Exception when sending email using {configuration.server_host}"
-            f" with port{configuration.server_host_port} server: %s\n" % e,
+            f"Exception when sending email using {configuration.server_host}" f" with port{configuration.server_host_port} server: %s\n" % e,
         )
 
 

@@ -62,9 +62,7 @@ class SLIThothIntegrationsUsers(SLIBase):
 
     def _aggregate_queries(self, thoth_integration: str):
         """Aggregate Thoth integrations queries."""
-        query_labels_integrations = (
-            f'{{field="{self.configuration.instance}", job="metrics-exporter", thoth_integration="{thoth_integration}"}}'
-        )
+        query_labels_integrations = f'{{field="{self.configuration.instance}", job="metrics-exporter", thoth_integration="{thoth_integration}"}}'
 
         return {
             f"{thoth_integration}_counts_users_total": {

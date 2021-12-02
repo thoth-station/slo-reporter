@@ -62,8 +62,7 @@ class SLILearning(SLIBase):
 
         return {
             "average_learning_rate": {
-                "query": "increase("
-                f"thoth_graphdb_unsolved_python_package_versions_change_total{query_labels}[{_LEARNING_RATE_INTERVAL}])",
+                "query": "increase(" f"thoth_graphdb_unsolved_python_package_versions_change_total{query_labels}[{_LEARNING_RATE_INTERVAL}])",
                 "requires_range": True,
                 "type": "average",
             },
@@ -78,8 +77,7 @@ class SLILearning(SLIBase):
                 "type": "latest",
             },
             "average_si_learning_rate": {
-                "query": "increase("
-                f"thoth_graphdb_si_unanalyzed_python_package_versions_change_total{query_labels}[{_LEARNING_RATE_INTERVAL}])",
+                "query": "increase(" f"thoth_graphdb_si_unanalyzed_python_package_versions_change_total{query_labels}[{_LEARNING_RATE_INTERVAL}])",
                 "requires_range": True,
                 "type": "average",
             },

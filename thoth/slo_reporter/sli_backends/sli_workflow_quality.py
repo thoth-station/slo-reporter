@@ -120,9 +120,7 @@ class SLIWorkflowQuality(SLIBase):
                 html_inputs[component]["value"] = np.nan
 
             else:
-                total_workflows = (
-                    int(number_workflows_succeeded) + int(number_workflows_failed) + int(number_workflows_error)
-                )
+                total_workflows = int(number_workflows_succeeded) + int(number_workflows_failed) + int(number_workflows_error)
 
                 if int(number_workflows_succeeded) > 0:
 
