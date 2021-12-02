@@ -47,15 +47,13 @@ def _add_dashbords(configuration: Configuration):
 
     sli_slo_dashboard_name = "thoth-sli-slo"
     sli_slo_dashboard_url = (
-        f"{configuration.grafana_reference_base_url}/{sli_slo_dashboard_name}?"
-        + f"refresh=1m&orgId=1&from={start_time_epoch}&to={end_time_epoch}"
+        f"{configuration.grafana_reference_base_url}/{sli_slo_dashboard_name}?" + f"refresh=1m&orgId=1&from={start_time_epoch}&to={end_time_epoch}"
     )
     html_inputs["Thoth SLI/SLO"] = {"url": sli_slo_dashboard_url, "description": "Dashboard for SLI/SLO for Thoth."}
 
     sli_slo_dashboard_name = "thoth-reports"
     sli_slo_dashboard_url = (
-        f"{configuration.grafana_reference_base_url}/{sli_slo_dashboard_name}?"
-        + f"refresh=1m&orgId=1&from={start_time_epoch}&to={end_time_epoch}"
+        f"{configuration.grafana_reference_base_url}/{sli_slo_dashboard_name}?" + f"refresh=1m&orgId=1&from={start_time_epoch}&to={end_time_epoch}"
     )
     html_inputs["Thoth Reports"] = {
         "url": sli_slo_dashboard_url,

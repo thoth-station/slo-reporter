@@ -63,9 +63,9 @@ class SLIUserAPI(SLIBase):
 
     def _query_sli(self) -> Dict[str, Any]:
         """Aggregate queries for User-API SLI Report."""
-        query_labels = f'{{instance="{self.instance}"}}'
-        query_labels_success = f'{{instance="{self.instance}", status=~"2.*"}}'
-        query_labels_up = f'{{instance="{self.instance}", job="Thoth User API Metrics"}}'
+        query_labels = f'{{field="{self.instance}"}}'
+        query_labels_success = f'{{field="{self.instance}", status=~"2.*"}}'
+        query_labels_up = f'{{field="{self.instance}"}}'
 
         return {
             "avg_total_request": {

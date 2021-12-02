@@ -1,17 +1,12 @@
 ---
 repos:
-  - repo: git://github.com/asottile/add-trailing-comma
-    rev: v2.1.0
-    hooks:
-      - id: add-trailing-comma
-
   - repo: git://github.com/Lucas-C/pre-commit-hooks
     rev: v1.1.10
     hooks:
       - id: remove-tabs
 
   - repo: git://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v3.4.0
     hooks:
       - id: trailing-whitespace
       - id: check-merge-conflict
@@ -28,27 +23,20 @@ repos:
       - id: debug-statements
 
   - repo: git://github.com/pycqa/pydocstyle.git
-    rev: 6.1.1
+    rev: 6.0.0
     hooks:
       - id: pydocstyle
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v3.4.0
     hooks:
       - id: check-toml
       - id: check-yaml
       - id: end-of-file-fixer
       - id: trailing-whitespace
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.910
-    hooks:
-      - id: mypy
-        exclude: '^(docs|tasks|tests)|setup\.py'
-        args: [--ignore-missing-imports]
-
   - repo: https://github.com/psf/black
-    rev: 21.6b0
+    rev: 21.4b0
     hooks:
       - id: black
 
@@ -57,17 +45,11 @@ repos:
     hooks:
       - id: black-nb
 
-  # Enable this in repositories with python packages.
-  # - repo: https://github.com/mgedmin/check-manifest
-  #   rev: '0.39'
-  #   hooks:
-  #     - id: check-manifest
-
   - repo: https://gitlab.com/PyCQA/flake8
-    rev: "3.9.2"
+    rev: "3.9.1"
     hooks:
       - id: flake8
         additional_dependencies: ["pep8-naming"]
         # Ignore all format-related checks as Black takes care of those.
         args:
-          ["--ignore", "E2,W5", "--select", "E,W,F,N", "--max-line-length=130"]
+          ["--ignore", "E2,W5", "--select", "E,W,F,N", "--max-line-length=150"]

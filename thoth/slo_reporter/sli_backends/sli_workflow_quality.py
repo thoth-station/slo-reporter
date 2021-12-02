@@ -61,9 +61,9 @@ class SLIWorkflowQuality(SLIBase):
         instance = self.configuration.registered_workflows[component]["instance"]
         name = self.configuration.registered_workflows[component]["name"]
 
-        query_labels_workflows_s = f'{{instance="{instance}", name="{name}", status="Succeeded"}}'
-        query_labels_workflows_f = f'{{instance="{instance}", name="{name}", status="Failed"}}'
-        query_labels_workflows_e = f'{{instance="{instance}", name="{name}", status="Error"}}'
+        query_labels_workflows_s = f'{{field="{instance}", name="{name}", status="Succeeded"}}'
+        query_labels_workflows_f = f'{{field="{instance}", name="{name}", status="Failed"}}'
+        query_labels_workflows_e = f'{{field="{instance}", name="{name}", status="Error"}}'
 
         return {
             f"{component}_workflows_succeeded": {
@@ -120,9 +120,7 @@ class SLIWorkflowQuality(SLIBase):
                 html_inputs[component]["value"] = np.nan
 
             else:
-                total_workflows = (
-                    int(number_workflows_succeeded) + int(number_workflows_failed) + int(number_workflows_error)
-                )
+                total_workflows = int(number_workflows_succeeded) + int(number_workflows_failed) + int(number_workflows_error)
 
                 if int(number_workflows_succeeded) > 0:
 

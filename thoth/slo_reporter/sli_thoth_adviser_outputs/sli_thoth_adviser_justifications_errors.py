@@ -91,8 +91,7 @@ class SLIThothAdviserJustificationsErrors(SLIBase):
                 for message in daily_justifications_df["message"].unique():
                     for adviser_version in daily_justifications_df["adviser_version"].unique():
                         subset_df = daily_justifications_df[
-                            (daily_justifications_df["message"] == message)
-                            & (daily_justifications_df["adviser_version"] == adviser_version)
+                            (daily_justifications_df["message"] == message) & (daily_justifications_df["adviser_version"] == adviser_version)
                         ]
 
                         if subset_df.shape[0] < 1:

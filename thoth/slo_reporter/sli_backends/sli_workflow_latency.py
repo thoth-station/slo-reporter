@@ -65,7 +65,7 @@ class SLIWorkflowLatency(SLIBase):
         queries = {}
 
         for bucket in self.configuration.buckets:
-            query_labels_workflows = f'{{instance="{instance}", name="{name}", le="{bucket}"}}'
+            query_labels_workflows = f'{{field="{instance}", name="{name}", le="{bucket}"}}'
             queries[f"{component}_workflows_latency_bucket_{bucket}"] = {
                 "query": f"argo_workflows_duration_seconds_histogram_bucket{query_labels_workflows}",
                 "requires_range": True,

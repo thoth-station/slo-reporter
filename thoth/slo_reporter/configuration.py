@@ -100,7 +100,7 @@ class Configuration:
             # Ceph
             self.public_ceph_bucket = os.getenv("THOTH_PUBLIC_CEPH_BUCKET")
             self.ceph_bucket_prefix = os.environ["THOTH_CEPH_BUCKET_PREFIX"]
-            self.ceph_sli = _connect_to_ceph(self.ceph_bucket_prefix, self.environment)
+            self.ceph_sli = _connect_to_ceph(self.ceph_bucket_prefix, self.environment)  # type: ignore
 
         # Grafana
         self.grafana_reference_base_url = os.getenv(
