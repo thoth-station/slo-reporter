@@ -51,7 +51,7 @@ class SLIKebechet(SLIBase):
 
     def _query_sli(self) -> Dict[str, Any]:
         """Aggregate queries for Kebechet SLI Report."""
-        query_labels = f'{{instance="{self.configuration.instance}", job="Thoth Metrics"}}'
+        query_labels = f'{{field="{self.configuration.instance}", job="metrics-exporter"}}'
         return {
             "total_active_repositories": {
                 "query": f"thoth_kebechet_total_active_repo_count{query_labels}",

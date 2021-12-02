@@ -61,9 +61,9 @@ class SLIWorkflowTaskQuality(SLIBase):
         instance = self.configuration.registered_workflow_tasks[component]["instance"]
         name = self.configuration.registered_workflow_tasks[component]["name"]
 
-        query_labels_workflows_s = f'{{instance="{instance}", name="{name}", status="Succeeded"}}'
-        query_labels_workflows_f = f'{{instance="{instance}", name="{name}", status="Failed"}}'
-        query_labels_workflows_e = f'{{instance="{instance}", name="{name}", status="Error"}}'
+        query_labels_workflows_s = f'{{field="{instance}", name="{name}", status="Succeeded"}}'
+        query_labels_workflows_f = f'{{field="{instance}", name="{name}", status="Failed"}}'
+        query_labels_workflows_e = f'{{field="{instance}", name="{name}", status="Error"}}'
 
         return {
             f"{component}_workflow_tasks_succeeded": {

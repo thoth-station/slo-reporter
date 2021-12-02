@@ -58,7 +58,7 @@ class SLILearning(SLIBase):
 
     def _query_sli(self) -> Dict[str, Any]:
         """Aggregate queries for learning quantities SLI Report."""
-        query_labels = f'{{instance="{self.configuration.instance}", job="Thoth Metrics"}}'
+        query_labels = f'{{field="{self.configuration.instance}", job="metrics-exporter"}}'
 
         return {
             "average_learning_rate": {

@@ -63,7 +63,7 @@ class SLIThothIntegrationsUsers(SLIBase):
     def _aggregate_queries(self, thoth_integration: str):
         """Aggregate Thoth integrations queries."""
         query_labels_integrations = (
-            f'{{instance="{self.configuration.instance}", thoth_integration="{thoth_integration}"}}'
+            f'{{field="{self.configuration.instance}", job="metrics-exporter", thoth_integration="{thoth_integration}"}}'
         )
 
         return {

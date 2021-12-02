@@ -53,10 +53,10 @@ class SLIPyPIKnowledgeGraph(SLIBase):
     def _query_sli(self) -> Dict[str, Any]:
         """Aggregate queries for knowledge graph SLI Report."""
         query_labels_packages = (
-            f'{{instance="{self.configuration.instance}", job="Thoth Metrics", stats_type="packages"}}'
+            f'{{field="{self.configuration.instance}", stats_type="packages", job="metrics-exporter"}}'
         )
         query_labels_releases = (
-            f'{{instance="{self.configuration.instance}", job="Thoth Metrics", stats_type="releases"}}'
+            f'{{field="{self.configuration.instance}", stats_type="releases", job="metrics-exporter"}}'
         )
 
         return {
