@@ -1,5 +1,10 @@
 # Changelog for Thoth's Template GitHub Project
 
+## Release 0.19.2 (2022-05-09T19:58:11)
+* e59e098 :ship: Bump up base image initialized in CI. (#337)
+* f272a3d :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment (#336)
+* 28faaba :medal_sports: set badges for easy access to content
+
 ## Release 0.19.1 (2022-01-31T21:56:35)
 * :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment
 * :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment (#329)
