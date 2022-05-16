@@ -243,7 +243,7 @@ def push_thoth_sli_periodic_metrics(
 
             if weekly_value_metric != "ErrorMetricRetrieval":
 
-                configuration.thoth_weekly_sli.labels(sli_type=sli_type, metric_name=metric_name, env=configuration.deployment_name,).set(
+                configuration.thoth_weekly_sli.labels(sli_type=sli_type, metric_name=metric_name, env=configuration.deployment_name).set(
                     weekly_value_metric,
                 )
                 _LOGGER.info("(sli_type=%r, metric_name=%r)=%r", sli_type, metric_name, weekly_value_metric)

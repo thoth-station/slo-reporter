@@ -66,14 +66,11 @@ class SLIThothAdviserReportsStatistics(SLIBase):
         if not self.configuration.dry_run:
 
             e_time = self.configuration.start_time.strftime("%Y-%m-%d").split("-")
-            current_end_time = (
-                datetime.date(
-                    year=int(e_time[0]),
-                    month=int(e_time[1]),
-                    day=int(e_time[2]),
-                )
-                + datetime.timedelta(days=1)
-            )
+            current_end_time = datetime.date(
+                year=int(e_time[0]),
+                month=int(e_time[1]),
+                day=int(e_time[2]),
+            ) + datetime.timedelta(days=1)
             current_initial_date = current_end_time - datetime.timedelta(days=days)
 
             while current_initial_date < current_end_time:

@@ -216,14 +216,11 @@ def evaluate_total_data_window_days(
     if not configuration.dry_run:
 
         e_time = configuration.start_time.strftime("%Y-%m-%d").split("-")
-        current_end_time = (
-            datetime.date(
-                year=int(e_time[0]),
-                month=int(e_time[1]),
-                day=int(e_time[2]),
-            )
-            + datetime.timedelta(days=1)
-        )
+        current_end_time = datetime.date(
+            year=int(e_time[0]),
+            month=int(e_time[1]),
+            day=int(e_time[2]),
+        ) + datetime.timedelta(days=1)
         current_initial_date = current_end_time - datetime.timedelta(days=number_days)
 
         while current_initial_date < current_end_time:
