@@ -1,10 +1,10 @@
 # See the OWNERS docs at https://go.k8s.io/owners
 
 approvers:
-  - pacospace
+  - codificat
+  - harshad16
   - sesheta
 reviewers:
-  - fridex
   - harshad16
 
 labels:
