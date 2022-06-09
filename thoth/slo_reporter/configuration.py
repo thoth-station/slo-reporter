@@ -105,13 +105,13 @@ class Configuration:
         # Grafana
         self.grafana_reference_base_url = os.getenv(
             "GRAFANA_DASHBOARD_BASE_URL",
-            "https://grafana-route-opf-monitoring.apps.zero.massopen.cloud/",
+            "https://grafana.operate-first.cloud/",
         )
 
         # Superset
         self.superset_dashboard_url = os.getenv(
             "SUPERSET_DASHBOARD_URL",
-            "https://hue-opf-datacatalog.apps.zero.massopen.cloud/",
+            "https://superset.operate-first.cloud/",
         )
 
         # TODO: Adjust logic to evaluate metrics not to maintain list of components
