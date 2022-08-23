@@ -4,8 +4,12 @@ approvers:
   - codificat
   - harshad16
   - sesheta
+
 reviewers:
   - harshad16
+
+emeritus_approvers:
+  - pacospace
 
 labels:
  - sig/observability
